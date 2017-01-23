@@ -1,0 +1,28 @@
+.marketing .col-lg-4 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.marketing h2 {
+  font-weight: normal;
+}
+.marketing .col-lg-4 p {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+div.jumbotron {
+	background: white url("images/suppbuilder.png") center;
+	background-position: center;
+	background-size: cover;
+	height: 500px;
+	width: 1282;
+	margin-top: -100px
+}	
+
+div.jumbotron p{
+	text-align: center;
+	position: relative;
+	top: 363px;
+	left: 38px;
+
+}

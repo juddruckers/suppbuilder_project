@@ -1,0 +1,24 @@
+{% extends "suppbuilder/base.html" %}
+{% block body%}
+
+
+<div class='container'>
+<form action="{% url 'checkout-view' %}" id="checkout" method="post">
+	{% csrf_token %}                      
+	<div id="dropin-container"></div>
+	<input type="submit" value="Pay" />
+</form>
+</div>
+
+
+
+<script src="https://js.braintreegateway.com/js/braintree-2.30.0.min.js"></script>
+
+
+<script>
+braintree.setup("{{token}}", "dropin", {
+	container : "dropin-container",
+});
+</script>
+
+{% endblock %}

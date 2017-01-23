@@ -1,0 +1,36 @@
+{% extends 'suppbuilder/base.html' %}
+
+{%include 'suppbuilder/navbar.html' %}
+
+{% block body %}
+
+<h1> this is the page that will display the users billing and shipping options </h1>
+
+<div class='container'>
+	<h3> Shipping Addresses</h3>
+	{% for address in address_list %}
+		<div class='container'>
+			{% if address.address_type == 'shipping' %}
+				<p>{{address.first_name}}
+				<p>{{address.street_address}} {{address.extended_address}} </p>
+				<p> {{address.city}}, {{address.state}} {{address.zip_code}} </p>
+				<input type='radio' id='{{address.id}}'>
+
+			{% endif %}
+		</div>
+
+	{% endfor %}
+
+	<h3>Billing Address</h3>
+	{% for address in address_list %}
+
+	{% if address.address_type == 'billing' %}
+
+		<p>{{address.street_address}}</p>
+	{% endif %}
+
+	{%endfor%}
+
+</div>
+
+{% endblock %}
