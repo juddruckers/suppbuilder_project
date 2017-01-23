@@ -1,0 +1,16 @@
+braintree==3.32.0
+Django==1.10.3
+django-allauth==0.29.0
+django-carton==1.2.1
+django-crispy-forms==1.6.1
+django-extensions==1.6.1
+oauthlib==2.0.1
+pbr==1.10.0
+python-openid==2.2.5
+requests==2.12.3
+requests-oauthlib==0.7.0
+six==1.10.0
+stevedore==1.18.0
+virtualenv==15.0.1
+virtualenv-clone==0.2.6
+virtualenvwrapper==4.7.2
