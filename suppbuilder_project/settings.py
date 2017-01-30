@@ -20,12 +20,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'w@t$(&@2=s$sc0pl)dt=_d6qv&=w5c397^$ib^%a+be$htps5$'
+SECRET_KEY = os.environ.get('SECRETKEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.environ.get('PRODUCTION') is not None:
+	DEBUG = False
+else:
+	DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['162.243.151.222']
 
 
 # Application definition
@@ -99,10 +102,9 @@ ACCOUNT_EMAIL_REQUIRED = True
 WSGI_APPLICATION = 'suppbuilder_project.wsgi.application'
 
 #Brain Tree
-BRAINTREE_MERCHANT_ID = '6sxqz6v5rp9mkbtk'
-BRAINTREE_PUBLIC_KEY = 'stg5227psrym8s8w'
-BRAINTREE_PRIVATE_KEY = '1622cff917395f05cf8e5a587f731129'
-
+BRAINTREE_MERCHANT_ID = os.environ.get('BRAINTREE_MERCHANT_ID')
+BRAINTREE_PUBLIC_KEY = os.environ.get('BRAINTREE_PUBLIC_KEY')
+BRAINTREE_PRIVATE_KEY = os.environ.get('BRAINTREE_PRIVATE_KEY')
 
 
 # Database
@@ -110,8 +112,12 @@ BRAINTREE_PRIVATE_KEY = '1622cff917395f05cf8e5a587f731129'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('DBNAME'),
+	'USER': os.environ.get('DBUSER'),
+	'PASSWORD' : os.environ.get('DBKEY'),
+	'HOST' : 'localhost',
+	'PORT' : '',
     }
 }
 # braintree environment variables
@@ -125,7 +131,7 @@ ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE =True
 # username not required
 ACCOUNT_USERNAME_REQUIRED = False
 
-#sign in using email 
+#sign in using email
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 
 # Password validation
@@ -165,4 +171,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = '/home/judd/suppbuilder_project/static/'
+
+
+
+
+
+
+
+
+
+
+
+
+
