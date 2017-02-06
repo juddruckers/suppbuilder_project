@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from configurations import Configuration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRETKEY')
+SECRET_KEY = 'w@t$(&@2=s$sc0pl)dt=_d6qv&=w5c397^$ib^%a+be$htps5$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.environ.get('PRODUCTION') is not None:
@@ -29,6 +30,9 @@ else:
 	DEBUG = True
 
 ALLOWED_HOSTS = ['162.243.151.222']
+
+class Local(Configuration):
+    DEBUG = True
 
 
 # Application definition
