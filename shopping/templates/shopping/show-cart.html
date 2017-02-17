@@ -1,29 +1,60 @@
 {% extends 'suppbuilder/base.html' %}
+{% load static %}
 {% load carton_tags %}
-
+{% block head %}
+    
+<link rel="stylesheet" type="text/css" href="{% static 'shopping/product.css' %}">
+{% endblock %}
 
 
 {% block body %}
 <div class='container'>
-<h1>Shopping Cart</h1>
+        <h1>Shopping Cart</h1>
+        <hr>
+    <div class='row'>
+        <div class='col-lg-8'>
+        <h1>Ingredients in supplement blend</h1>
 
-{% get_cart as cart %}
+        {% get_cart as cart %}
+        
+            <table class='table table-condensed'>
+            <tr>
+                <th>Product</th>
+                <th>Serving Size</th>
+                <th>Price</th>
+                <th>Price per serving</th>
+                <th>Remove</th>
+            </tr>
+            {% for item in cart.items %}
+            <tr>
+                <td>{{ item.product.product.title }}</td>
+                <td>{{ item.product }}</td>
+                <td>{{ item.subtotal }}</td>
+                <td>{{item.price}}</td>
+                <td><input type='checkbox' value='{{item.product.id}}'></input></td>
+            </tr>   
+            {% endfor %}
+            </table>
 
-    <table border="1">
-    <tr>
-        <th>Product</th>
-        <th>Quantity</th>
-        <th>Price</th>
-    </tr>
-    {% for item in cart.items %}
-    <tr>
-        <td>{{ item.product }} {{item.product.id}}</td>
-        <td>{{ item.quantity }}</td>
-        <td>{{ item.subtotal }}</td>
-    </tr>
-        {% endfor %}
-    </table>
+            
 
-    Total: {{ cart.total }}
+        </div>
+    </div>
+    <div class='row'>
+        <div class='col-lg-4'>
+            <h5>Total: {{ cart.total }} </h5>
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class='col-lg-6'>
+          <button type="button" class="btn btn-danger " id='update-cart' >Update Cart</button>
+        </div>
+        <div class='col-lg-6'>
+          <button type="button" class="btn btn-success" >Continue to checkout</button>
+        </div>
+    </div>
 </div>
+
+
 {% endblock %}

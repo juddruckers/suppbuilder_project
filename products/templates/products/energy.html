@@ -1,111 +1,153 @@
+{% extends 'suppbuilder/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Bootstrap 101 Template</title>
+{% load carton_tags %}
+{% block head %}
+    
+<link rel="stylesheet" type="text/css" href="{% static 'products/product.css' %}">
+{% endblock %}
 
-    <!-- Bootstrap -->
-<!--     <link href="css/bootstrap.min.css" rel="stylesheet"> -->
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-<!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-<!-- Latest compiled and minified JavaScript -->
-
-
-
-  </head>
-  <body>
-{% include 'suppbuilder/navbar.html' %}
+{% block body %}
 
 <div class='container'>
-    <div class="jumbotron">
+    <div class="jumbotron" id="product-jumbo">
       <div class="container">
         <h1>Hello, world!</h1>
         <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        {% for product in energy_list %}
-          <p>{{product.title}}</p>
-        {% endfor %}
       </div>
     </div>
 </div>
 
-{% for product in energy_list %}
-<div class='container'>
-<table class="table">
-  <caption> {{product.title}} </caption>
-  <thead>
-    <tr>
-      <th>{{product.title}}</th>
-      <th> Benefits </th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-        {{product.description}}
-      </td>
-      <td colspan='6'>
-      <ul>
-      {% for benefit in product.benefits.all %}
-        <li>
-          {{benefit}}
-        </li>
-      {% endfor %}
-      </ul>
-      </td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr>
-      <td>
-      {% for variation in product.variation_set.all %}
-      <a class='btn btn-default' href="{% url 'shopping-cart-add' %}?id={{variation.product.id}}"> add {{variation.product}} </a>
-      <a class='btn btn-default' href="{% url 'shopping-cart-remove' %}?id={{variation.product.id}}"> remove {{variation.product}} </a>
-      {% endfor %}
-      </td>
-    </tr>
-  </tfoot>
-</table>
+<!-- Product title/description/benefits -->
+<div class='container product-container'>
+  <div class='row'>
+    <div class='col-lg-6'>
+      {% if caffeine_match %}
+      <h2>
+        {{caffeine.title}} <span id='caffeine-price'> $ {{ caffeine_match.price }}</span>
+      </h2>
+      {% else %}
+      <h2>
+        {{caffeine.title}} <span id='caffeine-price'> </span>
+      </h2>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class='row'>
+    <div class='col-lg-8'>
+      <h5>Product description</h5>
+      <p>{{caffeine.description}}</p>
+    </div>
+    <div class='col-lg-4'>
+      <h5>Key Benefits</h5>
+        <ul>
+          {% for benefit in caffeine.benefits.all %}
+            <li>{{benefit}}</li>  
+          {% endfor %}
+        </ul>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-lg-6'>    
+      {% if caffeine_match %}
+        <label for='Caffeine-select'><h4>Select serving size :</h4></label>
+          <select id="Caffeine-select" class="Caffeine-select" disabled>
+            {% for variation in caffeine_variations %}
+              {% if variation.id == caffeine_match.id %}
+                <option value="{{caffeine_match.id}}" data-caffeine-price='{{caffeine_match.price}}' selected> {{caffeine_match.title}}</option>
+                {% else %}
+                <option value="{{variation.id}}" data-caffeine-price="{{variation.price}}"> {{variation.title}} </option>
+              {% endif %}
+            {% endfor %}
+          </select>
+      {% else %}
+        <label for='Caffeine-select'><h4>Select serving size :</h4></label>
+          <select id="Caffeine-select" class="Caffeine-select">
+            {% for variation in caffeine.variation_set.all %}
+              <option value="{{variation.id}}" data-caffeine-price="{{variation.price}}"> {{variation.title}}</option>
+            {% endfor %}
+          </select> 
+      {% endif %}
+    </div>
+  </div>
+    <div class='row'>
+      <div class='col-lg-12'>
+        {% if caffeine_match %}
+          <button type="button" class="btn btn-success Caffeine-add remove">Add {{caffeine.title}}</button>
+          <button type="button" class="btn btn-danger Caffeine-remove" >Remove {{caffeine.title}}</button>
+          {% else %}
+          <button type="button" class="btn btn-success Caffeine-add">Add {{caffeine.title}}</button>
+          <button type="button" class="btn btn-danger Caffeine-remove remove" >Remove {{caffeine.title}}</button>
+        {% endif %}
+      </div>
+    </div>
 </div>
-{% endfor %}
+
+<!-- <div class='container'>
+  <div class='row'>
+    <div class='col-lg-6'>    
+      {% if caffeine_match %}
+        <label for='Caffeine-select'><h4>Select serving size :</h4></label>
+          <select id="Caffeine-select" class="Caffeine-select" disabled>
+            {% for variation in caffeine_variations %}
+              {% if variation.id == caffeine_match.id %}
+                <option value="{{caffeine_match.id}}" data-caffeine-price='{{caffeine_match.price}}' selected> {{caffeine_match.title}}</option>
+                {% else %}
+                <option value="{{variation.id}}" data-caffeine-price="{{variation.price}}"> {{variation.title}} </option>
+              {% endif %}
+            {% endfor %}
+          </select>
+      {% else %}
+        <label for='Caffeine-select'><h4>Select serving size :</h4></label>
+          <select id="Caffeine-select" class="Caffeine-select">
+            {% for variation in caffeine.variation_set.all %}
+              <option value="{{variation.id}}" data-caffeine-price="{{variation.price}}"> {{variation.title}}</option>
+            {% endfor %}
+          </select> 
+      {% endif %} 
+    </div>
+  </div>
+</div>
+ -->
 
 
+<!--   <div class='container'>
+    <div class='row'>
+      <div class='col-lg-12'>
+        {% if caffeine_match %}
+          <button type="button" class="btn btn-success Caffeine-add remove">Add {{caffeine.title}}</button>
+          <button type="button" class="btn btn-danger Caffeine-remove" >Remove {{caffeine.title}}</button>
+          {% else %}
+          <button type="button" class="btn btn-success Caffeine-add">Add {{caffeine.title}}</button>
+          <button type="button" class="btn btn-danger Caffeine-remove remove" >Remove {{caffeine.title}}</button>
+        {% endif %}
+      </div>
+    </div>
+  </div>  -->
 
-<div class='container'>
-  {% for product in energy_list %}
-  <h1>{{product}}</h1>
-  {% for research in product.research_set.all %}
-  <p> {{research.research_title}} <p>
-  {% endfor %}
-  {% endfor %}
-<div>
+<hr>
+
+
+  <div class='container research-container'>
+    <h1>Research</h1>
+    <div class='row'>
+    <div class='col-lg-12'>
+    {% for product in energy_list %}
+    <h3>{{product}}</h3>
+    {% for research in product.research_set.all %}
+    <p> {{research.research_title}} <p>
+    {% endfor %}
+    {% endfor %}
+    </div>
+  </div>
 
 
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/JavaScript" src="{% static 'products/products.js' %}"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <!--     / <script src="js/bootstrap.min.js"></script> -->
-</body>
-</html>
+{% endblock %}

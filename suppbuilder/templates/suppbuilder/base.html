@@ -30,15 +30,16 @@
 
     <script src="https://js.braintreegateway.com/js/braintree-2.30.0.min.js"></script>
 
-
     <link rel="stylesheet" type="text/css" href="{% static 'suppbuilder/homepage.css' %}"/>
+    {% block head %}
 
 
+    {% endblock %}
   </head>
 <body>
 {% include 'suppbuilder/navbar.html' %}
 
-{%block body %}
+{% block body %}
 
 
 {%endblock%}

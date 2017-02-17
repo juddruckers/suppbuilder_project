@@ -51,7 +51,7 @@ class Base(Configuration):
         'crispy_forms',
     ]
 
-    CART_PRODUCT_MODEL = 'products.models.Product'
+    CART_PRODUCT_MODEL = 'products.models.Variation'
 
     ACCOUNT_EMAIL_REQUIRED = False
 
@@ -171,7 +171,7 @@ class Base(Configuration):
     # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
     STATIC_URL = '/static/'
-    STATIC_ROOT = '/home/judd/suppbuilder_project/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 #local django configuration 

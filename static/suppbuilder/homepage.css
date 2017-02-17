@@ -10,7 +10,7 @@
   margin-left: 10px;
 }
 
-div.jumbotron {
+.jumbohome {
 	background: white url("images/suppbuilder.png") center;
 	background-position: center;
 	background-size: cover;
@@ -19,7 +19,7 @@ div.jumbotron {
 	margin-top: -100px
 }	
 
-div.jumbotron p{
+.jumbohome p{
 	text-align: center;
 	position: relative;
 	top: 363px;

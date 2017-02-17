@@ -28,8 +28,9 @@ def add(request):
 
 def remove(request):
     cart = Cart(request.session)
-    product = Product.objects.get(id=request.GET.get('id'))
-    cart.remove(product)
+    # product = Product.objects.get(id=request.GET.get('id'))
+    variation = Variation.objects.get(id=request.GET.get('id'))
+    cart.remove(variation)
     return HttpResponse("Removed")
 
 
