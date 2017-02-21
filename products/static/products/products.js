@@ -1,7 +1,4 @@
 
-
-
-
 $(".Caffeine-add").on("click", function(added){
 
 	var variation = $("#Caffeine-select").val();
@@ -36,9 +33,9 @@ $(".Caffeine-remove").on("click", function(){
 
 
 
-$(".Theanine-add").on("click", function(added){
+$(".theanine-add").on("click", function(added){
 
-	var variation = $("#Theanine-select").val();
+	var variation = $("#theanine-select").val();
 
 	$.ajax({
 		url: '/shopping/add?id=' + variation,
@@ -49,23 +46,23 @@ $(".Theanine-add").on("click", function(added){
 
 	$(this).hide();
 
-	$("#Theanine-select").attr('disabled', true);
-	$(".Theanine-remove").show();
+	$("#theanine-select").attr('disabled', true);
+	$(".theanine-remove").show();
 
 });
 
 
 
-$(".Theanine-remove").on("click", function(){
-	var variation = $("#Theanine-select").val();
+$(".theanine-remove").on("click", function(){
+	var variation = $("#theanine-select").val();
 	$.ajax({
 		url : '/shopping/remove?id=' + variation,
 		type: 'GET',
 	})
 
-	$("#Theanine-select").attr("disabled", false);
+	$("#theanine-select").attr("disabled", false);
 	$(this).hide();
-	$(".Theanine-add").show();
+	$(".theanine-add").show();
 });
 
 

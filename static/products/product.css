@@ -1,3 +1,15 @@
-.ingredient-button {
+.ingredient-select {
 	margin: 10px;
-} 
+	width: 25%;
+}
+
+
+.remove {
+	display: none;
+}
+
+
+.product-container {
+	border: thin solid black;
+
+}

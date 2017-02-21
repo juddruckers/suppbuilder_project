@@ -8,6 +8,8 @@
 
 {% block body %}
 
+
+<!--  JUMBO TRON -->
 <div class='container'>
     <div class="jumbotron" id="product-jumbo">
       <div class="container">
@@ -17,7 +19,7 @@
     </div>
 </div>
 
-<!-- Product title/description/benefits -->
+<!-- Caffeine product container -->
 <div class='container product-container'>
   <div class='row'>
     <div class='col-lg-6'>
@@ -52,19 +54,19 @@
       {% if caffeine_match %}
         <label for='Caffeine-select'><h4>Select serving size :</h4></label>
           <select id="Caffeine-select" class="Caffeine-select" disabled>
-            {% for variation in caffeine_variations %}
-              {% if variation.id == caffeine_match.id %}
-                <option value="{{caffeine_match.id}}" data-caffeine-price='{{caffeine_match.price}}' selected> {{caffeine_match.title}}</option>
+            {% for product in caffeine_products %}
+              {% if product.id == caffeine_match.id %}
+                <option value="{{caffeine_match.id}}" data-caffeine-price='{{caffeine_match.price}}' selected> {{caffeine_match.title}} {{caffeine_match.serving_size}}</option>
                 {% else %}
-                <option value="{{variation.id}}" data-caffeine-price="{{variation.price}}"> {{variation.title}} </option>
+                <option value="{{product.id}}" data-caffeine-price="{{product.price}}"> {{product.title}} {{product.serving_size}} </option>
               {% endif %}
             {% endfor %}
           </select>
       {% else %}
         <label for='Caffeine-select'><h4>Select serving size :</h4></label>
           <select id="Caffeine-select" class="Caffeine-select">
-            {% for variation in caffeine.variation_set.all %}
-              <option value="{{variation.id}}" data-caffeine-price="{{variation.price}}"> {{variation.title}}</option>
+            {% for product in caffeine_products %}
+              <option value="{{product.id}}" data-caffeine-price="{{product.price}}"> {{product.title}} {{product.serving_size}}</option>
             {% endfor %}
           </select> 
       {% endif %}
@@ -83,64 +85,94 @@
     </div>
 </div>
 
-<!-- <div class='container'>
+<!-- Theanine product container -->
+<div class='container product-container'>
+  <div class='row'>
+    <div class='col-lg-6'>
+      {% if theanine_match %}
+      <h2>
+        {{theanine.title}} <span id='theanine-price'> $ {{ theanine_match.price }}</span>
+      </h2>
+      {% else %}
+      <h2>
+        {{theanine.title}} <span id='theanine-price'> </span>
+      </h2>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class='row'>
+    <div class='col-lg-8'>
+      <h5>Product description</h5>
+      <p>{{theanine.description}}</p>
+    </div>
+    <div class='col-lg-4'>
+      <h5>Key Benefits</h5>
+        <ul>
+          {% for benefit in theanine.benefits.all %}
+            <li>{{benefit}}</li>  
+          {% endfor %}
+        </ul>
+    </div>
+  </div>
   <div class='row'>
     <div class='col-lg-6'>    
-      {% if caffeine_match %}
-        <label for='Caffeine-select'><h4>Select serving size :</h4></label>
-          <select id="Caffeine-select" class="Caffeine-select" disabled>
-            {% for variation in caffeine_variations %}
-              {% if variation.id == caffeine_match.id %}
-                <option value="{{caffeine_match.id}}" data-caffeine-price='{{caffeine_match.price}}' selected> {{caffeine_match.title}}</option>
+      {% if theanine_match %}
+        <label for='theanine-select'><h4>Select serving size :</h4></label>
+          <select id="theanine-select" class="theanine-select" disabled>
+            {% for product in theanine_products %}
+              {% if variation.id == theanine_match.id %}
+                <option value="{{theanine_match.id}}" data-caffeine-price='{{theanine_match.price}}' selected> {{theanine_match.title}} {{theanine_match.serving_size}} </option>
                 {% else %}
-                <option value="{{variation.id}}" data-caffeine-price="{{variation.price}}"> {{variation.title}} </option>
+                <option value="{{product.id}}" data-caffeine-price="{{product.price}}"> {{product.title}} {{product.serving_size}} </option>
               {% endif %}
             {% endfor %}
           </select>
       {% else %}
-        <label for='Caffeine-select'><h4>Select serving size :</h4></label>
-          <select id="Caffeine-select" class="Caffeine-select">
-            {% for variation in caffeine.variation_set.all %}
-              <option value="{{variation.id}}" data-caffeine-price="{{variation.price}}"> {{variation.title}}</option>
+        <label for='theanine-select'><h4>Select serving size :</h4></label>
+          <select id="theanine-select" class="theanine-select">
+            {% for product in theanine_products %}
+              <option value="{{product.id}}" data-theanine-price="{{product.price}}"> {{product.title}} {{product.serving_size}}</option>
             {% endfor %}
           </select> 
-      {% endif %} 
+      {% endif %}
     </div>
   </div>
-</div>
- -->
-
-
-<!--   <div class='container'>
     <div class='row'>
       <div class='col-lg-12'>
-        {% if caffeine_match %}
-          <button type="button" class="btn btn-success Caffeine-add remove">Add {{caffeine.title}}</button>
-          <button type="button" class="btn btn-danger Caffeine-remove" >Remove {{caffeine.title}}</button>
+        {% if theanine_match %}
+          <button type="button" class="btn btn-success theanine-add remove">Add {{theanine.title}}</button>
+          <button type="button" class="btn btn-danger theanine-remove" >Remove {{theanine.title}}</button>
           {% else %}
-          <button type="button" class="btn btn-success Caffeine-add">Add {{caffeine.title}}</button>
-          <button type="button" class="btn btn-danger Caffeine-remove remove" >Remove {{caffeine.title}}</button>
+          <button type="button" class="btn btn-success theanine-add">Add {{theanine.title}}</button>
+          <button type="button" class="btn btn-danger theanine-remove remove" >Remove {{theanine.title}}</button>
         {% endif %}
       </div>
     </div>
-  </div>  -->
+</div>
 
-<hr>
-
-
-  <div class='container research-container'>
-    <h1>Research</h1>
-    <div class='row'>
-    <div class='col-lg-12'>
-    {% for product in energy_list %}
-    <h3>{{product}}</h3>
-    {% for research in product.research_set.all %}
-    <p> {{research.research_title}} <p>
-    {% endfor %}
-    {% endfor %}
+<div class='container'>
+  <div class='row'>
+    <div class='col-lg-6'>
+        <button type="button" class="btn btn-danger theanine-remove remove" >Remove {{theanine.title}}</button>
     </div>
   </div>
+</div>
 
+<!-- RESEARCH CONTAINER -->
+<div class='container research-container'>
+    <h1>Research</h1>
+    <div class='row'>
+      <div class='col-lg-12'>
+        <h3>Caffeine Research</h3>
+        {% for research in caffeine_research %}
+
+        <p> {{research}} <p>
+
+        {% endfor %}
+      </div>
+  </div>
+</div>
 
 
 

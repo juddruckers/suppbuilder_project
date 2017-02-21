@@ -8,9 +8,11 @@ class Product(models.Model):
 	description = models.TextField()
 	categories = models.ManyToManyField('Category')
 	benefits = models.ManyToManyField('Benefit')
+	serving_size = models.CharField(max_length=120)
+	price = models.DecimalField(decimal_places=2, max_digits=6)
 
 	def __str__(self):
-		return self.title
+		return self.title + " " + self.serving_size
 
 
 class Variation(models.Model):

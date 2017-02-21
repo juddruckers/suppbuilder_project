@@ -21,22 +21,29 @@ braintree.Configuration.configure(braintree.Environment.Sandbox,
 def add(request):
     cart = Cart(request.session)
     variation = Variation.objects.get(id=request.GET.get('id'))
-    # product = Product.objects.get(id=request.GET.get('id'))
-    cart.add(variation, price=variation.price)
+    product = Product.objects.get(id=request.GET.get('id'))
+    cart.add(product, price=product.price)
     return render(request, 'shopping/show-cart.html')
 
 
 def remove(request):
     cart = Cart(request.session)
-    # product = Product.objects.get(id=request.GET.get('id'))
-    variation = Variation.objects.get(id=request.GET.get('id'))
-    cart.remove(variation)
+    product_list = request.POST.getlist('delete_item_list[]')
+
+    for item in product_list:
+        product_id = int(item)
+        product = Product.objects.get(id=product_id)
+        cart.remove(product)
+        
     return HttpResponse("Removed")
 
 
 def show(request):
     return render(request, 'shopping/show-cart.html')
 
+def update_cart(request):
+
+    return render(request, 'shopping/show-cart.html')
 
 
 @login_required(login_url='/accounts/login/')
