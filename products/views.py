@@ -18,15 +18,22 @@ def EnergyView(request):
 
 
 	# CAFFEINE
-	caffeine_match = ''
-	caffeine = Product.objects.get(id=3)
+	#this is the caffine for default display
+	caffeine = Product.objects.get(id=1)
+
 	caffeine_products = Product.objects.all().filter(title='Caffeine')
 	caffeine_research = Research.objects.all().filter(product__title='Caffeine')
 
-	caffeine_in_cart = [item for item in caffeine_products if item in cart_items]
 
-	if caffeine_in_cart:
-	 	caffeine_match = caffeine_in_cart[0]
+	caffeine_match = [item for item in caffeine_products if item in cart_items]
+
+	print type(caffeine_match)
+
+	# if caffeine_match:
+	#  	print caffeine_match[0]
+	#  	print "caffeine is in the cart"
+
+	# print caffeine_match[0]
 
 	#THEANINE
 	theanine = Product.objects.get(id=2)
@@ -37,6 +44,7 @@ def EnergyView(request):
 
 	if theanine_in_cart:
 	 	theanine_match = theanine_in_cart[0]
+	 	print "theanine in the cart"
 
 
 	context = {	

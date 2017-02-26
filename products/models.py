@@ -14,6 +14,9 @@ class Product(models.Model):
 	def __str__(self):
 		return self.title + " " + self.serving_size
 
+	def thirty_day(self):
+		return round(self.price / 30, 2)
+
 
 class Variation(models.Model):
 	product = models.ForeignKey(Product)

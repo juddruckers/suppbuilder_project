@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 import braintree
-
+from allauth.account.views import *
 
 
 def IndexView(request):
@@ -32,3 +32,5 @@ def IndexView(request):
 
 
     return render(request, 'suppbuilder/index.html')
+
+ 

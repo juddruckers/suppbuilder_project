@@ -20,7 +20,6 @@ braintree.Configuration.configure(braintree.Environment.Sandbox,
 
 def add(request):
     cart = Cart(request.session)
-    variation = Variation.objects.get(id=request.GET.get('id'))
     product = Product.objects.get(id=request.GET.get('id'))
     cart.add(product, price=product.price)
     return render(request, 'shopping/show-cart.html')
@@ -38,11 +37,27 @@ def remove(request):
     return HttpResponse("Removed")
 
 
+def removeSingle(request):
+    cart = Cart(request.session)
+    product_id = Product.objects.get(id=request.POST.get('product_id'))
+    # item_id = str(Product.objects.get(id=request.GET.get('product_id')))
+    print type(product_id)
+    cart.remove(product_id)
+
+    return HttpResponse("item removed")
+
+def AddressChangeView(request):
+    current_user = request.user
+    current_address = request.POST.get('selected_address')
+
+    print current_address
+    # address_list = Address.objects.filter(email=current_user_email, address_type='shipping')
+    Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
+    Address.objects.filter(id=current_address).update(default_address=True)
+    return HttpResponse('address changed')
+
+
 def show(request):
-    return render(request, 'shopping/show-cart.html')
-
-def update_cart(request):
-
     return render(request, 'shopping/show-cart.html')
 
 
@@ -158,6 +173,7 @@ def payment_view(request):
         customer_first_name = str(request.user.first_name)
         customer_last_name = str(request.user.last_name)
 
+        shipping_address = Address.objects.get(email=current_user.email, address_type='shipping', default_address='True')
 
         try: 
             braintree_customer = braintree.Customer.find(customer_id)
@@ -180,7 +196,7 @@ def payment_view(request):
 
 
         token = braintree.ClientToken.generate({"customer_id": customer_id})
-        return render(request, 'shopping/payment_template.html', {"token": token}) 
+        return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address": shipping_address}) 
 
 
 
@@ -230,10 +246,13 @@ def create_purchase(request):
 def AddressView(request):
 
 
-    current_user_id = str(request.user.id)
+
     current_user = request.user
-    user_email = request.user.email
-    post_data = request.POST.get
+    customer_email = str(current_user.email)
+    customer_id = str(current_user.id)
+    # customer_first_name = str(current_user.first_name)
+    # customer_last_name = str(current_user.last_name)
+    result = braintree.Customer.create()
 
 
     if request.method == 'POST' and request.POST['address_type'] == 'shipping':
@@ -241,6 +260,23 @@ def AddressView(request):
         """
         create a new shipping address, find the braintree customer. If the braintree customer doesnt exist create it.
         """
+        existing_customer = " "
+
+
+        try:
+            braintree_customer = braintree.Customer.find(customer_id)
+            existing_customer = braintree_customer
+        except braintree.exceptions.not_found_error.NotFoundError:
+            print " No customer found, creating customer"
+            existing_customer = braintree.Customer.create({
+                "email" : current_user.email,
+                "id" : current_user.id,
+            })
+
+            if existing_customer.is_success:
+                print "new customer created successfully"
+            else:
+                print new_customer.errors.deep_errors            
 
 
         #create a form instance from POST data
@@ -256,32 +292,29 @@ def AddressView(request):
 
             #change all previously saved shipping addresses to a default address value of False
 
-            Address.objects.filter(email=user_email, address_type='shipping').update(default_address=False)
+            Address.objects.filter(email=customer_email, address_type='shipping').update(default_address=False)
 
             #create the braintree address using the user ID and take the brain tree address id
             #then save it to the address being created
             braintree_shipping_address = braintree.Address.create({
-                'customer_id' : str(current_user.id),
+                'customer_id' : str(customer_id),
                 'first_name' : str(current_user.first_name),
                 'last_name' : str(current_user.last_name),
-                'street_address' : str(post_data('street_address')),
-                'extended_address' : str(post_data('extended_address')),
-                'locality' : str(post_data('city')),
-                'region': str(post_data('state')), 
-                'postal_code' : str(post_data('zip_code')),
+                'street_address' : str(request.POST['street_address']),
+                'extended_address' : str(request.POST['extended_address']),
+                'locality' : str(request.POST['city']),
+                'region': str(request.POST['state']), 
+                'postal_code' : str(request.POST['zip_code']),
                 'country_code_alpha2' : 'US',
 
             })
             if braintree_shipping_address.is_success:
-                print "billing address saved successfully"
+                print "billing address saved successfully and saving the braintree code to the shipping address"
+                shipping_address.brain_tree_code = braintree_shipping_address.address.id
             else:
                 print 'billing address has errors'
                 print braintree_shipping_address.errors.deep_errors
 
-            print type(braintree_shipping_address)
-
-
-            shipping_address.brain_tree_code = braintree_shipping_address.address.id
 
 
             shipping_address.save()
@@ -301,11 +334,11 @@ def AddressView(request):
                     'customer_id' : str(current_user.id),
                     'first_name' : str(current_user.first_name),
                     'last_name' : str(current_user.last_name),
-                    'street_address' : str(post_data('street_address')),
-                    'extended_address' : str(post_data('extended_address')),
-                    'locality' : str(post_data('city')),
-                    'region': str(post_data('state')), 
-                    'postal_code' : str(post_data('zip_code')),
+                    'street_address' : str(request.POST['street_address']),
+                    'extended_address' : str(request.POST['extended_address']),
+                    'locality' : str(request.POST['city']),
+                    'region': str(request.POST['state']), 
+                    'postal_code' : str(request.POST['zip_code']),
                     'country_code_alpha2' : 'US',
                 })
                 
@@ -319,35 +352,10 @@ def AddressView(request):
                     print 'billing address has errors'
                     print braintree_billing_address.errors.deep_errors
             
-            #create braintree customer or add address to existing braintree customer
-
-            #find customer
-            existing_customer = braintree.Customer.find(current_user_id)
-
-
-            #if there isnt a customer create it
-            if not existing_customer:
-                
-                print " No customer found, creating customer"
-                #create customer
-                new_customer = braintree.Customer.create({
-                    "email" : current_user.email,
-                    "id" : current_user.id,
-                })
-
-                if new_customer.is_success:
-                    print "new customer created successfully"
-                else:
-                    print new_customer.errors.deep_errors
-            else:
-                print "braintree customer found"
-
-            #if the shipping address and the billing address are the same then generate 
-            # braintree token and send send that to the checkout view
-
             if shipping_address.same == True:
                 token = braintree.ClientToken.generate()
-                return render(request, 'shopping/payment_template.html', {"token": token})
+                shipping_address = Address.objects.get(email=current_user.email, address_type='shipping', default_address='True')
+                return render(request, 'shopping/payment_template.html', {"token": token, 'shipping_address': shipping_address})
             else:
                 return render(request, 'shopping/billing_address.html', {'form': BillingAddressForm(initial={'address_type': 'billing'})}) 
 
@@ -401,6 +409,7 @@ def AddressView(request):
 
 
 @login_required(login_url='/accounts/login/')
+@require_http_methods(["GET", "POST"])
 def ShippingView(request):
 
     """
@@ -412,19 +421,22 @@ def ShippingView(request):
     """
 
     #retrieve the current users email
+
+
     current_user_email = request.user.email
 
     current_user = request.user
 
-    address_list = Address.objects.filter(email=current_user_email)
+    address_list = Address.objects.filter(email=current_user_email, address_type='shipping')
+
 
     if address_list:
         print address_list
+        return render(request, 'shopping/shipping.html', {'address_list': address_list, 'current_user': current_user})
     else:
         print "there is no address_list"
-
- 
-    return render(request, 'shopping/shipping.html', {'address_list': address_list, 'current_user': current_user})
+        return render(request, 'shopping/address.html', {'form': AddressForm})  
+    
 
 
 

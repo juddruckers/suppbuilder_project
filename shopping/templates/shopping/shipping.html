@@ -1,36 +1,53 @@
 {% extends 'suppbuilder/base.html' %}
 
-{%include 'suppbuilder/navbar.html' %}
+{% load static %}
+{% block head %}
+    
+<link rel="stylesheet" type="text/css" href="{% static 'shopping/shopping.css' %}">
+{% endblock %}
 
 {% block body %}
 
-<h1> this is the page that will display the users billing and shipping options </h1>
+
 
 <div class='container'>
-	<h3> Shipping Addresses</h3>
-	{% for address in address_list %}
-		<div class='container'>
-			{% if address.address_type == 'shipping' %}
-				<p>{{address.first_name}}
-				<p>{{address.street_address}} {{address.extended_address}} </p>
-				<p> {{address.city}}, {{address.state}} {{address.zip_code}} </p>
-				<input type='radio' id='{{address.id}}'>
-
-			{% endif %}
+	<div class='row'>
+		<div class="alert alert-info remove" id='success-alert' role="alert">Address changed</div>
+		<div class='col-lg-12'>
+			<h1> Select shipping address </h1>
 		</div>
+	</div>
 
-	{% endfor %}
-
-	<h3>Billing Address</h3>
-	{% for address in address_list %}
-
-	{% if address.address_type == 'billing' %}
-
-		<p>{{address.street_address}}</p>
-	{% endif %}
-
-	{%endfor%}
-
+	<div class ='row'>
+		<div class='col-lg-6'>
+			<h3> Shipping Addresses</h3>
+			
+				{% for address in address_list %}
+				{% if address.address_type == 'shipping' %}
+					<p>
+						<strong>{{address.first_name}} {{address.last_name}}</strong>
+						<span><a href="{% url '">edit</a></span>
+					</p>
+					<p>{{address.street_address}}, {{address.extended_address}} </p>
+					<p> {{address.city}}, {{address.state}}, {{address.zip_code}} </p>
+					<input type='radio' id='{{address.id}}' name='address' value='{{address.id}}'>
+				{% endif %}
+				{% endfor %}
+		</div>		
+	</div>
+</div>
+<div class='container'>
+	<div class='row'>
+		<div class='col-lg-4'>
+      		<a class="btn btn-default" href="{% url 'checkout-view'%}" role="button">Go Forward</a>
+		</div>
+	</div>
 </div>
 
+
+
+{% endblock %}
+
+{% block footer %}
+     <script type="text/JavaScript" src="{% static 'shopping/shopping.js' %}"></script>
 {% endblock %}

@@ -1,28 +1,7 @@
+$(document).ready(function() {
 
 
-
-
-
-// $('#update-cart').on("click", function(){
-// 	console.log("button connected");
-// 	$(":checkbox").each(function(){
-// 		if ($(this).is(":checked")) {
-// 			var ingredientDelete = $(this).val();
-// 			delete_item_list.unshift(ingredientDelete)
-// 			console.log("looks like this box is checked");
-// 			console.log(delete_item_list);
-
-
-// 		};
-// 	});
-// });
-
-
-
-
-$('#update-cart').on("click", function(){
-	console.log("button connected");
-
+	
 	function getCookie(name) {
 	    var cookieValue = null;
 	    if (document.cookie && document.cookie !== '') {
@@ -41,8 +20,8 @@ $('#update-cart').on("click", function(){
 	var csrftoken = getCookie('csrftoken');
 
 	function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	// these HTTP methods do not require CSRF protection
+	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 	}
 
 	$.ajaxSetup({
@@ -52,6 +31,14 @@ $('#update-cart').on("click", function(){
 	        }
 	    }
 	});
+
+
+});
+
+
+
+$('#update-cart').on("click", function(){
+	console.log("button connected");
 
 	delete_item_list = []
 
@@ -73,6 +60,26 @@ $('#update-cart').on("click", function(){
 			console.log("ajax call successful")
 		},
 	});	
-
-
 });
+
+
+$("input:radio[name='address']").on("click", function(){
+	selected_address= $(this).val()
+	$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+	    $("#success-alert").slideUp(500);
+	});
+
+	$.ajax({
+		url : '/shopping/change',
+		type: 'POST',
+		data: {'selected_address': selected_address},
+		success: function(){
+			console.log("address id sent to view")
+		},
+	});	
+})
+
+
+
+
+

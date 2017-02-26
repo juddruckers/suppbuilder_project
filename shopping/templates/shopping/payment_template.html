@@ -1,13 +1,38 @@
 {% extends "suppbuilder/base.html" %}
 {% block body%}
-
+{% load carton_tags %}
 
 <div class='container'>
-<form action="{% url 'checkout-view' %}" id="checkout" method="post">
-	{% csrf_token %}                      
-	<div id="dropin-container"></div>
-	<input type="submit" value="Pay" />
-</form>
+	<div class='row'>
+		<div class='col-lg-6 col-md-4'>
+			<div class='row'>
+				<h3> Shipping address</h3>
+				<a href="{% url 'shipping' %}"> change</a>
+				<p>{{shipping_address.first_name}} {{shipping_address.last_name}}</p>
+				<p>{{shipping_address}} <p>
+				<p>{{shipping_address.city}}, {{shipping_address.state}} {{shipping_address.zip_code}}</p>
+			</div>
+			<div class='row'>
+				<h3>Order Summary</h3>
+				<a href="{% url 'shopping-cart-show' %}"> review order</a>
+				{% get_cart as cart %}
+					{% for item in cart.items %}
+					<ul class='list-group'>
+						<li class='list-group-item'>{{ item.product.title}} {{item.product.serving_size}}</li>
+					</ul>
+					{% endfor %}		
+			</div>
+		</div>
+		<div class='col-lg-6 col-md-4'>
+			<h3>Payment Information</h3>
+			<form action="{% url 'checkout-view' %}" id="checkout" method="post">
+				{% csrf_token %}                      
+				<div id="dropin-container"></div>
+				<input class='btn btn-success' type="submit" value="Submit Order" />
+			</form>
+		</div>
+	</div>
+
 </div>
 
 
