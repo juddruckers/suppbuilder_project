@@ -3,21 +3,22 @@
 {% load carton_tags %}
 {% block head %}
     
-<link rel="stylesheet" type="text/css" href="{% static 'shopping/shopping.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'shopping/cart.css' %}">
 {% endblock %}
 
 
 {% block body %}
-<div class='container'>
-        <h1>Shopping Cart</h1>
-        <hr>
-    <div class='row'>
-        <div class='col-lg-8'>
-        <h1>Ingredients in supplement blend</h1>
+<div class='container cart'>
 
+
+    <div class='row'>
+        <div class='col-lg-10 col-lg-offset-1'>
         {% get_cart as cart %}
         
-            <table class='table table-condensed'>
+            <table class='table'>
+            <caption>
+                <h1>Shopping Cart</h1>
+            </caption>
             <tr>
                 <th>Product</th>
                 <th>Serving Size</th>
@@ -27,10 +28,10 @@
             </tr>
             {% for item in cart.items %}
             <tr>
-                <td>{{ item.product.product.title }}</td>
-                <td>{{ item.product }}</td>
-                <td>{{ item.subtotal }}</td>
-                <td>{{item.price}}</td>
+                <td>{{ item.product.title }}</td>
+                <td>{{ item.product.serving_size }}</td>
+                <td>${{item.price}}</td>
+                <td>${{item.product.thirty_day}}</td>
                 <td><input type='checkbox' class='item-in' value='{{item.product.id}}'></input></td>
             </tr>   
             {% endfor %}
@@ -41,17 +42,17 @@
         </div>
     </div>
     <div class='row'>
-        <div class='col-lg-4'>
-            <h5>Total: {{ cart.total }} </h5>
+        <div class='col-lg-10' id='cart-total'>
+            <h2>Total: ${{ cart.total }} </h2>
         </div>
     </div>
-
+    <br>
     <div class='row'>
-        <div class='col-lg-6'>
+        <div class='col-lg-5 col-xs-5 col-lg-offset-1'>
           <button type="button" class="btn btn-danger" id='update-cart' >Update Cart</button>
         </div>
-        <div class='col-lg-6'>
-        <a class="btn btn-success" href="{% url 'checkout-view' %}" role="button">Continue to checkout</a>
+        <div class='col-lg-5 col-cs-5'>
+        <a class="btn btn-success" id='checkout-button' href="{% url 'checkout-view' %}" role="button">Continue to checkout</a>
         </div>
     </div>
 </div>

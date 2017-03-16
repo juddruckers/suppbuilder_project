@@ -18,28 +18,30 @@
 		</div>
 	</div>
 
-	<div class ='row'>
+	<div class ='row' id='address-block'>
 		<div class='col-lg-6'>
-			<h3> Shipping Addresses</h3>
+
 			
 				{% for address in address_list %}
 				{% if address.address_type == 'shipping' %}
-					<p>
+					<p> 
+						<input type='radio' id='{{address.id}}' name='address' value='{{address.id}}'>
 						<strong>{{address.first_name}} {{address.last_name}}</strong>
-						<span><a href="{% url '">edit</a></span>
+						{{address.street_address}}, {{address.extended_address}}
+						{{address.city}}, {{address.state}}, {{address.zip_code}}
+						<span><a href="{% url 'update' address.id %}" >edit</a></span>
 					</p>
-					<p>{{address.street_address}}, {{address.extended_address}} </p>
-					<p> {{address.city}}, {{address.state}}, {{address.zip_code}} </p>
-					<input type='radio' id='{{address.id}}' name='address' value='{{address.id}}'>
 				{% endif %}
 				{% endfor %}
 		</div>		
 	</div>
 </div>
 <div class='container'>
-	<div class='row'>
+	<div class='row' id='button'>
 		<div class='col-lg-4'>
-      		<a class="btn btn-default" href="{% url 'checkout-view'%}" role="button">Go Forward</a>
+
+      		<a class="btn btn-info" href="{% url 'address'%}" role="button">Add new address</a>
+      		<a class="btn btn-success" href="{% url 'checkout-view'%}" role="button">Continue to checkout</a>
 		</div>
 	</div>
 </div>

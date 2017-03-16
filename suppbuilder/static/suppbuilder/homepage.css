@@ -1,3 +1,5 @@
+{% load staticfiles %}
+
 .marketing .col-lg-4 {
   margin-bottom: 20px;
   text-align: center;
@@ -10,7 +12,7 @@
   margin-left: 10px;
 }
 
-.jumbohome {
+/*.jumbohome {
 	background: white url("images/suppbuilder.png") center;
 	background-position: center;
 	background-size: cover;
@@ -25,4 +27,19 @@
 	top: 363px;
 	left: 38px;
 
+}*/
+
+.logo {
+	background: white url("images/suppbuilder_logo_RGB_V.jpg") center no-repeat ;
+	height: 500px;
+	margin-bottom: 50px;
+	position: relative;
+}
+
+
+.logo p{
+	text-align: center;
+	vertical-align: middle;
+	line-height: 1025px;
+	font-size: 18px;    
 }

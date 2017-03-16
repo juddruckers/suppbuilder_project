@@ -1,7 +1,89 @@
 {% extends "suppbuilder/base.html" %}
+{% load static %}
+{% block head %} 
+	<link rel="stylesheet" type="text/css" href="{% static 'shopping/order.css' %}">
+{% endblock %}
 
 {% block body %}
 
-<h1> Hello shopping order summmary </h1>
+
+<div class='container' id='summary'>
+	<div class='row'>
+		<div class='col-lg-12' id='order-title'>
+				<h1> Thank you!</h1>
+				<hr>
+		</div>
+	</div>
+
+	<div class='row'>
+		<!-- logo and thank you column -->
+		<div class='col-lg-6' id='logo_side'>
+		</div>
+
+		<!-- Order information column -->
+		<div class='col-lg-6'>
+			<div class='row'>
+				<div class='col-lg-6 col-xs-5'>
+					<div class='row'>
+						<h3>Order Summary</h3>
+						<table class='table-condensed'>
+							<tr>
+								<td>Transaction ID :</td>
+								<td> {{transaction.id}}</td>
+							</tr>
+							<tr>
+								<td>Items (<span id='cart-counter'>{{cart_count}}</span>):</td>
+								<td>$ {{transaction.amount}}</td>
+							</tr>
+							<tr>
+								<td>Shipping & Handling:</td>
+								<td>$ <span id='shipping-price'>{{transaction.custom_fields.shipping_price}}</span></td>
+							</tr>
+							<tr>
+								<td>Tax:</td>
+								<td>$ 3.78</td>
+							</tr>
+							<tr>
+								<td>Grand Total:</td>
+								<td>$ {{grand_total}}</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class='col-lg-6 col-xs-5' id='shipping-information'>
+					<h3>Shipping Information</h3>
+					<p>{{transaction.shipping_details.first_name}} {{transaction.shipping_details.last_name}}</p>
+					<p>{{transaction.shipping_details.street_address}}</p>
+					<p>
+						{{transaction.shipping_details.locality}}, 
+						{{transaction.shipping_details.region}}
+						{{transaction.shipping_details.postal_code}} 
+					</p>
+				</div>
+			</div>
+			<div class='row'>
+				<div class='col-lg-6'>
+					<h3>Payment Method</h3>
+
+					<p><span><img src="{{transaction.credit_card_details.image_url}}" height="21" width="34"></span> **** {{transaction.credit_card.last_4}}</p>
+
+				</div>
+				<div class='col-lg-6'>
+					<h3>Items</h3>
+					{% for product in order.product.all %}
+						<p>{{ product}}</p>
+
+					{% endfor %}
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
 
 {%endblock%}

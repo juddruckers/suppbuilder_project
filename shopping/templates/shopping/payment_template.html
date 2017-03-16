@@ -1,40 +1,114 @@
 {% extends "suppbuilder/base.html" %}
-{% block body%}
 {% load carton_tags %}
+{% load static %}
+
+{% block head %}
+    
+	<link rel="stylesheet" type="text/css" href="{% static 'shopping/payment.css' %}">
+{% endblock %}
+
+{% block body%}
+<div class='container'>
+	<div class='row'>
+		<div class='col-lg-12' id='checkout-title'>
+			<h1> Checkout </h1>
+			<br>
+		</div>
+	</div>
+</div>
 
 <div class='container'>
 	<div class='row'>
-		<div class='col-lg-6 col-md-4'>
+		<div class='col-lg-6 col-md-4' id='order-column'>
 			<div class='row'>
-				<h3> Shipping address</h3>
-				<a href="{% url 'shipping' %}"> change</a>
-				<p>{{shipping_address.first_name}} {{shipping_address.last_name}}</p>
-				<p>{{shipping_address}} <p>
-				<p>{{shipping_address.city}}, {{shipping_address.state}} {{shipping_address.zip_code}}</p>
+				<div class='col-lg-12' id='shipping-row'>
+					<h3> Shipping address</h3>
+					<a href="{% url 'shipping' %}"> change</a>
+					<p>{{shipping_address.0.first_name}} {{shipping_address.0.last_name}}</p>
+					<p>{{shipping_address.0.street_address}} <p>
+					<p>{{shipping_address.0.city}}, {{shipping_address.0.state}} {{shipping_address.0.zip_code}}</p>
+				</div>
+			</div>
+			<hr>
+			<div class='row'>
+				<div class='col-lg-12 col-xs-12' id='order-summary'>
+					<h3>Items and Shipping</h3>
+					<a href="{% url 'shopping-cart-show' %}">review</a>
+				</div>
 			</div>
 			<div class='row'>
-				<h3>Order Summary</h3>
-				<a href="{% url 'shopping-cart-show' %}"> review order</a>
-				{% get_cart as cart %}
+				<div class='col-lg-4' id='cart-block'>
+					<h4>Cart items</h4>
+					{% get_cart as cart %}
 					{% for item in cart.items %}
-					<ul class='list-group'>
-						<li class='list-group-item'>{{ item.product.title}} {{item.product.serving_size}}</li>
-					</ul>
-					{% endfor %}		
+						<ul class='list'>
+							<li>{{ item.product.title}} {{item.product.serving_size}}</li>
+						</ul>
+					{% endfor %}
+				</div>
+				<div class='col-lg-8' id='shipping-block'>
+					<h4>Shipping options</h4>
+
+					<div class="radio">
+					  <label><input type="radio" name="shipping" value='4.99' id='usps' checked='checked'>4-5 business days USPS<span> $4.99</span></label>
+					</div>
+					<div class="radio">
+					  <label><input type="radio" name="shipping"value='5.99' id='fedex'>4-5 business days FEDEX</label>
+					</div>
+					<div class="radio">
+					  <label><input type="radio" name="shipping"value='15.99' id='twoday'>Two day delivery</label>
+					</div>
+					<div class="radio">
+					  <label><input type="radio" name="shipping"value='19.99' id='overnight'>Overnight Delivery</label>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class='col-lg-6 col-md-4'>
-			<h3>Payment Information</h3>
-			<form action="{% url 'checkout-view' %}" id="checkout" method="post">
-				{% csrf_token %}                      
-				<div id="dropin-container"></div>
-				<input class='btn btn-success' type="submit" value="Submit Order" />
-			</form>
+		<div class='col-lg-6 col-md-4' id='payment-column'>
+			<div class='row'>
+				<div class='col-lg-12'>
+					<h3>Order Summary</h3>
+				</div>
+			</div>
+
+			<div class='row'>
+				<div class='col-lg-4 col-xs-5'>
+					<p>Items (<span id='cart-counter'>{{cart_count}}</span>):</p>
+					<p>Shipping & Handling:</p>
+					<p>Tax:<p>					
+				</div>
+				<div class='col-lg-4 col-xs-4'>
+					<p>$ {{cart.total}}</p>
+					<p>$ <span id='shipping-price'>4.99</span></p>
+					<p>$ 3.78<p>
+				</div>
+			</div>
+
+			<div class='row'>
+				<div class='col-lg-4 col-xs-5'>
+					<h3>Order total:</h3>	
+				</div>
+				<div class='col-lg-4 col-xs-4'>
+					<h3>$ <span id='cart-total'>{{cart_total}}</span></h3>	
+				</div>
+			</div>
+
+			<hr>
+			<div class='row'>
+				<div class='col-lg-12'>
+					<h3>Payment Information</h3>
+						<form action="{% url 'checkout-view' %}" id="checkout" method="post" autocomplete="off">
+							{% csrf_token %}                      
+							<input type="text" data-shipping-price=4.99 id="hidden" name="hidden_shipping" value=4.99></input>
+							<div id="dropin-container">
+							</div>
+							<input class='btn btn-success' id='order-button' type="submit" value="Submit Order" />
+						</form>
+				</div>
+			</div>
 		</div>
 	</div>
-
 </div>
-
 
 
 <script src="https://js.braintreegateway.com/js/braintree-2.30.0.min.js"></script>
@@ -46,4 +120,10 @@ braintree.setup("{{token}}", "dropin", {
 });
 </script>
 
+{% endblock %}
+
+
+{% block footer %}
+     <script type="text/JavaScript" src="{% static 'shopping/payment.js' %}"></script>
+     <script type="text/JavaScript" src="{% static 'shopping/accounting.js' %}"></script>
 {% endblock %}

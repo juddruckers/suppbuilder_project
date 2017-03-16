@@ -1,0 +1,11 @@
+.remove {
+	display: none;
+}
+
+h3 {
+	display: inline-block;
+}
+
+#AddressForm{
+	height:50px;
+}

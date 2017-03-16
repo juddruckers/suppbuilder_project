@@ -10,8 +10,13 @@ urlpatterns = [
     url(r'^delete/$', views.removeSingle, name='single-item-remove'),
     url(r'^show/$', views.show, name='shopping-cart-show'),
     url(r'^checkout/$', views.payment_view, name='checkout-view'),
-    url(r'^order$', views.create_purchase, name='order-summary'),
-    url(r'^address$', views.AddressView, name='address'),
-    url(r'^shipping$', views.ShippingView, name='shipping'),
-    url(r'^change$', views.AddressChangeView, name='address-change'),
+    url(r'^order$', views.ThanksView, name='order-summary'),
+    url(r'^order-detail$', views.OrderDetailView, name='order-detail'),
+    url(r'^address/$', views.AddressView, name='address'),
+    url(r'^billing/$', views.BillingAddressView, name='billing'),
+    url(r'^shipping/$', views.ShippingView, name='shipping'),
+    url(r'^change/$', views.AddressChangeView, name='address-change'),
+    url(r'^update/(?P<pk>\d+)/$', views.AddressUpdateView, name='update'),
+    url(r'^remove-address/(?P<pk>\d+)/$', views.AddressDeleteView, name='address-delete'),
+
 ]

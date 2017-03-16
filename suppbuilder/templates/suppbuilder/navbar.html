@@ -1,6 +1,12 @@
 {% load static %}
 {% load carton_tags %}
 {% get_cart as cart %}
+
+{% block head %}
+    
+<link rel="stylesheet" type="text/css" href="{% static 'suppbuilder/navbar.css' %}">
+{% endblock %}
+
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->

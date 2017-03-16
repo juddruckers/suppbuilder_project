@@ -10,6 +10,78 @@
 
 
 .product-container {
-	border: thin solid black;
-
+	width: 70%;
+	border: 1px white solid;
+	margin-bottom: 10px;
 }
+
+
+.nav-buttons {
+	width: 70%;
+	margin-bottom: 10px;	
+}
+.caffeine-add {
+	margin-bottom: 10px;
+}
+
+.caffeine-remove {
+	margin-bottom: 10px;
+}
+
+#caffeine-price {
+	color:rgb(132,189,0);
+	font-size: 18px;
+}
+
+#caffeine-size {
+	color:rgb(5,195,222);
+	font-size: 22px;
+}
+
+
+.research-container{
+	width: 50%;
+	margin-bottom: 10px;		
+}
+
+.forward {
+	float:right;
+}
+
+.backwards {
+	float:left;
+}
+
+
+.research-container h1{
+	text-align: center;
+	color:rgb(132,189,0);
+}
+
+.research-container a{
+	text-align: center;
+	color:rgb(5,195,222);
+}
+
+.research-container h3{
+
+	color:rgb(113,124,125);
+}
+
+#theanine-price {
+	color:rgb(132,189,0);
+	font-size: 18px;
+}
+
+#theanine-size {
+	color:rgb(5,195,222);
+	font-size: 22px;
+}
+
+
+
+
+
+
+
+

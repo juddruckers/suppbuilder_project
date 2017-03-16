@@ -1,0 +1,54 @@
+{% extends "suppbuilder/base.html" %}
+{% load static %}
+{% block head %} 
+	<link rel="stylesheet" type="text/css" href="{% static 'shopping/order.css' %}">
+{% endblock %}
+
+{% block body %}
+
+<div class='container' id='summary'>
+	<div class='row'>
+		<div class='col-lg-12' id='order-title'>
+				<h1> Your Orders</h1>
+				<hr>
+		</div>
+	</div>
+</div>
+
+
+
+<div class='container marketing'>
+	<div class='row'>
+{% for order in order %}
+        <div class="col-lg-3">
+
+          <img class="img-rounded" src="{% static 'shopping/images/supplement.png' %}" alt="Generic placeholder image" width="140" height="140">
+			<table class='table table-condensed'>
+				<tr>
+					<td>Order date:</td>
+					<td>{{ order.date_ordered|date:"M d, Y"}}</td>
+				</tr>
+				<tr>
+					<td>Grand Total:</td>
+					<td>$ {{order.total}}</td>
+				</tr>
+				<tr>
+					<td>Order #</td>
+					<td>{{order.transaction_id}}</td>
+				</tr>
+			</table>          
+          <p><a class="btn btn-info" href="#" role="button">View details</a></p>
+        </div>
+{% endfor %}    
+	</div>    
+</div>
+
+
+
+
+
+
+
+
+
+{%endblock%}

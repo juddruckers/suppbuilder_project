@@ -15,18 +15,21 @@ def IndexView(request):
 
     current_user = request.user
 
+    print current_user.is_anonymous
     current_user_id = str(request.user.id)
+
 
     print "This is the %s" % (current_user)
 
-    try:
-    	brain_tree_user = braintree.Customer.find(current_user_id)
-    	if brain_tree_user == None:
-    		print "not a customer"
-    	else:
-    		print "we have a customer"
-    except:
-    	pass
+
+    # try:
+    # 	brain_tree_user = braintree.Customer.find(current_user_id)
+    # 	if brain_tree_user == None:
+    # 		print "not a customer"
+    # 	else:
+    # 		print "we have a customer"
+    # except:
+    # 	pass
 
 
 

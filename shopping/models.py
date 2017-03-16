@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 # Create your models here.
 
@@ -28,3 +29,9 @@ class Address(models.Model):
 
 	def __str__(self):
 		return 	self.street_address
+
+	def get_absolute_url(self):
+		return reverse('update', kwargs={'pk': self.pk})
+
+
+

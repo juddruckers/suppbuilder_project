@@ -20,7 +20,7 @@ class Base(Configuration):
     # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
     # SECURITY WARNING: keep the secret key used in production secret!
-    SECRET_KEY = ''
+    SECRET_KEY = 'w@t$(&@2=s$sc0pl)dt=_d6qv&=w5c397^$ib^%a+be$htps5$'
 
     # SECURITY WARNING: don't run with debug turned on in production!
     if os.environ.get('PRODUCTION') is not None:
@@ -51,7 +51,9 @@ class Base(Configuration):
         'crispy_forms',
     ]
 
-    CART_PRODUCT_MODEL = 'products.models.Variation'
+    CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+    CART_PRODUCT_MODEL = 'products.models.Product'
 
     ACCOUNT_EMAIL_REQUIRED = False
 
@@ -187,9 +189,9 @@ class Local(Base):
         }
     }
 
-    BRAINTREE_MERCHANT_ID = os.environ.get('BRAINTREE_MERCHANT_ID')
-    BRAINTREE_PUBLIC_KEY = os.environ.get('BRAINTREE_PUBLIC_KEY')
-    BRAINTREE_PRIVATE_KEY = os.environ.get('BRAINTREE_PRIVATE_KEY')
+    BRAINTREE_MERCHANT_ID = '6sxqz6v5rp9mkbtk'
+    BRAINTREE_PUBLIC_KEY = 'stg5227psrym8s8w'
+    BRAINTREE_PRIVATE_KEY = '1622cff917395f05cf8e5a587f731129'
 
 
 

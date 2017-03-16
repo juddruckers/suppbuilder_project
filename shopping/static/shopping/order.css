@@ -1,0 +1,39 @@
+#logo_side {
+	background: white url("images/logo_no_brand.jpg") center no-repeat ;
+	height: 325px;
+}
+
+
+#order-title {
+	text-align: center;
+}
+
+h3 {
+	color:rgb(113, 124, 125);
+}
+
+.marketing .col-lg-4 {
+  margin: 20px;
+  text-align: center;
+  border: 1px solid gray;
+}
+
+.marketing .col-lg-3 {
+  margin: 20px;
+  text-align: center;
+  border: 1px #fcf9f9;
+  background-color: #fcf9f9;
+}
+
+.marketing img {
+  margin: 20px;
+  text-align: center;
+}
+
+.marketing h2 {
+  font-weight: normal;
+}
+.marketing .col-lg-4 p {
+  margin-right: 10px;
+  margin-left: 10px;
+}
