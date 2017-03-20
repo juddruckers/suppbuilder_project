@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
-
+from django.conf import settings
 from django.contrib.auth.models import User
+
 from django.core.urlresolvers import reverse
 
 # Create your models here.
@@ -13,6 +14,7 @@ class Address(models.Model):
 		('billing', 'Billing'),
 		('shipping', 'Shipping'),
 	)
+
 	first_name = models.CharField(max_length=120)
 	last_name = models.CharField(max_length=120)
 	street_address = models.CharField(max_length=120)

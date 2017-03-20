@@ -24,9 +24,9 @@
 				<div class='col-lg-12' id='shipping-row'>
 					<h3> Shipping address</h3>
 					<a href="{% url 'shipping' %}"> change</a>
-					<p>{{shipping_address.0.first_name}} {{shipping_address.0.last_name}}</p>
-					<p>{{shipping_address.0.street_address}} <p>
-					<p>{{shipping_address.0.city}}, {{shipping_address.0.state}} {{shipping_address.0.zip_code}}</p>
+					<p>{{shipping_address.first_name}} {{shipping_address.last_name}}</p>
+					<p>{{shipping_address.street_address}} <p>
+					<p>{{shipping_address.city}}, {{shipping_address.state}} {{shipping_address.zip_code}}</p>
 				</div>
 			</div>
 			<hr>

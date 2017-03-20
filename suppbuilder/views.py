@@ -15,7 +15,10 @@ def IndexView(request):
 
     current_user = request.user
 
-    print current_user.is_anonymous
+    # current_user.email = "juddarias@gmail.com"
+
+
+    print current_user.is_anonymous()
     current_user_id = str(request.user.id)
 
 

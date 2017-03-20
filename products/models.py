@@ -53,7 +53,8 @@ class Order(models.Model):
 	product = models.ManyToManyField(Product)
 	transaction_id = models.CharField(max_length=120)
 	email = models.EmailField(max_length=120)
-	name = models.CharField(max_length=120)
+	first_name = models.CharField(max_length=120)
+	last_name = models.CharField(max_length=120)
 	date_ordered = models.DateTimeField()
 	total = models.DecimalField(decimal_places=2, max_digits=6)
 
