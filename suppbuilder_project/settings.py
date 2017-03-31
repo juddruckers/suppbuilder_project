@@ -194,16 +194,16 @@ class Local(Base):
         }
     }
 
-    BRAINTREE_MERCHANT_ID = '6sxqz6v5rp9mkbtk'
-    BRAINTREE_PUBLIC_KEY = 'stg5227psrym8s8w'
-    BRAINTREE_PRIVATE_KEY = '1622cff917395f05cf8e5a587f731129'
+    BRAINTREE_MERCHANT_ID = ''
+    BRAINTREE_PUBLIC_KEY = ''
+    BRAINTREE_PRIVATE_KEY = ''
 
 
 
     EMAIL_USE_TLS = True
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_HOST_USER = 'juddruckers@gmail.com'
-    EMAIL_HOST_PASSWORD = '84{7anoV.aqu)pPZpTyLtY.rc?L66+79U[Xz#6d.m9r2FajXo['
+    EMAIL_HOST = ''
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
     EMAIL_PORT = 587
 
 
