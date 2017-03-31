@@ -1,15 +1,24 @@
 {% extends "suppbuilder/base.html" %}
 {% load static %}
 {% block head %} 
+    <link rel="stylesheet" type="text/css" href="{% static 'shopping/order.css' %}">
 {% endblock %}
+
 
 {% block body %}
 
 <div class='container' id='summary'>
+
+<div class='row'>
+    <ol class="breadcrumb">
+      <li><a href="{% url 'profile' %}">Profile</a></li>
+      <li><a href="{% url 'order-summary' %}">Orders</a></li>
+      <li class='active'>Order Detail</li>
+    </ol>
+</div>    
 	<div class='row'>
-		<div class='col-lg-12' id='order-title'>
-				<h1>Order details</h1>
-				<hr>
+		<div class='col-lg-12 page-header'>
+				<h2>Order details</h2>
 		</div>
 	</div>
 </div>
@@ -17,10 +26,14 @@
 
 
 <div class='container detail'>
-	<div class='row'>
-        <div class="col-lg-12">
+    <div class='panel panel-default'>
+    <div class='panel-heading'>
+        <h3 class='panel-title'>Order# {{order.transaction_id}}</h3>
+    </div>
+	<div class='panel-body'>
+        <div class="col-md-12 col-sm-12">
         	<div class='row'>
-        		<div class='col-lg-4'>
+        		<div class='col-md-3 col-sm-3'>
         			<h5>Delivery Address</h5>
         			<p>{{transaction.shipping_details.first_name}} {{transaction.shipping_details.last_name}}</p>
         			<p>{{transaction.shipping_details.street_address}}</p>
@@ -29,7 +42,7 @@
 						{{transaction.shipping_details.postal_code}} 
         			</p>
         		</div>
-        		<div class='col-lg-4'>
+        		<div class='col-md-3 col-sm-3'>
         			<h5>Shipping details</h5>
         			<table class='table-condensed'>
         				<tr>
@@ -49,46 +62,55 @@
         				</tr>
         			</table>
         		</div>
-        		<div class='col-lg-4'>
-        			<h5>Order Details</h5>
+        		<div class='col-md-4 col-sm-3'>
+        			<h5>Order Summary</h5>
         			<table class='table-condensed'>
         				<tr>
-        					<td>Order Number:</td>
-        					<td>{{transaction.id}}</td>        					
+        					<td>Item({{order.item_count}}) subtotal:</td>
+        					<td> $ {{order.total}}</td>
         				</tr>
-        				<tr>
-        					<td>Item(s) subtotal:</td>
-        					<td> $ {{transaction.amount}}</td>
-        				</tr>
-        				<tr>
-        					<td>Shipping & Handling:</td>
-        					<td>$ {{transaction.custom_fields.shipping_price}}</td>
-        				</tr>
-        				<tr>
+                        {% if order.discount %}
+                        <tr>
+                            <td>Discount code: </td>
+                            <td>{{order.discount_code}}</td>
+                        </tr>
+                        <tr>
+                            <td>Price after discount</td>
+                            <td>$ {{order.discount_amount}}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td>Shipping and Handling:</td>
+                            <td>$ {{order.shipping}}</td>
+                        </tr>
+                        <tr>
         					<td>Tax :</td>
-        					<td>$ {{transaction.tax_amount}}</td>
+        					<td>$ {{order.tax}}</td>
         				</tr>
         				<tr>
         					<td>Grand Total :</td>
-        					<td>$ {{grand_total}}</td>
+        					<td>$ {{order.grand_total}}</td>
         				</tr>
         			</table>
         		</div>
         	</div>
         	<div class='row'>
         		<div class='col-lg-12'>
+                    <h5>Products</h5>
         			{% for product in order.product.all %}
+
         				<p>{{product}}
-        					<span>
+<!--         					<span>
         						<button type="button" id="{{product}}" class="btn btn-link btn-click-action"data-toggle="modal" data-target="#myModal"> Add to cart </button>
-        					</span>
+        					</span> -->
         				</p>
         			{% endfor %}
         		</div>
 
         	</div>
 		</div> 
-	</div>   
+	</div> 
+</div>
 </div>
 
 

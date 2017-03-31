@@ -1,0 +1,68 @@
+{% extends "suppbuilder/base.html" %}
+{% load static %}
+
+{% block head %} 
+	<link rel="stylesheet" type="text/css" href="{% static 'shopping/order.css' %}">
+{% endblock %}
+
+
+{% block body %}
+<div class='container'>
+	<div class='col-lg-12 page-header'>
+			<h2>Account Details</h2>
+	</div>
+
+	<div class='row'>
+		<div class='col-lg-6 col-lg-offset-3 panel panel-default'>
+			<div class='panel-body'>
+			<table class='table'>
+				<caption>Account Details <span><u><a href="">edit</a></u></span></caption>
+				<tr>
+					<td>First Name:</td>
+					<td>{{current_user.first_name}}</td>
+				</tr>
+				<tr>
+					<td>Last Name:</td>
+					<td>{{current_user.last_name}}</td>
+				</tr>
+				<tr>
+					<td>Email:</td>
+					<td>{{current_user.email}}</td>
+				</tr>			
+			</table>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class='row marketing order-list'>
+
+        <div class="col-lg-3">
+
+          <img class="img-rounded" src="{% static 'shopping/images/box.png' %}" alt="Generic placeholder image" width="140" height="140">
+      
+          <p><a class="btn btn-info" href="{% url 'shipping' %}" role="button">Shipping Details</a></p>
+        </div>
+
+        <div class="col-lg-3">
+
+          <img class="img-rounded" src="{% static 'shopping/images/supplement.png' %}" alt="Generic placeholder image" width="140" height="140">
+         
+          <p><a class="btn btn-info" href="{% url 'order-summary' %}" role="button">Past Orders</a></p>
+        </div>
+
+        <div class="col-lg-3">
+
+          <img class="img-rounded" src="{% static 'shopping/images/credit-card.png' %}" alt="Generic placeholder image" width="140" height="140">         
+          <p><a class="btn btn-info" href="{% url 'payment-methods' %}" role="button">Payment methods</a></p>
+        </div>
+
+    </div>
+
+
+
+</div>
+
+
+{% endblock%}

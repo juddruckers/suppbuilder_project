@@ -4,42 +4,66 @@
   margin-bottom: 20px;
   text-align: center;
 }
-.marketing h2 {
+
+.marketing h3 {
   font-weight: normal;
 }
-.marketing .col-lg-4 p {
-  margin-right: 10px;
-  margin-left: 10px;
+
+
+.marketing .col-lg-3 {
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-/*.jumbohome {
-	background: white url("images/suppbuilder.png") center;
-	background-position: center;
-	background-size: cover;
-	height: 500px;
-	width: 1282;
-	margin-top: -100px
-}	
-
-.jumbohome p{
-	text-align: center;
-	position: relative;
-	top: 363px;
-	left: 38px;
-
-}*/
+.marketing .row {
+	margin-top: 20px;
+}
 
 .logo {
-	background: white url("images/suppbuilder_logo_RGB_V.jpg") center no-repeat ;
-	height: 500px;
+	background: white url("images/suppbuilder_logo_RGB_H.jpg") center no-repeat ;
+	height: 400px;
 	margin-bottom: 50px;
 	position: relative;
 }
 
 
 .logo p{
-	text-align: center;
-	vertical-align: middle;
-	line-height: 1025px;
-	font-size: 18px;    
+	font-size: 18px;
+	position:absolute;
+    top: 90%;  
+    left: 50%;
+	transform: translate(-50%, -50%); 
 }
+
+
+.media-body h2 {
+	color: #05C3DE;
+}
+
+.media-body h4 {
+	color: #717C7D;
+}
+
+.page-header h1{
+	color: #003A70;
+}
+
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+#step{}

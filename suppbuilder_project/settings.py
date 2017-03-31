@@ -51,13 +51,11 @@ class Base(Configuration):
         'crispy_forms',
     ]
 
-    CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
 
     CART_PRODUCT_MODEL = 'products.models.Product'
 
-    ACCOUNT_EMAIL_REQUIRED = False
-
-    LOGIN_REDIRECT_URL = '/suppbuilder/'
+    LOGIN_REDIRECT_URL = '/'
     ACCOUNT_LOGOUT_REDIRECT_URL = '/suppbuilder'
 
     SITE_ID=1
@@ -99,7 +97,7 @@ class Base(Configuration):
     )
 
 
-    ACCOUNT_EMAIL_REQUIRED = True
+
 
     WSGI_APPLICATION = 'suppbuilder_project.wsgi.application'
 
@@ -126,15 +124,22 @@ class Base(Configuration):
 
     # path to custom sign up form to have first and last name instead of username
 
+    ACCOUNT_ADAPTER = 'suppbuilder.adapter.AccountAdapter'
 
     # user must enter password twice to avoid typos
     ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE =True
 
+    ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+    ACCOUNT_SIGNUP_FORM_CLASS = 'suppbuilder.forms.SignupForm'
     # username not required
     ACCOUNT_USERNAME_REQUIRED = False
-
+    ACCOUNT_EMAIL_REQUIRED = True
+    ACCOUNT_UNIQUE_EMAIL = True
+    ACCOUNT_LOGOUT_ON_GET = True
     #sign in using email
     ACCOUNT_AUTHENTICATION_METHOD = "email"
+    CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
     # Password validation
     # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
@@ -195,7 +200,11 @@ class Local(Base):
 
 
 
-
+    EMAIL_USE_TLS = True
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = 'juddruckers@gmail.com'
+    EMAIL_HOST_PASSWORD = '84{7anoV.aqu)pPZpTyLtY.rc?L66+79U[Xz#6d.m9r2FajXo['
+    EMAIL_PORT = 587
 
 
 

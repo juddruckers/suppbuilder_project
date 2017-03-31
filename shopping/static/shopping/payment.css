@@ -18,6 +18,9 @@
 }
 
 
+#discount-section .btn {
+	margin-top: 10px;
+}
 
 #payment-column {
 	border-top: 1px solid #eee;
@@ -40,6 +43,6 @@
 	width:100%;
 }
 
-#hidden {
+.hidden {
 	display:none;
 }

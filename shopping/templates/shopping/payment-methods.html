@@ -1,0 +1,92 @@
+{% extends "suppbuilder/base.html" %}
+{% load static %}
+
+{% block head %} 
+	<link rel="stylesheet" type="text/css" href="{% static 'shopping/order.css' %}">
+{% endblock %}
+{% block body %}
+<div class='container'>
+
+
+<ol class="breadcrumb">
+  <li><a href="{% url 'profile' %}">Profile</a></li>
+  <li class='active'>Payment methods</li>
+</ol>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"> Are you sure you want to delete this payment method?</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this payment methods?</p>
+      </div>
+      <div class="modal-footer">
+<!--         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <a href="" id='delete-link' class='btn btn-danger'> Delete payment method</a> -->
+        <form action="{% url 'payment-delete' %}" method='post'>
+        		{% csrf_token %}
+        		<input type='hidden' id='payment-token' name='token' value=''>
+        		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>	
+        	 <button type="submit" class="btn btn-danger">Delete payment method</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+	<div class='row'>
+		<div class='col-lg-6 col-lg-offset-3'>
+			<div class='panel panel-default'>
+				<div class='panel-heading'>
+					<h3>Your Payment Methods</h3>
+				</div>
+				<div class='panel-body'>
+			<table class='table table-condensed'>				
+
+				 	<tr>
+				 		<td>Credit and Debit Cards</td>
+				 		<td>Expiration date</td>
+				 		<td></td>
+				 	</tr>
+				 	{% for payment_method in customer.payment_methods %}
+					 	<tr>
+
+					 		<td>
+								<span><img src="{{payment_method.image_url}}" height="21" width="34"></span> {{payment_method.card_type}} **** {{payment_method.last_4}}				 			
+					 		</td>
+					 		<td>
+					 			{{payment_method.expiration_date}}
+					 		</td>
+					 		<td>
+					 			<button class='btn btn-default btn-xs payment-delete' data-toggle='modal' data-target='#myModal' data-lastfour='{{payment_method.last_4}}' data-image='{{payment_method.image_url}}' data-method='{{payment_method.card_type}}' data-token='{{payment_method.token}}' data-expire='{{payment_method.expiration_date}}'>
+					 				Delete
+					 			</button>
+					 		</td>
+
+					 	</tr>
+					{% endfor %}	
+				 </table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+
+
+
+</div>
+{% endblock %}
+
+
+{% block footer %}
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script type="text/JavaScript" src="{% static 'shopping/payment-method.js' %}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+{% endblock %}

@@ -12,33 +12,68 @@
 
 
 <div class='container login-block'>
-
+  
+  <div class='row'>
       
+      <div class='col-md-5 col-md-offset-1'>
+          
+          <div class='panel panel-default'>
+            
+            <div class="panel-heading">
+              <h2 class="panel-title">Sign in</h2>
+              <br>
 
-    <div class='row'>
-      <div class='col-md-6 col-md-offset-3'>
-            <div class='row login-title'>
-              <h3>Sign in</h3>
-              <a href="{{ signup_url }}">Create an account</a>
             </div>
-        <form class="login" method="POST" action="{% url 'account_login' %}">
-
-
-                      {{ form|crispy }}
-              {% csrf_token %}
-            {% if redirect_field_value %}
-            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-            {% endif %}
-            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-            <button class="btn btn-success" type="submit">{% trans "Sign In" %}</button>
-        </form>
+            
+            <div class='panel-body'>
+              
+              <form class="login" method="POST" action="{% url 'account_login' %}">
+                  
+                  {{ form|crispy }}
+                    
+                  {% csrf_token %}
+                  
+                  {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                  {% endif %}
+                  
+                  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                  
+                  <button class="btn btn-success" type="submit">{% trans "Sign In" %}</button>
+              
+              </form>                          
+            </div>
+        </div>
       </div>
-    </div>
+      <div class='col-md-5 guest-block'>
+          
+          <div class='panel panel-default'>
+            
+            <div class="panel-heading">
+              <h2 class="panel-title">Continue as a guest</h2>
+              <br>
 
-
-
-
+            </div>
+            
+            <div class='panel-body'>
+              
+              <form class="guest-form" method="POST" action="/suppbuilder/brainguest/">
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="guest-email">Email address</label>
+                    <input type="email" class="form-control" id="guest-email" name='email' placeholder="Email Address">
+                  </div>
+                    
+                  
+                  <button class="btn btn-success" name='submit-guest-form' type="submit">{% trans "Continue as guest" %}</button>
+              
+              </form>                          
+            </div>
+        </div>
+      </div>
+  </div>
 </div>
+
 
 
 

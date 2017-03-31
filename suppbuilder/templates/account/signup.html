@@ -12,18 +12,27 @@
 <div class='container signup-block'>
   
 
-<!-- this sign up form works as intended -->
-<div class='row'>
-  <div class='col-md-6 col-md-offset-3'> 
-    <div class='row login-title'>
-      <h3>Sign up</h3>
-      <p>Already have an account?</p><a href="{{ login_url }}"> Sign in</a>
+
+  <div class='row'>
+    <div class='col-md-6 col-md-offset-3'> 
+
+
+      <div class='panel panel-default'>
+        <div class='panel-heading'>
+          <h3>Sign up</h3>       <p>Already have an account? <span><a href="{{ login_url }}"> Sign in</a></span></p>
+           </div>
+        <div class='panel-body'>
+
+
+          {% crispy form %}
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+        </div>
+      </div> 
+
     </div>
 
-    {% crispy form %}
-    {% if redirect_field_value %}
-    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-    {% endif %}
 
 
   </div>

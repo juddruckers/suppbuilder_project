@@ -5,4 +5,6 @@ from . import views
 app_name='suppbuilder'
 urlpatterns = [
     url(r'^$', views.IndexView, name='home'),
+    url(r'^guest/$', views.GuestLoginView, name='brainguest'),    
+    url(r'^brainguest/$', views.BrainTreeCustomerView, name='guest-login'),
 ]

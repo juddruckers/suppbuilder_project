@@ -56,7 +56,7 @@ $('#update-cart').on("click", function(){
 		type: 'POST',
 		data: {'delete_item_list[]': delete_item_list},
 		success: function(){
-			console.log("ajax call successful")
+			location.reload();
 		},
 	});	
 });
@@ -69,7 +69,7 @@ $("input:radio[name='address']").on("click", function(){
 	});
 
 	$.ajax({
-		url : '/shopping/change',
+		url : '/shopping/change/',
 		type: 'POST',
 		data: {'selected_address': selected_address},
 		success: function(){

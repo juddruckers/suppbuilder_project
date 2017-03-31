@@ -3,6 +3,15 @@
 	width: 25%;
 }
 
+.item-size {
+	color:rgb(5,195,222);
+	font-size: 22px;
+}
+
+.item-price {
+	color:rgb(132,189,0);
+	font-size: 18px;
+}
 
 .remove {
 	display: none;
@@ -79,9 +88,23 @@
 }
 
 
+.jumbotron {
+	background-color: white;
+}
+
+.jumbotron h1{
+	color: rgb(0,58,112);
+}
 
 
+.breadcrumb{
+	background-color: white;
+}
 
-
+.panel > .panel-heading {
+    background-image: none;
+    background-color: #F8F8F8;
+    color: #05C3DE;
+}
 
 

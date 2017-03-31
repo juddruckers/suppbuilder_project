@@ -11,35 +11,251 @@
 <div class='container logo'>
   <div class='row'>
     </div class='col-lg-12'>
-      <p>Customized dietary supplements for your lifestyle goals<span><a href="{% url 'energy' %}"> build yours now >></a></span></p>
+      <p>Made to order dietary supplements for your lifestyle goals</p>
   </div>
 </div>
 
 <div class='container marketing'>
+<div class="page-header">
+  <h4>Custom supplements <small>Select a product to customize</small></h4>
+</div>
       <div class="row">
+
+
         <div class="col-lg-4">
-          <img class="img-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-          <h2>Protein</h2>
-          <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <img class="img-square" src="{% static 'suppbuilder/images/vitamin.jpg' %}" alt="Generic placeholder image" width="140" height="140">
+          <h3>Vitamins</h3>
+
+          <p><a class="" href="{% url 'vitamin'%}" role="button">Customize &raquo;</a></p>
+        </div>
+
+        <div class="col-lg-4">
+          <img class="img-square" src="{% static 'suppbuilder/images/shaker.jpg' %}" alt="Generic placeholder image" width="140" height="140">
+          <h3>Pre &amp Post workout blend</h3>
+          <p><a class="" href="{% url 'energy' %}" role="button">Customize &raquo;</a></p>
         </div>
         <div class="col-lg-4">
-          <img class="img-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-          <h2>Preworkout and Protein</h2>
-          <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <a href='#'><img class="img-square" src="{% static 'suppbuilder/images/proteinbag.jpg' %}" alt="Generic placeholder image" width="140" height="140"></a>
+          <h3>Protein</h3>
+          <p><a class="" href="{% url 'protein'%}" role="button">Customize &raquo;</a></p>
         </div>
-        <div class="col-lg-4">
-          <img class="img-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Generic placeholder image" width="140" height="140">
-          <h2>Pre workout</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
+
       </div>
 </div>
 
 
 
+
+<div class='container'>
+  
+  <div class="page-header">
+    <h1>The process</h1>
+  </div>
+
+  <!-- start of steps row one -->
+  <div class='row'>
+    
+    <!-- column 1  -->
+    <div class='col-lg-6'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <div class="media">
+            <div class="media-left">
+              <img src="{% static 'suppbuilder/images/blank_protein.svg' %}" class="media-object" style="width:100px">
+            </div>
+
+            <div class="media-body">
+              <h2 class="media-heading">1. Select the product to customize</h2>
+              <p>Customize your very own protein powder blend, pre and post workout formulas, and vitamin pack.</p>
+          
+            <!-- Nested media object -->
+            <div class="media">
+              <div class="media-left">
+                <img src="{% static 'suppbuilder/images/protein.svg' %}" class="media-object" style="width:80px">
+              </div>
+              <div class="media-body">
+                <h4 class="media-heading"> Protein Powder </h4>
+                <p>Build the perfect protein blend for your goals and lifestyle. Pick one type of protein powder or select multiple to create a custom protein powder blend.</p>
+              </div>
+            </div>
+           
+             <div class="media">
+              <div class="media-left">
+                <img src="{% static 'suppbuilder/images/preworkout.svg' %}" class="media-object" style="width:80px">
+              </div>
+              <div class="media-body">
+                <h4 class="media-heading">Pre and post workout stack</h4>
+                <p>Fully customize your pre and post workout formulas. Pick and choose which supplements you want in your stack.  </p>
+              </div>
+            </div>
+
+            <div class="media">
+              <div class="media-left">
+                <img src="{% static 'suppbuilder/images/vitaminpack.svg' %}" class="media-object" style="width:80px">
+              </div>
+              <div class="media-body">
+                <h4 class="media-heading">Vitamin pack</h4>
+                <p>Select all the vitamins and minerals you want included all in one pack.</p>          
+              </div>
+            </div>
+
+        </div>
+      </div> <!-- end media object -->
+      
+    </div>
+    </div>
+    </div><!-- end of column one -->
+
+
+    <!-- column two -->
+    <div class='col-lg-6 step'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <div class="media">
+            
+            <div class="media-left">
+              <img src="{% static 'suppbuilder/images/select.svg' %}" class="media-object" style="width:100px">
+            </div>
+
+            <div class="media-body">
+              <h2 class="media-heading">2. Choose your supplements.</h2>
+              <p>You get to pick which supplements you want in your stack, what effective dose you want, and what flavor. Customize the supplement stack based on your life style goals.</p>
+        
+              <!-- Nested media object -->
+              <div class="media">
+                <div class="media-left">
+                  <img src="{% static 'suppbuilder/images/usada.svg' %}" class="media-object" style="width:80px">
+                </div>
+               
+                <div class="media-body">
+                  <h4 class="media-heading">Quality Ingredients</h4>
+                  <p>All the supplements included in your stack are third party tested for quaility and purity.</p>
+                </div>
+
+                  <div class="media">
+                    <div class="media-left">
+                      <img src="{% static 'suppbuilder/images/einstein.svg' %}" class="media-object" style="width:80px">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">Backed by research</h4>
+                      <p>All supplements provided are backed by scientific research</p>
+                    </div>
+                  </div>
+
+                  <div class="media">
+                    <div class="media-left">
+                      <img src="{% static 'suppbuilder/images/scoop.svg' %}" class="media-object" style="width:80px">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">Effective serving sizes</h4>
+                      <p>The serving sizes of each supplement are only provided at what has been shown as effective in scientific studies </p>
+                    </div>
+                  </div>
+
+                  <div class="media">
+                    <div class="media-left">
+                      <img src="{% static 'suppbuilder/images/melon.svg' %}" class="media-object" style="width:80px">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">No added color, natural flavors</h4>
+                      <p>The pre and post workout formulas and protein powders are flavored and sweetened using natural flavors and ingredients. We also dont add any unnecessary coloring agents.</p>
+                    </div>
+                  </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end of row one -->
+
+  <!-- row two -->
+  <div class='row'>
+
+    <!-- column one -->
+    <div class='col-lg-6'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <div class="media">
+            <div class="media-left">
+              <img src="{% static 'suppbuilder/images/drink.svg' %}" class="media-object" style="width:100px">
+            </div>
+
+            <div class="media-body">
+                <h2 class="media-heading">3. Reap the benefits.</h2>
+                  <p>You will be given a thirty day supply of your custom supplements. </p>
+          
+            <!-- Nested media object -->
+                <div class="media">
+                  <div class="media-left">
+                    <img src="{% static 'suppbuilder/images/weightlifting.svg' %}" class="media-object" style="width:80px">
+                  </div>
+                 
+                    <div class="media-body">
+                      <h4 class="media-heading">Adjust</h4>
+                      <p>Consume products based on your training regiment and goals</p>
+                    </div>
+                <div class="media">
+                  <div class="media-left">
+                    <img src="{% static 'suppbuilder/images/empty.svg' %}" class="media-object" style="width:80px">
+                  </div>
+                  <div class="media-body">
+                    <h4 class="media-heading">Re order</h4>
+                      <p>Re order when you are close to running out!</p>
+                  </div>
+                </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- column two -->
+    <div class='col-lg-6'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <div class="media">
+            <div class="media-left">
+              <img src="{% static 'suppbuilder/images/exercise.svg' %}" class="media-object" style="width:100px">
+            </div>
+
+            <div class="media-body">
+                <h2 class="media-heading">4. Share and earn.</h2>
+                  <p>If you are a coach, personal trainer, or a nutritionist you can now recommend customized dietary supplements for your clients instead of turning them to competitors. </p>
+          
+            <!-- Nested media object -->
+                <div class="media">
+                  <div class="media-left">
+                    <img src="{% static 'suppbuilder/images/decision.svg' %}" class="media-object" style="width:80px">
+                  </div>
+                 
+                    <div class="media-body">
+                      <h4 class="media-heading">Customers choose</h4>
+                      <p>Customers have total control. The customer still decides on every ingredient going into their custom supplement. The power is in their hands</p>
+                    </div>
+                <div class="media">
+                  <div class="media-left">
+                    <img src="{% static 'suppbuilder/images/money.svg' %}" class="media-object" style="width:80px">
+                  </div>
+                  <div class="media-body">
+                    <h4 class="media-heading">Earn</h4>
+                      <p>Earn a percentage per transaction instead of turning your clients to the competitors.</p>
+                  </div>
+                </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- 
 <div class='container'>
 {% if request.user.is_authenticated %}
     <a href="/accounts/logout/" class="pull-right">Logout</a>
@@ -53,14 +269,18 @@
 {% else %}
     <a href="/accounts/login/" class="pull-right">Login</a>
 {% endif %}
-</div>
+</div> -->
 
-{{ request.user.email }}
+<!-- {{ request.user.email }}
 <div class='container'>
 {% load account %}
 
 {% user_display user %}
-</div>
-
+</div> -->
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+      </div>
+    </footer>
 
 {% endblock %}

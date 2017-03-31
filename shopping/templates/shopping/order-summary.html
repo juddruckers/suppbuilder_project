@@ -21,6 +21,7 @@
 		</div>
 
 		<!-- Order information column -->
+
 		<div class='col-lg-6'>
 			<div class='row'>
 				<div class='col-lg-6 col-xs-5'>
@@ -36,6 +37,15 @@
 								<td>$ {{transaction.amount}}</td>
 							</tr>
 							<tr>
+								<td>Discount (<span id='cart-counter'>{{cart_count}}</span>):</td>
+								<td>$ {{transaction.amount}}</td>
+							</tr>
+
+							<tr>
+								<td>Grand Total:</td>
+								<td>$ {{grand_total}}</td>
+							</tr>
+							<tr>
 								<td>Shipping & Handling:</td>
 								<td>$ <span id='shipping-price'>{{transaction.custom_fields.shipping_price}}</span></td>
 							</tr>
@@ -47,6 +57,7 @@
 								<td>Grand Total:</td>
 								<td>$ {{grand_total}}</td>
 							</tr>
+	
 						</table>
 					</div>
 				</div>

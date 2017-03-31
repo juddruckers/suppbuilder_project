@@ -1,0 +1,514 @@
+{% extends 'suppbuilder/base.html' %}
+{% load static %}
+{% load carton_tags %}
+{% block head %}
+    
+<link rel="stylesheet" type="text/css" href="{% static 'products/product.css' %}">
+{% endblock %}
+
+{% block body %}
+
+
+<!--  JUMBO TRON -->
+<div class='container'>
+  <ol class="breadcrumb">
+    <li class="active"><a href="{% url 'vitamin' %}">Multivitamin</a></li>
+    <li><a href="{% url 'energy' %}">Pre-workout</a></li>
+    <li class='active'>Protein</li>
+  </ol>    
+  <div class="jumbotron">
+    <div class="container">
+      <h1>Protein</h1>
+        <h2><small> Select which protein powder you want to add to you your customized protein blend. Select multiple protein powders to create your own blend of protein. </small></h2>
+      <hr>
+    </div>
+  </div>
+</div>
+
+<!--  product container -->
+<div class='container product-container'>
+<div class='panel panel-default'>
+  <div class='panel-body'>
+  <div class='row'>
+    <div class='col-lg-12'>
+      {% if whey_match %}
+        <h2>
+          {{whey.title}}
+          <span class='item-size' id='whey-size'>
+            {{whey_match.0.serving_size}}/serving
+          </span>
+          <span class='item-price' id='whey-price'> 
+            ${{whey_match.0.price}} (${{whey_match.0.thirty_day}}/serving)
+          </span>
+        </h2>
+      {% else %}
+        <h2>
+          {{whey.title}}
+          <span class='item-size' id='whey-size'>
+            {{whey.serving_size}}/serving
+          </span>
+
+          <span class='item-price' id='whey-price'> 
+            ${{whey.cost}} (${{whey.thirty_day}}/serving) 
+          </span>
+        </h2>
+      {% endif %}
+    </div>
+  </div>
+
+
+<!-- description of product -->
+
+  {% if whey_match %}
+  <div class='row collapse ' id='whey-description'>
+  {% else %}
+  <div class='row collapse in' id='whey-description'>
+  {%endif %}
+    <div class='col-lg-8'>
+      <h5>Product description</h5>
+      <p>{{whey.description}}</p>
+    </div>
+    <div class='col-lg-4'>
+      <h5>Key Benefits</h5>
+        <ul>
+          {% for benefit in whey.benefits.all %}
+            <li>{{benefit}}</li>  
+          {% endfor %}
+        </ul>
+    </div>
+  </div>
+
+<!-- end of product description row -->
+
+
+
+<!-- start of product select -->
+
+  {% if whey_match %}
+  <div class='row collapse' id='whey-options'>
+  {% else %}
+  <div class='row collapse in'id='whey-options'>
+  {%endif %}
+    <div class='col-lg-6'>    
+        <label for='whey-select'><h4>Select serving size :</h4></label>
+        {%if whey_match %}
+          <select  id="whey-select" disabled="disabled">
+          {% else %}
+          <select  id="whey-select">
+        {% endif %}
+            {% for product in whey_products %}
+              {% if product.id == whey_match.0.id %}
+                <option value="{{product.id}}" data-whey-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected> {{product.title}} {{product.serving_size}}</option>
+                {% else %}
+                <option value="{{product.id}}" data-whey-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+    </div>
+  </div>
+  <!--end of product select row  -->
+
+
+
+<!-- start of product button row -->
+    <div class='row'>
+      <div class='col-lg-12'>
+        {% if whey_match %}
+          <button type="button" class="btn btn-success whey-add remove">Add {{whey.title}}</button>
+          <button type="button" class="btn btn-danger whey-remove" >Remove {{whey.title}}</button>
+          {% else %}
+          <button type="button" class="btn btn-success whey-add">Add {{whey.title}}</button>
+          <button type="button" class="btn btn-danger whey-remove remove" >Remove {{whey.title}}</button>
+        {% endif %}
+      </div>
+    </div>
+<!-- end of product button row -->
+
+ </div>
+</div>
+</div>
+
+<!-- end of product container -->
+
+
+
+
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if caseine_match %}
+            <h2>
+              {{caseine.title}}
+              <span class='item-size' id='caseine-size'>
+                {{caseine_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='caseine-price'> 
+                ${{caseine_match.0.price}} (${{caseine_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{caseine.title}}
+              <span class='item-size' id='caseine-size'>
+                {{caseine.serving_size}}/serving
+              </span>
+              <span class='item-price' id='caseine-price'> 
+                ${{caseine.cost}} (${{caseine.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if caseine_match %}
+        <div class='row collapse ' id='caseine-description'>
+      {% else %}
+        <div class='row collapse in' id='caseine-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{caseine.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in caseine.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if caseine_match %}
+        <div class='row collapse' id='caseine-options'>
+      {% else %}
+        <div class='row collapse in'id='caseine-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='caseine-select'><h4>Select serving size :</h4></label>
+            
+            {%if caseine_match %}
+              <select  id="caseine-select" disabled="disabled">
+            {% else %}
+              <select  id="caseine-select">
+            {% endif %}
+
+                {% for product in caseine_products %}
+                  {% if product.id == caseine_match.0.id %}
+                    <option value="{{product.id}}" data-caseine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-caseine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if caseine_match %}
+            <button type="button" class="btn btn-success caseine-add remove">Add {{caseine.title}}</button>
+            <button type="button" class="btn btn-danger caseine-remove" >Remove {{caseine.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success caseine-add">Add {{caseine.title}}</button>
+            <button type="button" class="btn btn-danger caseine-remove remove" >Remove {{caseine.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row -->
+
+
+
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if pea_protein_match %}
+            <h2>
+              {{pea_protein.title}}
+              <span class='item-size' id='pea_protein-size'>
+                {{pea_protein_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='pea_protein-price'> 
+                ${{pea_protein_match.0.price}} (${{pea_protein_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{pea_protein.title}}
+              <span class='item-size' id='pea_protein-size'>
+                {{pea_protein.serving_size}}/serving
+              </span>
+              <span class='item-price' id='pea_protein-price'> 
+                ${{pea_protein.cost}} (${{pea_protein.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if pea_protein_match %}
+        <div class='row collapse ' id='pea_protein-description'>
+      {% else %}
+        <div class='row collapse in' id='pea_protein-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{pea_protein.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in pea_protein.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if pea_protein_match %}
+        <div class='row collapse' id='pea_protein-options'>
+      {% else %}
+        <div class='row collapse in'id='pea_protein-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='pea_protein-select'><h4>Select serving size :</h4></label>
+            
+            {%if pea_protein_match %}
+              <select  id="pea_protein-select" disabled="disabled">
+            {% else %}
+              <select  id="pea_protein-select">
+            {% endif %}
+
+                {% for product in pea_protein_products %}
+                  {% if product.id == pea_protein_match.0.id %}
+                    <option value="{{product.id}}" data-pea_protein-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-pea_protein-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if pea_protein_match %}
+            <button type="button" class="btn btn-success pea_protein-add remove">Add {{pea_protein.title}}</button>
+            <button type="button" class="btn btn-danger pea_protein-remove" >Remove {{pea_protein.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success pea_protein-add">Add {{pea_protein.title}}</button>
+            <button type="button" class="btn btn-danger pea_protein-remove remove" >Remove {{pea_protein.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row -->
+
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if soy_protein_match %}
+            <h2>
+              {{soy_protein.title}}
+              <span class='item-size' id='soy_protein-size'>
+                {{soy_protein_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='soy_protein-price'> 
+                ${{soy_protein_match.0.price}} (${{soy_protein_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{soy_protein.title}}
+              <span class='item-size' id='soy_protein-size'>
+                {{soy_protein.serving_size}}/serving
+              </span>
+              <span class='item-price' id='soy_protein-price'> 
+                ${{soy_protein.cost}} (${{soy_protein.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if soy_protein_match %}
+        <div class='row collapse ' id='soy_protein-description'>
+      {% else %}
+        <div class='row collapse in' id='soy_protein-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{soy_protein.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in soy_protein.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if soy_protein_match %}
+        <div class='row collapse' id='soy_protein-options'>
+      {% else %}
+        <div class='row collapse in'id='soy_protein-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='soy_protein-select'><h4>Select serving size :</h4></label>
+            
+            {%if soy_protein_match %}
+              <select  id="soy_protein-select" disabled="disabled">
+            {% else %}
+              <select  id="soy_protein-select">
+            {% endif %}
+
+                {% for product in soy_protein_products %}
+                  {% if product.id == soy_protein_match.0.id %}
+                    <option value="{{product.id}}" data-soy_protein-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-soy_protein-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if soy_protein_match %}
+            <button type="button" class="btn btn-success soy_protein-add remove">Add {{soy_protein.title}}</button>
+            <button type="button" class="btn btn-danger soy_protein-remove" >Remove {{soy_protein.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success soy_protein-add">Add {{soy_protein.title}}</button>
+            <button type="button" class="btn btn-danger soy_protein-remove remove" >Remove {{soy_protein.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row -->
+
+<div class='container'>
+  <div class='row'>
+    <div class='col-lg-6 col-lg-offset-3'>
+      <nav aria-label="...">
+        <ul class="pager">
+          <li class="previous"><a href="{% url 'energy' %}"><span aria-hidden="true">&larr;</span> Back to Preworkout stack</a></li>
+          <li class="next"><a href="{% url 'checkout-view' %}">Checkout <span aria-hidden="true">&rarr;</span></a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+<hr>
+<!--  end nav buttons -->
+
+
+
+<!-- RESEARCH CONTAINER -->
+<div class='container research-container'>
+
+    <div class='row'>
+      <div class='col-lg-12 col-xs-12'>
+          <h1>Research</h1>
+          <div class='row'>
+            <div class='col-lg-12 col-xs-12'>
+              <h3>Whey protein Research</h3>
+              {% for research in whey_research %}
+                <a href="{{research.research_article}}" target="_blanks">{{research}} </a>
+              {% endfor %}
+              <h3>Caseine Research</h3>
+              {% for research in caseine_research %}
+                <a href="{{research.research_article}}" target="_blanks">{{research}} </a>
+              {% endfor %}
+            </div>
+          </div>
+      </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block footer %}
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script type="text/JavaScript" src="{% static 'products/protein.js' %}"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+{% endblock %}

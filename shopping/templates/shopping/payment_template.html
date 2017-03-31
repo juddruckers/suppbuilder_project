@@ -75,7 +75,11 @@
 				<div class='col-lg-4 col-xs-5'>
 					<p>Items (<span id='cart-counter'>{{cart_count}}</span>):</p>
 					<p>Shipping & Handling:</p>
-					<p>Tax:<p>					
+					<p>Tax:<p>
+					<div id='discount-section'>
+						<input id='discount-code' type='text' class='form-control' value='' placeholder='enter discount code'>
+						<button id='discount' class='btn btn-info'>Apply discount</button>
+					</div>					
 				</div>
 				<div class='col-lg-4 col-xs-4'>
 					<p>$ {{cart.total}}</p>
@@ -99,7 +103,9 @@
 					<h3>Payment Information</h3>
 						<form action="{% url 'checkout-view' %}" id="checkout" method="post" autocomplete="off">
 							{% csrf_token %}                      
-							<input type="text" data-shipping-price=4.99 id="hidden" name="hidden_shipping" value=4.99></input>
+							<input type="text" data-shipping-price=4.99 class='hidden' name="hidden_shipping" value=4.99></input>
+							<input type="hidden" name="hidden_discount" value=0.00></input>
+							<input type="hidden" name="discount_name" value=''></input>
 							<div id="dropin-container">
 							</div>
 							<input class='btn btn-success' id='order-button' type="submit" value="Submit Order" />

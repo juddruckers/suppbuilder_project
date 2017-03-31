@@ -1,15 +1,19 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.views.generic.edit import UpdateView
 from django.views.decorators.http import require_http_methods
+
+from django.conf import settings
 import braintree
 import decimal
-from django.conf import settings
+from allauth.account.forms import LoginForm
 from carton.cart import Cart
 from products.models import Product, Variation , Order
+from shopping.models import Guest
 from .models import Address
 from .forms import AddressForm, BillingAddressForm, EditAddressForm
 # Create your views here.
@@ -49,6 +53,19 @@ def removeSingle(request):
 
     return HttpResponse("item removed")
 
+def DiscountFindView(request):
+    discount_list = braintree.Discount.all()
+    name = request.GET.get('name')
+    testvar = 'Invalid discount code'
+
+    for discount in discount_list:
+        if discount.name == name:
+            testvar = discount.amount
+
+
+        
+
+    return HttpResponse(testvar)
 
 def AddressDeleteView(request, pk):
     current_user_email = request.user.email
@@ -123,7 +140,7 @@ def AddressUpdateView(request, pk):
                             'zip_code' : updated_address.cleaned_data['zip_code'],
                             'email' : updated_address.cleaned_data['email'],
                             'address_type' : updated_address.cleaned_data['address_type'],
-                            'default_address' : updated_address.cleaned_data['default_address'],
+                            'default_address' : True,
                             'brain_tree_code' : updated_address.cleaned_data['brain_tree_code'],
                         }
                     )
@@ -143,25 +160,6 @@ def AddressUpdateView(request, pk):
             except braintree.exceptions.authorization_error.AuthorizationError as e:
                 print e
 
-            try:
-                print 'attempting to find an existing braintree customer'
-                braintree_customer = braintree.Customer.find(str(current_user.id))
-                if braintree_customer:
-                    print 'found a fucking customah govenah'
-                    print braintree_customer
-            except braintree.exceptions.not_found_error.NotFoundError:
-                print " No customer found, creating customer"
-                result = braintree.Customer.create({
-                    "email" : current_user.email,
-                    "id" : current_user.id,
-                })
-
-                if result.is_success == True:
-                    customer = result.customer
-                    print "customer successfully created and printing ID"
-                elif result.is_success == False:
-                    print result.errors.deep_errors
-                    print "customer not created"
 
             cart = Cart(request.session)
             cart_count = 0
@@ -170,7 +168,7 @@ def AddressUpdateView(request, pk):
                 cart_count +=1
 
             token = braintree.ClientToken.generate({"customer_id": current_user.id})
-            shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', id=pk)
+            shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address=True).first()
             cart_total = cart.total + decimal.Decimal("4.99")
             
             context = {
@@ -203,226 +201,303 @@ def AddressUpdateView(request, pk):
             })
         
         pk = Address.objects.get(id=pk)
-        print pk
-
-        try:
-            print 'attempting to find an existing braintree customer'
-            braintree_customer = braintree.Customer.find(str(current_user.id))
-            if braintree_customer:
-                print 'found a fucking customah govenah'
-                print braintree_customer
-        except braintree.exceptions.not_found_error.NotFoundError:
-            print " No customer found, creating customer"
-            result = braintree.Customer.create({
-                "email" : current_user.email,
-                "id" : current_user.id,
-            })
-
-            if result.is_success == True:
-                customer = result.customer
-                print "customer successfully created and printing ID"
-            elif result.is_success == False:
-                print result.errors.deep_errors
-                print "customer not created"
 
         return render(request, 'shopping/address_form.html', {'form': existing_address_form, 'address': address, 'pk':pk})
 
 
 def show(request):
     return render(request, 'shopping/show-cart.html')
+    
 
-
-@login_required(login_url='/accounts/login/')
-@require_http_methods(["GET", "POST"])
 def payment_view(request):
 
-    """ 
-    payment view. Get the current_user ID and pass it to the client token. This will
-    allow for repeat customers to access payment methods they have utilized before on 
-    the site. 
 
-    NOTE: NEED TO ADD IN CURRENT USER ID LATER TO RETRIEVE PREVIOUS METHODS USED TO MAKE PAYMENTS
-
-    """
-
+    
     if request.method == 'POST':
 
-        """
-        retreive payment method nonce from form and use it to create transaction
-
-        FOR TESTING PURPOSES:
-        nonce should be "fake-valid-nonce"
-        """
         cart = Cart(request.session)
         hidden_shipping = decimal.Decimal(request.POST['hidden_shipping'])
-        current_user = request.user
+
         payment_method_nonce = request.POST["payment_method_nonce"]
+        discount = decimal.Decimal(request.POST['hidden_discount']) 
+        discount_code = request.POST['discount_name']
         customer_id = str(request.user.id)
-        braintree_customer = braintree.Customer.find(customer_id)
-        billing_address = Address.objects.get(email=current_user.email, address_type='billing', default_address='True')
-        shipping_address = Address.objects.get(email=current_user.email, address_type='shipping', default_address='True')
-        order_total = (hidden_shipping + cart.total)
+        discount_amount = decimal.Decimal("{0:.2f}".format(round(cart.total * discount,2)))
+        order_total = (hidden_shipping + cart.total) - discount_amount
 
-        result = braintree.Transaction.sale({
-            'amount': order_total,
-            'payment_method_nonce': 'fake-valid-nonce',
-            'customer_id' : customer_id,
-            'billing_address_id': str(billing_address.brain_tree_code),
-            'shipping_address_id' : str(shipping_address.brain_tree_code),
-            'tax_amount' : '3.78',
-            'custom_fields': {
-                'shipping_price' :str(hidden_shipping),
-            },
-            'options' : {
-                'submit_for_settlement': True,
-                'store_in_vault_on_success' : True,
-                'add_billing_address_to_payment_method': True,
-                'store_shipping_address_in_vault' : True,
-            },
-        })
-        
-        if result.is_success == True:
-            cart = Cart(request.session)
-            cart_count = 0
-            transaction = result.transaction
-            grand_total = (transaction.amount + decimal.Decimal(transaction.custom_fields['shipping_price']) + decimal.Decimal(transaction.tax_amount))
 
-            for product in cart.products:
-                cart_count +=1
 
-            order = Order(
-                transaction_id= transaction.id,
-                email= request.user.email,
-                first_name = transaction.shipping_details.first_name,
-                last_name = transaction.shipping_details.last_name,
-                date_ordered = transaction.created_at,
-                total = grand_total,
-            )
+        if request.user.is_anonymous:
+            guest = Guest.objects.get(email=request.session.get('email'))
+            customer_id = str(guest.id)
+            # query the guest_objects using the session variable
+            #get the match and use the id in the transaction for customer_id
+            billing_address = Address.objects.filter(email=guest.email, address_type='billing', default_address=True).first()
+            shipping_address = Address.objects.filter(email=guest.email, address_type='shipping', default_address=True).first()
+            
+            result = braintree.Transaction.sale({
+                'amount': order_total,
+                'payment_method_nonce': str(payment_method_nonce),
+                'customer_id' : str(guest.id),
+                'billing_address_id': str(billing_address.brain_tree_code),
+                'shipping_address_id' : str(shipping_address.brain_tree_code),
+                'tax_amount' : '3.78',
+                'custom_fields': {
+                    'shipping_price' : str(hidden_shipping),
+                },
 
-            order.save()
+                'options' : {
+                    'submit_for_settlement': True,
+                    'store_in_vault_on_success' : True,
+                    'add_billing_address_to_payment_method': True,
+                },
+            })               
 
-            for product in cart.products:
-                order.product.add(product)
+            if result.is_success == True:
+                cart = Cart(request.session)
+                cart_count = 0
+                transaction = result.transaction
+                grand_total = (transaction.amount + decimal.Decimal(transaction.custom_fields['shipping_price']) + decimal.Decimal(transaction.tax_amount))
+
+                for product in cart.products:
+                    cart_count +=1
+
+                order = Order(
+                    transaction_id= transaction.id,
+                    email= guest.email,
+                    first_name = transaction.shipping_details.first_name,
+                    last_name = transaction.shipping_details.last_name,
+                    date_ordered = transaction.created_at,
+                    total = cart.total,
+                    shipping = hidden_shipping,
+                    discount = discount,
+                    discount_code = discount_code,
+                    tax = 3.78
+                )
+
                 order.save()
 
-            cart.clear()
+                for product in cart.products:
+                    order.product.add(product)
+                    order.save()
 
-            subject = "Thank you for your Order! from Suppbuilder"
+                cart.clear()
+                subject = "Thank you for your order from Suppbuilder!"
+                message = "Here are your order details"
+                from_email = settings.EMAIL_HOST_USER
+                recipient_list = [str(guest.email)]
 
-            message = "Here are your order details"
 
-            from_email = settings.EMAIL_HOST_USER
 
-            recipient_list = [str(current_user.email)]
+
+                send_mail(subject, message, from_email, recipient_list, fail_silently=True) 
+
+                return render(request, 'shopping/order-summary.html', {"order" : order, "transaction" : transaction, 'grand_total' : grand_total, 'cart_count': cart_count})
             
-            send_mail(subject, message, from_email, recipient_list, fail_silently=True) 
+            elif result.is_success == False:
 
-            return render(request, 'shopping/order-summary.html', {"order" : order, "transaction" : transaction, 'grand_total' : grand_total, 'cart_count': cart_count})
+                print result.errors.deep_errors
+                token = braintree.ClientToken.generate({"customer_id": guest.id})
+                return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address": shipping_address,})
 
-        elif result.is_success == False:
+            else:
 
-            print result.errors.deep_errors
-            token = braintree.ClientToken.generate({"customer_id": current_user.id})
-            return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address": shipping_address,})
+                token = braintree.ClientToken.generate({"customer_id": guest.id})
+                return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address" : shipping_address,})
 
         else:
+            billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address=True).first()
+            shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address=True).first()
+            result = braintree.Transaction.sale({
+                'amount': order_total,
+                'payment_method_nonce': str(payment_method_nonce),
+                'customer_id' : customer_id,
+                'billing_address_id': str(billing_address.brain_tree_code),
+                'shipping_address_id' : str(shipping_address.brain_tree_code),
+                'tax_amount' : '3.78',
+                'custom_fields': {
+                    'shipping_price' : str(hidden_shipping),
+                },
 
-            token = braintree.ClientToken.generate({"customer_id": current_user.id})
-            return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address" : shipping_address,})
+                'options' : {
+                    'submit_for_settlement': True,
+                    'store_in_vault_on_success' : True,
+                    'add_billing_address_to_payment_method': True,
+                },
+            })
+        
+            if result.is_success == True:
+                cart = Cart(request.session)
+                cart_count = 0
+                transaction = result.transaction
+                grand_total = (transaction.amount + decimal.Decimal(transaction.custom_fields['shipping_price']) + decimal.Decimal(transaction.tax_amount))
+
+                for product in cart.products:
+                    cart_count +=1
+
+                order = Order(
+                    transaction_id= transaction.id,
+                    email= request.user.email,
+                    first_name = transaction.shipping_details.first_name,
+                    last_name = transaction.shipping_details.last_name,
+                    date_ordered = transaction.created_at,
+                    total = cart.total,
+                    shipping = hidden_shipping,
+                    discount = discount,
+                    discount_code = discount_code,
+                    tax = 3.78
+                )
+
+                order.save()
+
+                for product in cart.products:
+                    order.product.add(product)
+                    order.save()
+
+                cart.clear()
+                subject = "Thank you for your order from Suppbuilder!"
+                message = "Here are your order details"
+                from_email = settings.EMAIL_HOST_USER
+                recipient_list = [str(current_user.email)]
+
+
+
+
+                send_mail(subject, message, from_email, recipient_list, fail_silently=True) 
+
+                return render(request, 'shopping/order-summary.html', {"order" : order, "transaction" : transaction, 'grand_total' : grand_total, 'cart_count': cart_count})
+
+            elif result.is_success == False:
+
+                print result.errors.deep_errors
+                token = braintree.ClientToken.generate({"customer_id": current_user.id})
+                return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address": shipping_address,})
+
+            else:
+
+                token = braintree.ClientToken.generate({"customer_id": current_user.id})
+                return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address" : shipping_address,})
 
     else:
 
-        """ request the customer and if the customer does not exist then create it """
-        current_user = request.user
-        shipping_address_count = Address.objects.filter(email=request.user.email, address_type='shipping', default_address='True').first()
-        if shipping_address_count == None:
-            return render(request, 'shopping/address.html', {'form': AddressForm,})
 
-        else: 
-
-            try:
-                print 'attempting to find an existing braintree customer'
-                braintree_customer = braintree.Customer.find(str(current_user.id))
-                if braintree_customer:
-                    print 'found a fucking customah govenah'
-            except braintree.exceptions.not_found_error.NotFoundError:
-                print " No customer found, creating customer"
-                result = braintree.Customer.create({
-                    "email" : current_user.email,
-                    "id" : current_user.id,
-                })
-
-                if result.is_success == True:
-                    customer = result.customer
-                    print "customer successfully created and printing ID"
-                elif result.is_success == False:
-                    print result.errors.deep_errors
-                    print "customer not created"
+        guest_email = request.session.get('email')
 
 
-            cart = Cart(request.session)
-            cart_count = 0
+        # if the user is anonymous check the session variable guest email
+        # if the guest email is none go to to the login page to either log in 
+        # or continue as a guest and create the session variable       
+        if request.user.is_anonymous:
+            guest_email = request.session.get('email')
+            print guest_email
+            guest = Guest.objects.filter(email=guest_email).first() 
             
-            for product in cart.products:
-                cart_count +=1
+            if guest_email is None:
+
+                form = LoginForm()
+                return render(request, 'account/login.html', {'form' : form})
+
+            #if the session test has an email available 
+            else:
+                print "user is anonymous but the session variable has his email"
+
+                shipping_address = Address.objects.filter(email=guest_email, address_type='shipping', default_address='True').first()
+                billing_address = Address.objects.filter(email=guest_email, address_type='shipping', default_address='True').first()
 
 
-            cart_total = cart.total + decimal.Decimal("4.99")
+                if shipping_address is None:
+                    return render(request, 'shopping/address.html', {'form': AddressForm,})
 
-            token = braintree.ClientToken.generate({"customer_id": current_user.id})
-
-            single_billing = Address.objects.get(email=request.user.email, address_type='billing', default_address='True')
-            single_shipping = Address.objects.get(email=request.user.email, address_type='shipping', default_address='True')
-            context = {
-                'token': token,
-                'shipping_address': single_shipping,
-                'billing_address' : single_billing,
-                'cart_count' : cart_count,
-                'cart_total' : cart_total
-            }
+                if billing_address is None:
+                    form = BillingAddressForm(initial={'address_type': 'billing'})
+                    return render(request, 'shopping/billing_address.html', {'form': form})                    
 
 
-            print single_shipping.brain_tree_code
+                cart = Cart(request.session)
+                cart_count = 0
 
-            return render(request, 'shopping/payment_template.html', context)
+                for product in cart.products:
+                    cart_count +=1
+
+
+                cart_total = cart.total + decimal.Decimal("4.99")
+
+                # need to get the token using the guests email to get the braintree id
+
+                guest = Guest.objects.filter(email=guest_email).first()
+                print guest
+
+                token = braintree.ClientToken.generate({"customer_id": str(guest.id)})
+
+                context = {
+                    'token': token,
+                    'shipping_address': shipping_address,
+                    'billing_address' : billing_address,
+                    'cart_count' : cart_count,
+                    'cart_total' : cart_total
+                }
+                
+                return render(request, 'shopping/payment_template.html', context)
+
+        if request.user.is_authenticated():
+
+            # make sure that the logged in user has a billing and shipping address
+            #get a list of addresses associated with the email
+            billing_list = Address.objects.filter(email=request.user.email, address_type='billing', default_address=True)
+            shipping_list = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True)
+
+            
+            if len(shipping_list) < 1:
+                print "there is less than 1 shipping address available meaning none."
+                return render(request, 'shopping/address.html', {'form': AddressForm,})
+            elif len(billing_list) < 1:
+                print "there is less than 1 billing address available"
+                form = BillingAddressForm(initial={'address_type': 'billing'})
+                return render(request, 'shopping/billing_address.html', {'form': form})  
+            else: 
+
+                cart = Cart(request.session)
+                cart_count = 0
+                
+                for product in cart.products:
+                    cart_count +=1
+
+
+                cart_total = cart.total + decimal.Decimal("4.99")
+
+                token = braintree.ClientToken.generate({"customer_id": current_user.id})
+
+                single_billing = Address.objects.filter(email=request.user.email, address_type='billing', default_address=True).first()
+                single_shipping = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True).first()
+                
+                context = {
+                    'token': token,
+                    'shipping_address': single_shipping,
+                    'billing_address' : single_billing,
+                    'cart_count' : cart_count,
+                    'cart_total' : cart_total
+                }
 
 
 
-@login_required(login_url='/accounts/login/')
+
+                return render(request, 'shopping/payment_template.html', context)
+
+
+
 def AddressView(request):
 
     form = AddressForm()
     current_user = request.user
-    customer_email = str(current_user.email)
     customer_id = str(current_user.id)
 
 
+    if request.user.is_anonymous:
+        current_user = Guest.objects.get(email=request.session['email'])
+        customer_id = current_user.id
+
     if request.method == 'POST':
-
-        """
-        create a new shipping address, find the braintree customer. If the braintree customer doesnt exist create it.
-        """
           
-        try:
-            print 'attempting to find an existing braintree customer'
-            braintree_customer = braintree.Customer.find(str(current_user.id))
-            if braintree_customer:
-                print 'found a fucking customah govenah'
-                print braintree_customer
-        except braintree.exceptions.not_found_error.NotFoundError:
-            print " No customer found, creating customer"
-            result = braintree.Customer.create({
-                "email" : current_user.email,
-                "id" : current_user.id,
-            })
-
-            if result.is_success == True:
-                customer = result.customer
-                print "customer successfully created and printing ID"
-
-            elif result.is_success == False:
-                print result.errors.deep_errors
-                print "customer not created"
 
         #create a form instance from POST data
         address_data = AddressForm(request.POST)
@@ -437,7 +512,7 @@ def AddressView(request):
 
             #change all previously saved shipping addresses to a default address value of False
 
-            Address.objects.filter(email=customer_email, address_type='shipping').update(default_address=False)
+            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
 
             #create the braintree address using the user ID and take the brain tree address id
             #then save it to the address being created
@@ -454,19 +529,19 @@ def AddressView(request):
 
             })
             if braintree_shipping_address.is_success:
-                print "shipping address saved successfully and saving the braintree code to the shipping address"
+                print "braintree shipping address saved successfully and saving the braintree code to the shipping address"
                 shipping_address.brain_tree_code = braintree_shipping_address.address.id
+                shipping_address.save()
             else:
                 print 'billing address has errors'
                 print braintree_shipping_address.errors.deep_errors
 
 
-            shipping_address.save()
-
+      
             if shipping_address.same == True:
                 print "make a new billing address"
 
-                Address.objects.filter(email=customer_email, address_type='billing').update(default_address=False)
+                Address.objects.filter(email=current_user.email, address_type='billing').update(default_address=False)
                 billing_address = Address.objects.get(pk=shipping_address.id)
                 billing_address.pk = None
                 billing_address.address_type = 'billing'
@@ -485,7 +560,7 @@ def AddressView(request):
                 })
 
                 if braintree_billing_address.is_success:
-                    print "billing address saved successfully and saving the braintree code to the shipping address"
+                    print "billing address saved successfully and saving the braintree code to the billing address"
                     billing_address.brain_tree_code = braintree_billing_address.address.id
                     billing_address.save()
 
@@ -500,8 +575,8 @@ def AddressView(request):
                     print cart_total
 
                     token = braintree.ClientToken.generate({"customer_id": current_user.id})
-                    billing_address = Address.objects.get(email=current_user.email, address_type='billing', default_address='True')
-                    shipping_address = Address.objects.get(email=request.user.email, address_type='shipping', default_address='True')
+                    billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address='True').first()
+                    shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address='True').first()
 
                     context = {
                         'token': token,
@@ -518,7 +593,7 @@ def AddressView(request):
                     print braintree_shipping_address.errors.deep_errors
                     return render(request, 'shopping/address.html', {'form': AddressForm})
             else:
-                billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address=True)
+                billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address=True).first()
                 if billing_address == None:
                     print "going to create a billing address now"
                     form = BillingAddressForm(initial={'address_type': 'billing'})
@@ -534,8 +609,8 @@ def AddressView(request):
                     print cart_total
 
                     token = braintree.ClientToken.generate({"customer_id": current_user.id})
-                    billing_address = Address.objects.get(email=current_user.email, address_type='billing', default_address='True')
-                    shipping_address = Address.objects.get(email=request.user.email, address_type='shipping', default_address='True')
+                    billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address='True').first()
+                    shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address='True').first()
 
                     context = {
                         'token': token,
@@ -559,30 +634,21 @@ def AddressView(request):
 
 
 
-
-@login_required(login_url='/accounts/login/')
 def BillingAddressView(request):
     form = BillingAddressForm()
     current_user = request.user
-    customer_email = str(current_user.email)
     customer_id = str(current_user.id)
 
+
+    if request.user.is_anonymous:
+        current_user = Guest.objects.get(email=request.session['email'])
+        customer_id = current_user.id
 
     if request.method == 'POST':
 
         """
         create a new shipping address, find the braintree customer. If the braintree customer doesnt exist create it.
         """
-
-        try:
-            braintree_customer = braintree.Customer.find(customer_id)
-            existing_customer = braintree_customer
-        except braintree.exceptions.not_found_error.NotFoundError:
-            print " No customer found, creating customer"
-            existing_customer = braintree.Customer.create({
-                "email" : current_user.email,
-                "id" : current_user.id,
-            })
           
 
         #create a form instance from POST data
@@ -598,14 +664,14 @@ def BillingAddressView(request):
 
             #change all previously saved billing addresses to a default address value of False
 
-            Address.objects.filter(email=customer_email, address_type='billing').update(default_address=False)
+            Address.objects.filter(email=current_user.email, address_type='billing').update(default_address=False)
 
             #create the braintree address using the user ID and take the brain tree address id
             #then save it to the address being created
             braintree_billing_address = braintree.Address.create({
                 'customer_id' : str(customer_id),
-                'first_name' : str(current_user.first_name),
-                'last_name' : str(current_user.last_name),
+                'first_name' : str(request.POST['first_name']),
+                'last_name' : str(request.POST['last_name']),
                 'street_address' : str(request.POST['street_address']),
                 'extended_address' : str(request.POST['extended_address']),
                 'locality' : str(request.POST['city']),
@@ -619,9 +685,26 @@ def BillingAddressView(request):
                 billing_address.brain_tree_code = braintree_billing_address.address.id            
                 billing_address.save()
                 token = braintree.ClientToken.generate({"customer_id": current_user.id})
-                shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address=True)
-                billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address=True)
-                return render(request, 'shopping/payment_template.html', {"token": token, 'shipping_address': shipping_address, 'billing_address' : billing_address})
+                shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address=True).first()
+                billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address=True).first()
+
+                cart = Cart(request.session)
+                cart_count = 0
+                
+                for product in cart.products:
+                    cart_count +=1
+
+                cart_total = cart.total + decimal.Decimal("4.99")
+
+                
+                context = {
+                    'token': token,
+                    'shipping_address': shipping_address,
+                    'billing_address' : billing_address,
+                    'cart_count' : cart_count,
+                    'cart_total' : cart_total
+                }
+                return render(request, 'shopping/payment_template.html', context)
             else:
                 print 'billing address has errors'
                 print braintree_billing_address.errors.deep_errors
@@ -675,30 +758,15 @@ def ShippingView(request):
         return render(request, 'shopping/address.html', {'form': AddressForm})  
     
 
-def ThanksView(request):
+def OrdersView(request):
 
     current_user = request.user
 
-    order = Order.objects.filter(email=request.user.email)
+    order = Order.objects.filter(email=request.user.email).order_by("-date_ordered")
 
-    transaction_list = braintree.Transaction.search(
-        braintree.TransactionSearch.customer_id == request.user.id
-    )
-    print order
+    return render(request, 'shopping/past-orders.html', {"order": order,})
 
-    # for transaction in transaction_list:
-    #     print type(transaction)
-    billing_address = Address.objects.get(email=current_user.email, address_type='billing', default_address='True')
-    shipping_address = Address.objects.get(email=current_user.email, address_type='shipping', default_address='True')
-
-    transaction = braintree.Transaction.find("57s5gc55")
-
-    grand_total = (transaction.amount + decimal.Decimal(transaction.custom_fields['shipping_price']) + decimal.Decimal(transaction.tax_amount))
-
-
-    return render(request, 'shopping/past-orders.html', {"order": order, "transaction" : transaction, "grand_total": grand_total, 'transaction_list': transaction_list})
-
-def OrderDetailView(request):
+def OrderDetailView(request, id):
 
     current_user = request.user
 
@@ -716,8 +784,8 @@ def OrderDetailView(request):
 
     product_count = 0
 
-    transaction = braintree.Transaction.find(str("4cfjw4n9"))
-    order = Order.objects.get(transaction_id="4cfjw4n9")
+    transaction = braintree.Transaction.find(str(id))
+    order = Order.objects.get(transaction_id=id)
 
     for product in order.product.all():
         product_count += 1
@@ -725,7 +793,6 @@ def OrderDetailView(request):
     print product_count
     grand_total = (transaction.amount + decimal.Decimal(transaction.custom_fields['shipping_price']) + decimal.Decimal(transaction.tax_amount))
 
-    # grand_total = transaction.amount + transaction.custom_fields['shipping_price'] + transaction.tax_amount
     print grand_total
     context = {
         'transaction': transaction,
@@ -736,6 +803,80 @@ def OrderDetailView(request):
 
 
     return render(request, 'shopping/order-detail.html', context)
+
+@login_required(login_url='/accounts/login/')
+def ProfileView(request):
+    current_user = request.user
+
+    try:
+        print 'attempting to find an existing braintree customer'
+        customer = braintree.Customer.find(str(current_user.id))
+        if customer:
+            print 'found a fucking customah govenah'
+    except braintree.exceptions.not_found_error.NotFoundError:
+        print " No customer found, creating customer"
+        result = braintree.Customer.create({
+            'first_name' : current_user.first_name,
+            'last_name' : current_user.last_name,
+            "email" : current_user.email,
+            "id" : current_user.id,
+        })
+
+        if result.is_success == True:
+            customer = result.customer
+            print "customer successfully created and printing ID"
+        elif result.is_success == False:
+            print result.errors.deep_errors
+            print "customer not created"
+
+
+    shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping')
+
+
+    print "printing address count below"
+
+
+
+    context = {
+        'current_user' : current_user,
+        'customer': customer,
+        'shipping_address' : shipping_address,
+    }
+
+
+
+    return render(request, 'shopping/profile.html', context)
+
+
+@login_required(login_url='/accounts/login/')
+def PaymentView(request):
+
+    current_user = request.user
+    customer = braintree.Customer.find(str(current_user.id))
+
+
+    return render(request, 'shopping/payment-methods.html', {'customer' : customer})
+
+
+
+def DeletePaymentView(request):
+
+    token = str(request.POST['token'])
+
+
+    current_user = request.user
+    result = braintree.PaymentMethod.delete(token)
+
+    if result.is_success:
+        print "payment method deleted"
+        return render(request, 'shopping/profile.html', {'current_user' : current_user})
+    else:
+        print "payment method not deleted"
+        return render(request, 'shopping/payment-methods.html', {'customer' : customer})
+
+
+
+
 
 
 
