@@ -2,6 +2,8 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, ButtonHolder, Field
 from crispy_forms.bootstrap import FormActions, PrependedText
+import braintree
+
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(max_length=30, label='First Name')
@@ -12,6 +14,13 @@ class SignupForm(forms.Form):
         user.last_name = self.cleaned_data['last_name']
         user.username = self.cleaned_data['first_name'] + self.cleaned_data['last_name']
         user.save()
+        braintree.Customer.create({
+            'first_name' : self.cleaned_data['first_name'],
+            'last_name' : self.cleaned_data['last_name'],
+            'email' : self.cleaned_data['email'],
+            'id' : user.id,
+        })
+
 
     def __init__(self, *args, **kwargs):
     	super(SignupForm, self).__init__(*args, **kwargs)

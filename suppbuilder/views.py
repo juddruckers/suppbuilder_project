@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render
 # Create your views here.
 from django.views.generic.list import ListView
@@ -7,6 +8,7 @@ from django.urls import reverse
 from django.views import generic
 import braintree
 import decimal
+from allauth.account.forms import LoginForm
 from allauth.account.views import *
 from shopping.forms import AddressForm
 from shopping.models import Guest, Address
@@ -38,7 +40,8 @@ def IndexView(request):
 	if 'email' in request.session:
 		del request.session['email']
 
-	# result = braintree.Customer.delete("18953635")
+
+	# result = braintree.Customer.delete("86794470")
 
 
 	return render(request, 'suppbuilder/index.html')
@@ -57,7 +60,19 @@ def BrainTreeCustomerView(request):
 
 		guest = Guest.objects.filter(email=braintree_email).first()
 
-		if guest is None:
+		existing_user = User.objects.filter(email=braintree_email).first()
+		error_message = "user already exists, please log in."
+
+		if existing_user:
+			print "existing user found"
+			error_message = "user already exists, please log in."
+			context = {
+				'error_message' : error_message,
+				'form' : LoginForm,
+			} 
+			return render(request, 'account/login.html', context)
+
+		if guest is None and existing_user is None:
 			result = braintree.Customer.create({
 				"email" : str(braintree_email),	
 			})
@@ -103,7 +118,7 @@ def BrainTreeCustomerView(request):
 
 				cart_total = cart.total + decimal.Decimal("4.99")
 
-				token = braintree.ClientToken.generate({"customer_id": str(guest.id)})
+				token = braintree.ClientToken.generate({})
 
 				context = {
 				    'token': token,

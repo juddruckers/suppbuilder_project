@@ -22,7 +22,7 @@
             <div class="panel-heading">
               <h2 class="panel-title">Sign in</h2>
               <br>
-
+              <span><a href="{{ signup_url }}"> Create an account </a></span></p>
             </div>
             
             <div class='panel-body'>
@@ -50,9 +50,12 @@
           <div class='panel panel-default'>
             
             <div class="panel-heading">
-              <h2 class="panel-title">Continue as a guest</h2>
+              <h3 class="">Continue as a guest</h3>
               <br>
+              {% if error_message %}
 
+                <p class='error'>Customer already exists, please log in.</p>
+              {% endif %}
             </div>
             
             <div class='panel-body'>
@@ -61,7 +64,11 @@
                   {% csrf_token %}
                   <div class="form-group">
                     <label for="guest-email">Email address</label>
+                    {% if error_message %}
                     <input type="email" class="form-control" id="guest-email" name='email' placeholder="Email Address">
+                    {% else %}
+                    <input type="email" class="form-control" id="guest-email" name='email' placeholder="Email Address">
+                    {% endif %}
                   </div>
                     
                   

@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.mail import send_mail
+
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -118,6 +119,10 @@ def AddressUpdateView(request, pk):
     current_user = request.user
     address = Address.objects.get(id=pk)
 
+    if request.user.is_anonymous:
+        guest_email = request.session['email']
+        current_user = Guest.objects.get(email=request.session['email'])
+
     if request.method == 'POST':
 
         updated_address = AddressForm(request.POST)
@@ -167,7 +172,11 @@ def AddressUpdateView(request, pk):
             for product in cart.products:
                 cart_count +=1
 
-            token = braintree.ClientToken.generate({"customer_id": current_user.id})
+            if request.user.is_anonymous:
+                token = braintree.ClientToken.generate()
+            else:
+                token = braintree.ClientToken.generate({"customer_id": current_user.id})
+
             shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address=True).first()
             cart_total = cart.total + decimal.Decimal("4.99")
             
@@ -228,28 +237,22 @@ def payment_view(request):
 
 
         if request.user.is_anonymous:
+
             guest = Guest.objects.get(email=request.session.get('email'))
             customer_id = str(guest.id)
-            # query the guest_objects using the session variable
-            #get the match and use the id in the transaction for customer_id
+
+
             billing_address = Address.objects.filter(email=guest.email, address_type='billing', default_address=True).first()
             shipping_address = Address.objects.filter(email=guest.email, address_type='shipping', default_address=True).first()
             
             result = braintree.Transaction.sale({
                 'amount': order_total,
                 'payment_method_nonce': str(payment_method_nonce),
-                'customer_id' : str(guest.id),
                 'billing_address_id': str(billing_address.brain_tree_code),
                 'shipping_address_id' : str(shipping_address.brain_tree_code),
                 'tax_amount' : '3.78',
                 'custom_fields': {
                     'shipping_price' : str(hidden_shipping),
-                },
-
-                'options' : {
-                    'submit_for_settlement': True,
-                    'store_in_vault_on_success' : True,
-                    'add_billing_address_to_payment_method': True,
                 },
             })               
 
@@ -306,8 +309,8 @@ def payment_view(request):
                 return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address" : shipping_address,})
 
         else:
-            billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address=True).first()
-            shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address=True).first()
+            billing_address = Address.objects.filter(email=request.user.email, address_type='billing', default_address=True).first()
+            shipping_address = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True).first()
             result = braintree.Transaction.sale({
                 'amount': order_total,
                 'payment_method_nonce': str(payment_method_nonce),
@@ -370,12 +373,12 @@ def payment_view(request):
             elif result.is_success == False:
 
                 print result.errors.deep_errors
-                token = braintree.ClientToken.generate({"customer_id": current_user.id})
+                token = braintree.ClientToken.generate({"customer_id": request.user.id})
                 return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address": shipping_address,})
 
             else:
 
-                token = braintree.ClientToken.generate({"customer_id": current_user.id})
+                token = braintree.ClientToken.generate({"customer_id": request.user.id})
                 return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address" : shipping_address,})
 
     else:
@@ -465,7 +468,7 @@ def payment_view(request):
 
                 cart_total = cart.total + decimal.Decimal("4.99")
 
-                token = braintree.ClientToken.generate({"customer_id": current_user.id})
+                token = braintree.ClientToken.generate({"customer_id": request.user.id})
 
                 single_billing = Address.objects.filter(email=request.user.email, address_type='billing', default_address=True).first()
                 single_shipping = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True).first()
@@ -492,9 +495,33 @@ def AddressView(request):
     customer_id = str(current_user.id)
 
 
+
+        
+
+
+        # # if the user is anonymous check the session variable guest email
+        # # if the guest email is none go to to the login page to either log in 
+        # # or continue as a guest and create the session variable       
+        # if request.user.is_anonymous:
+        #     guest_email = request.session.get('email')
+        #     guest = Guest.objects.filter(email=guest_email).first() 
+            
+        #     if guest_email is None:
+
+        #         form = LoginForm()
+        #         return render(request, 'account/login.html', {'form' : form})
+
+
+
     if request.user.is_anonymous:
-        current_user = Guest.objects.get(email=request.session['email'])
-        customer_id = current_user.id
+        guest_email = request.session.get('email')
+        if guest_email is None:
+            form = LoginForm()
+            return render(request, 'account/login.html', {'form' : form})
+
+        current_user = Guest.objects.filter(email=guest_email).first()
+        customer_id = str(current_user.id)
+
 
     if request.method == 'POST':
           

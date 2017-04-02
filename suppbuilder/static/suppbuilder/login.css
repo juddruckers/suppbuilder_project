@@ -76,3 +76,15 @@ h3 {
 	margin-top: 45px;
 	height: 203.5px;
 }
+
+.guest-block .panel-heading{
+	height:87px;
+}
+
+.guest-block .panel-body{
+	margin-top: px;
+}
+
+.error {
+	color:red;
+}

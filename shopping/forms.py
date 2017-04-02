@@ -144,7 +144,8 @@ class EditAddressForm(ModelForm):
             ),
             FormActions(
             Submit('save', 'Save changes'),
-            HTML("<button type='button' class='btn btn-danger' data-toggle='modal' data-target='#myModal'>Delete address</button>"),
+            HTML(
+                "{% if request.user.is_authenticated %} <button type='button' class='btn btn-danger' data-toggle='modal' data-target='#myModal'>Delete address</button>{% endif %}"),
             ),
         )
 

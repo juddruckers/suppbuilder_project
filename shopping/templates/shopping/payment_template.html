@@ -23,7 +23,12 @@
 			<div class='row'>
 				<div class='col-lg-12' id='shipping-row'>
 					<h3> Shipping address</h3>
-					<a href="{% url 'shipping' %}"> change</a>
+					{% if request.user.is_anonymous %}
+					<a href="{% url 'update' shipping_address.id %}">Edit</a>
+					{% else %}
+					<a href="{% url 'shipping' %}"> change</a>					
+					{% endif %}
+
 					<p>{{shipping_address.first_name}} {{shipping_address.last_name}}</p>
 					<p>{{shipping_address.street_address}} <p>
 					<p>{{shipping_address.city}}, {{shipping_address.state}} {{shipping_address.zip_code}}</p>
