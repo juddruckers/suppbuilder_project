@@ -24,11 +24,8 @@ class Address(models.Model):
 	zip_code = models.CharField(max_length=9)
 	address_type = models.CharField(max_length=20, choices=address_choices, default='shipping')
 	email = models.CharField(max_length=120, blank=True)
-	same = models.BooleanField(default= False)
 	default_address = models.BooleanField(default=True)
-	brain_tree_code = models.CharField(max_length=2, blank=True)
-
-
+	
 	def __str__(self):
 		return 	self.street_address
 
@@ -42,3 +39,12 @@ class Guest(models.Model):
 
 	def __str__(self):
 		return self.email
+
+
+class Order(models.Model):
+	order_id = models.CharField(max_length=120)
+	email = models.EmailField(max_length=120)
+
+	def __str__(self):
+		return self.order_id
+

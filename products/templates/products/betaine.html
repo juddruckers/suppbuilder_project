@@ -1,0 +1,107 @@
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if betaine_match %}
+            <h2>
+              {{betaine.title}}
+              <span class='item-size' id='betaine-size'>
+                {{betaine_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='betaine-price'> 
+                ${{betaine_match.0.price}} (${{betaine_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{betaine.title}}
+              <span class='item-size' id='betaine-size'>
+                {{betaine.serving_size}}/serving
+              </span>
+              <span class='item-price' id='betaine-price'> 
+                ${{betaine.cost}} (${{betaine.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if betaine_match %}
+        <div class='row collapse ' id='betaine-description'>
+      {% else %}
+        <div class='row collapse in' id='betaine-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{betaine.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in betaine.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if betaine_match %}
+        <div class='row collapse' id='betaine-options'>
+      {% else %}
+        <div class='row collapse in'id='betaine-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='betaine-select'><h4>Select serving size :</h4></label>
+            
+            {%if betaine_match %}
+              <select  id="betaine-select" disabled="disabled">
+            {% else %}
+              <select  id="betaine-select">
+            {% endif %}
+
+                {% for product in betaine_products %}
+                  {% if product.id == betaine_match.0.id %}
+                    <option value="{{product.id}}" data-betaine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-betaine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if betaine_match %}
+            <button type="button" class="btn btn-success betaine-add remove">Add {{betaine.title}}</button>
+            <button type="button" class="btn btn-danger betaine-remove" >Remove {{betaine.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success betaine-add">Add {{betaine.title}}</button>
+            <button type="button" class="btn btn-danger betaine-remove remove" >Remove {{betaine.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row --> 

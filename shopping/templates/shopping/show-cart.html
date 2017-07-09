@@ -9,52 +9,54 @@
 
 {% block body %}
 <div class='container cart'>
-
-
     <div class='row'>
         <div class='col-lg-10 col-lg-offset-1'>
-        {% get_cart as cart %}
-        
+            
             <table class='table'>
-            <caption>
-                <h1>Shopping Cart</h1>
-            </caption>
-            <tr>
-                <th>Product</th>
-                <th>Serving Size</th>
-                <th>Price</th>
-                <th>Price per serving</th>
-                <th>Remove</th>
-            </tr>
-            {% for item in cart.items %}
-            <tr>
-                <td>{{ item.product.title }}</td>
-                <td>{{ item.product.serving_size }}</td>
-                <td>${{item.price}}</td>
-                <td>${{item.product.thirty_day}}</td>
-                <td><input type='checkbox' class='item-in' value='{{item.product.id}}'></input></td>
-            </tr>   
-            {% endfor %}
+                <caption>
+                    <h3>Custom Supplement Stack</h3>
+                </caption>
+                <tr>
+                    <th>Product</th>
+                    <th>Serving Size</th>
+                    <th>Price</th>
+                    <th>Price per serving</th>
+                    <th>Remove</th>
+                </tr>
+                {% for item in cart.items %}
+                <tr>
+                    <td>{{ item.product.title }}</td>
+                    <td>{{ item.product.serving_size }}</td>
+                    <td>${{item.price}}</td>
+                    <td>${{item.product.thirty_day}}</td>
+                    <td><input type='checkbox' class='item-in' value='{{item.product.id}}'></input></td>
+                </tr>   
+                {% endfor %}
             </table>
 
-            
+        {% if cart.items|length > 0 %}
+        <button type="button" class="btn-small btn-danger update-cart" data-button='1' >Update Custom Supplement Stack</button>
 
-        </div>
-    </div>
-    <div class='row'>
-        <div class='col-lg-10' id='cart-total'>
-            <h2>Total: ${{ cart.total }} </h2>
+            <div class='row'>
+                <div class='col-lg-12' id='cart-total'>
+                    <h3>Total: ${{ grand_total }} <span>(${{per_serving}}/serving)</span> </h3>
+                </div>
+            </div> 
         </div>
     </div>
     <br>
     <div class='row'>
-        <div class='col-lg-5 col-xs-5 col-lg-offset-1'>
-          <button type="button" class="btn btn-danger" id='update-cart' >Update Cart</button>
-        </div>
-        <div class='col-lg-5 col-cs-5'>
-        <a class="btn btn-success" id='checkout-button' href="{% url 'checkout-view' %}" role="button">Braintree checkout</a>
+        <div class='col-lg-11 col-xs-11'>
+            <a class="btn btn-success" id='checkout-button' href="{% url 'checkout-view' %}" role="button">Continue to checkout</a>
         </div>
     </div>
+    {% else %}
+    <div class='row'>
+        <div class='col-lg-8 col-lg-offset-1'>
+            <h4>Oh no! Your custom stack is empty :( <a href="{% url 'energy' %}"> Build your custom supplement stack </a></h4>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}

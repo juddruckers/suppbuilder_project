@@ -1,0 +1,108 @@
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if glutamine_match %}
+            <h2>
+              {{glutamine.title}}
+              <span class='item-size' id='glutamine-size'>
+                {{glutamine_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='glutamine-price'> 
+                ${{glutamine_match.0.price}} (${{glutamine_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{glutamine.title}}
+              <span class='item-size' id='glutamine-size'>
+                {{glutamine.serving_size}}/serving
+              </span>
+              <span class='item-price' id='glutamine-price'> 
+                ${{glutamine.cost}} (${{glutamine.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if glutamine_match %}
+        <div class='row collapse ' id='glutamine-description'>
+      {% else %}
+        <div class='row collapse in' id='glutamine-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{glutamine.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in glutamine.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if glutamine_match %}
+        <div class='row collapse' id='glutamine-options'>
+      {% else %}
+        <div class='row collapse in'id='glutamine-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='glutamine-select'><h4>Select serving size :</h4></label>
+            
+            {%if glutamine_match %}
+              <select  id="glutamine-select" disabled="disabled">
+            {% else %}
+              <select  id="glutamine-select">
+            {% endif %}
+
+                {% for product in glutamine_products %}
+                  {% if product.id == glutamine_match.0.id %}
+                    <option value="{{product.id}}" data-glutamine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-glutamine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if glutamine_match %}
+            <button type="button" class="btn btn-success glutamine-add remove">Add {{glutamine.title}}</button>
+            <button type="button" class="btn btn-danger glutamine-remove" >Remove {{glutamine.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success glutamine-add">Add {{glutamine.title}}</button>
+            <button type="button" class="btn btn-danger glutamine-remove remove" >Remove {{glutamine.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row --> 

@@ -1,0 +1,107 @@
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if l_tyrosine_match %}
+            <h2>
+              {{l_tyrosine.title}}
+              <span class='item-size' id='l_tyrosine-size'>
+                {{l_tyrosine_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='l_tyrosine-price'> 
+                ${{l_tyrosine_match.0.price}} (${{l_tyrosine_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{l_tyrosine.title}}
+              <span class='item-size' id='l_tyrosine-size'>
+                {{l_tyrosine.serving_size}}/serving
+              </span>
+              <span class='item-price' id='l_tyrosine-price'> 
+                ${{l_tyrosine.cost}} (${{l_tyrosine.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if l_tyrosine_match %}
+        <div class='row collapse ' id='l_tyrosine-description'>
+      {% else %}
+        <div class='row collapse in' id='l_tyrosine-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{l_tyrosine.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in l_tyrosine.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if l_tyrosine_match %}
+        <div class='row collapse' id='l_tyrosine-options'>
+      {% else %}
+        <div class='row collapse in'id='l_tyrosine-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='l_tyrosine-select'><h4>Select serving size :</h4></label>
+            
+            {%if l_tyrosine_match %}
+              <select  id="l_tyrosine-select" disabled="disabled">
+            {% else %}
+              <select  id="l_tyrosine-select">
+            {% endif %}
+
+                {% for product in l_tyrosine_products %}
+                  {% if product.id == l_tyrosine_match.0.id %}
+                    <option value="{{product.id}}" data-l_tyrosine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-l_tyrosine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if l_tyrosine_match %}
+            <button type="button" class="btn btn-success l_tyrosine-add remove">Add {{l_tyrosine.title}}</button>
+            <button type="button" class="btn btn-danger l_tyrosine-remove" >Remove {{l_tyrosine.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success l_tyrosine-add">Add {{l_tyrosine.title}}</button>
+            <button type="button" class="btn btn-danger l_tyrosine-remove remove" >Remove {{l_tyrosine.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row --> 

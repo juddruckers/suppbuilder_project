@@ -60,14 +60,14 @@
             
             <div class='panel-body'>
               
-              <form class="guest-form" method="POST" action="/suppbuilder/brainguest/">
+              <form class="guest-form" method="POST" action="/suppbuilder/guest/">
                   {% csrf_token %}
                   <div class="form-group">
                     <label for="guest-email">Email address</label>
                     {% if error_message %}
-                    <input type="email" class="form-control" id="guest-email" name='email' placeholder="Email Address">
+                    <input type="email" class="form-control" id="guest-email" name='email' placeholder="Email Address" required>
                     {% else %}
-                    <input type="email" class="form-control" id="guest-email" name='email' placeholder="Email Address">
+                    <input type="email" class="form-control" id="guest-email" name='email' placeholder="Email Address" required>
                     {% endif %}
                   </div>
                     

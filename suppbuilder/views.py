@@ -10,7 +10,7 @@ import braintree
 import decimal
 from allauth.account.forms import LoginForm
 from allauth.account.views import *
-from shopping.forms import AddressForm
+from shopping.forms import AddressForm, GuestForm
 from shopping.models import Guest, Address
 from carton.cart import Cart
 
@@ -26,23 +26,15 @@ def IndexView(request):
 
 	current_user_id = str(request.user.id)
 
-	braintree_customers = braintree.Customer.search(
-		braintree.CustomerSearch.email =='juddruckers@gmail.com'
-	)
-
 	if customer.is_anonymous:
-		print "customer is anonymous captain here is the id"  
-
-	for customer in braintree_customers:
-		print customer.id	
-
+		print "customer is anonymous captain here is the id"  		
 
 	if 'email' in request.session:
+		print request.session['email']
+		print "deleting email captain"
 		del request.session['email']
-
-
-	# result = braintree.Customer.delete("86794470")
-
+	else:
+		print "no email in session captain"
 
 	return render(request, 'suppbuilder/index.html')
 
@@ -53,86 +45,24 @@ def GuestLoginView(request):
 	return render(request, 'suppbuilder/guest.html')
 
 
-def BrainTreeCustomerView(request):
-
+def StripeGuestView(request):
+	
+	form = AddressForm
 	if request.method == 'POST':
-		braintree_email = request.POST.get('email')
+		#create form instance from data
+		guest = GuestForm(request.POST)
 
-		guest = Guest.objects.filter(email=braintree_email).first()
-
-		existing_user = User.objects.filter(email=braintree_email).first()
-		error_message = "user already exists, please log in."
-
-		if existing_user:
-			print "existing user found"
-			error_message = "user already exists, please log in."
-			context = {
-				'error_message' : error_message,
-				'form' : LoginForm,
-			} 
-			return render(request, 'account/login.html', context)
-
-		if guest is None and existing_user is None:
-			result = braintree.Customer.create({
-				"email" : str(braintree_email),	
-			})
+		if guest.is_valid():
+			# guest.email= guest.cleaned_data['email
+			guest, created = Guest.objects.get_or_create(
+				email = guest.cleaned_data['email'],
+			)			
 			
-			if result.is_success == True:
-				braintree_customer = result.customer
-				new_guest = Guest(
-					email = str(braintree_email),
-					id = braintree_customer.id,
-				)
-				new_guest.save()
 
-				request.session['email'] = braintree_email
-				
-				return render(request, 'shopping/address.html', {'form': AddressForm,})
+		request.session['email'] = request.POST.get('email')	
+	
 
-		else:
-			braintree_customer = braintree.Customer.find(str(guest.id))
-			
-			request.session['email'] = guest.email
-
-			shipping_address = Address.objects.filter(email=guest.email, address_type='shipping', default_address='True').first()
-			
-			billing_address = Address.objects.filter(email=guest.email, address_type='shipping', default_address='True').first()
-		
-			if shipping_address is None:
-				return render(request, 'shopping/address.html', {'form': AddressForm,})
-
-			elif billing_address is None:
-				form = BillingAddressForm(initial={'address_type': 'billing'})
-				return render(request, 'shopping/billing_address.html', {'form': form})
-
-			else:
-				print "they have a billing and shipping captain"
-
-				cart = Cart(request.session)
-				
-				cart_count = 0
-
-				for product in cart.products:
-				    cart_count +=1
-
-
-				cart_total = cart.total + decimal.Decimal("4.99")
-
-				token = braintree.ClientToken.generate({})
-
-				context = {
-				    'token': token,
-				    'shipping_address': shipping_address,
-				    'billing_address' : billing_address,
-				    'cart_count' : cart_count,
-				    'cart_total' : cart_total
-				}
-
-				return render(request, 'shopping/payment_template.html', context)
-
-
-
-
+	return render(request, 'shopping/address.html', {'form': form})
 
 
 

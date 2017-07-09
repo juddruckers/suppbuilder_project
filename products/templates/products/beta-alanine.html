@@ -1,0 +1,109 @@
+{% load static %}
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if beta_alanine_match %}
+            <h2>
+              {{beta_alanine.title}}
+              <span class='item-size' id='beta_alanine-size'>
+                {{beta_alanine_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='beta_alanine-price'> 
+                ${{beta_alanine_match.0.price}} (${{beta_alanine_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{beta_alanine.title}}
+              <span class='item-size' id='beta_alanine-size'>
+                {{beta_alanine.serving_size}}/serving
+              </span>
+              <span class='item-price' id='beta_alanine-price'> 
+                ${{beta_alanine.cost}} (${{beta_alanine.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if beta_alanine_match %}
+        <div class='row collapse ' id='beta_alanine-description'>
+      {% else %}
+        <div class='row collapse in' id='beta_alanine-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{beta_alanine.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Research shows supplementation with Beta-Alanine</h5>
+            <ul>
+
+              {% for benefit in beta_alanine.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if beta_alanine_match %}
+        <div class='row collapse' id='beta_alanine-options'>
+      {% else %}
+        <div class='row collapse in'id='beta_alanine-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='beta_alanine-select'><h4>Select serving size :</h4></label>
+            
+            {%if beta_alanine_match %}
+              <select  id="beta_alanine-select" disabled="disabled">
+            {% else %}
+              <select  id="beta_alanine-select">
+            {% endif %}
+
+                {% for product in beta_alanine_products %}
+                  {% if product.id == beta_alanine_match.0.id %}
+                    <option value="{{product.id}}" data-beta_alanine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-beta_alanine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if beta_alanine_match %}
+            <button type="button" class="btn btn-success beta_alanine-add remove">Add {{beta_alanine.title}}</button>
+            <button type="button" class="btn btn-danger beta_alanine-remove" >Remove {{beta_alanine.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success beta_alanine-add">Add {{beta_alanine.title}}</button>
+            <button type="button" class="btn btn-danger beta_alanine-remove remove" >Remove {{beta_alanine.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row -->

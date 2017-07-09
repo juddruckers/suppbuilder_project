@@ -1,0 +1,26 @@
+{% extends "suppbuilder/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block head %}
+    
+<link rel="stylesheet" type="text/css" href="{% static 'shopping/shopping.css' %}">
+{% endblock %}
+
+{%block body %}
+
+<div class='container'>
+	<div class='row'>
+	</div>
+	<div class='row'>
+		<div class='col-md-6 col-md-offset-3'>
+			{% crispy form %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+     <script type="text/JavaScript" src="{% static 'shopping/address.js' %}"></script>
+{% endblock %}

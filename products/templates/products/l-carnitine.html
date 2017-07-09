@@ -1,0 +1,108 @@
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if acetyl_l_carnitine_match %}
+            <h2>
+              {{acetyl_l_carnitine.title}}
+              <span class='item-size' id='acetyl_l_carnitine-size'>
+                {{acetyl_l_carnitine_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='acetyl_l_carnitine-price'> 
+                ${{acetyl_l_carnitine_match.0.price}} (${{acetyl_l_carnitine_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{acetyl_l_carnitine.title}}
+              <span class='item-size' id='acetyl_l_carnitine-size'>
+                {{acetyl_l_carnitine.serving_size}}/serving
+              </span>
+              <span class='item-price' id='acetyl_l_carnitine-price'> 
+                ${{acetyl_l_carnitine.cost}} (${{acetyl_l_carnitine.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if acetyl_l_carnitine_match %}
+        <div class='row collapse ' id='acetyl_l_carnitine-description'>
+      {% else %}
+        <div class='row collapse in' id='acetyl_l_carnitine-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{acetyl_l_carnitine.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in acetyl_l_carnitine.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if acetyl_l_carnitine_match %}
+        <div class='row collapse' id='acetyl_l_carnitine-options'>
+      {% else %}
+        <div class='row collapse in'id='acetyl_l_carnitine-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='acetyl_l_carnitine-select'><h4>Select serving size :</h4></label>
+            
+            {%if acetyl_l_carnitine_match %}
+              <select  id="acetyl_l_carnitine-select" disabled="disabled">
+            {% else %}
+              <select  id="acetyl_l_carnitine-select">
+            {% endif %}
+
+                {% for product in acetyl_l_carnitine_products %}
+                  {% if product.id == acetyl_l_carnitine_match.0.id %}
+                    <option value="{{product.id}}" data-acetyl_l_carnitine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-acetyl_l_carnitine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if acetyl_l_carnitine_match %}
+            <button type="button" class="btn btn-success acetyl_l_carnitine-add remove">Add {{acetyl_l_carnitine.title}}</button>
+            <button type="button" class="btn btn-danger acetyl_l_carnitine-remove" >Remove {{acetyl_l_carnitine.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success acetyl_l_carnitine-add">Add {{acetyl_l_carnitine.title}}</button>
+            <button type="button" class="btn btn-danger acetyl_l_carnitine-remove remove" >Remove {{acetyl_l_carnitine.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row --> 

@@ -1,0 +1,53 @@
+{% extends "suppbuilder/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block head %} 
+<link rel="stylesheet" type="text/css" href="{% static 'suppbuilder/login.css' %}">
+{% endblock %}
+{% block body %}
+
+
+<div class='container login-block'>
+  
+  <div class='row'>
+      
+      <div class='col-md-5 guest-block'>
+          
+          <div class='panel panel-default'>
+            
+            <div class="panel-heading">
+              <h2 class="panel-title">Continue as a guest</h2>
+              <br>
+
+            </div>
+            
+            <div class='panel-body'>
+              
+              <form class="guest-form" method="POST" action="/suppbuilder/brainguest/">
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="guest-email">Email address</label>
+                    <input type="email" class="form-control" id="guest-email" name='email' placeholder="Email Address">
+                  </div>
+                    
+                  
+                  <button class="btn btn-success" name='submit-guest-form' type="submit">{% trans "Continue as guest" %}</button>
+              
+              </form>                          
+            </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+{% endblock %}

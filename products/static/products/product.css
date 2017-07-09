@@ -37,14 +37,9 @@
 	margin-bottom: 10px;
 }
 
-#caffeine-price {
+.product-price {
 	color:rgb(132,189,0);
 	font-size: 18px;
-}
-
-#caffeine-size {
-	color:rgb(5,195,222);
-	font-size: 22px;
 }
 
 
@@ -77,16 +72,6 @@
 	color:rgb(113,124,125);
 }
 
-#theanine-price {
-	color:rgb(132,189,0);
-	font-size: 18px;
-}
-
-#theanine-size {
-	color:rgb(5,195,222);
-	font-size: 22px;
-}
-
 
 .jumbotron {
 	background-color: white;
@@ -105,6 +90,15 @@
     background-image: none;
     background-color: #F8F8F8;
     color: #05C3DE;
+}
+
+.stacks{
+	text-align: center;
+	margin-bottom: 50px;
+}
+
+.hidden{
+	display : none;
 }
 
 

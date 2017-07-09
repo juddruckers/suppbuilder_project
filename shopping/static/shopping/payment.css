@@ -46,3 +46,15 @@
 .hidden {
 	display:none;
 }
+
+.oldprice{
+	text-decoration: line-through;
+	color: red;
+}
+.discountprice{
+	color: green;
+}
+
+.ordersummary {
+	font-size: 16px;
+}

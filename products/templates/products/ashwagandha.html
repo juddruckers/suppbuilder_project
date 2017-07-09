@@ -1,0 +1,109 @@
+{% load static %}
+
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if ashwagandha_match %}
+            <h2>
+              {{ashwagandha.title}}
+              <span class='item-size' id='ashwagandha-size'>
+                {{ashwagandha_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='ashwagandha-price'> 
+                ${{ashwagandha_match.0.price}} (${{ashwagandha_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{ashwagandha.title}}
+              <span class='item-size' id='ashwagandha-size'>
+                {{ashwagandha.serving_size}}/serving
+              </span>
+              <span class='item-price' id='ashwagandha-price'> 
+                ${{ashwagandha.cost}} (${{ashwagandha.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if ashwagandha_match %}
+        <div class='row collapse ' id='ashwagandha-description'>
+      {% else %}
+        <div class='row collapse in' id='ashwagandha-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{ashwagandha.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in ashwagandha.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if ashwagandha_match %}
+        <div class='row collapse' id='ashwagandha-options'>
+      {% else %}
+        <div class='row collapse in'id='ashwagandha-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='ashwagandha-select'><h4>Select serving size :</h4></label>
+            
+            {%if ashwagandha_match %}
+              <select  id="ashwagandha-select" disabled="disabled">
+            {% else %}
+              <select  id="ashwagandha-select">
+            {% endif %}
+
+                {% for product in ashwagandha_products %}
+                  {% if product.id == ashwagandha_match.0.id %}
+                    <option value="{{product.id}}" data-ashwagandha-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-ashwagandha-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if ashwagandha_match %}
+            <button type="button" class="btn btn-success ashwagandha-add remove">Add {{ashwagandha.title}}</button>
+            <button type="button" class="btn btn-danger ashwagandha-remove" >Remove {{ashwagandha.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success ashwagandha-add">Add {{ashwagandha.title}}</button>
+            <button type="button" class="btn btn-danger ashwagandha-remove remove" >Remove {{ashwagandha.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- end of product button row --> 

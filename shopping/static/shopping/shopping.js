@@ -36,25 +36,23 @@ $(document).ready(function() {
 
 
 
-$('#update-cart').on("click", function(){
+$('.update-cart').on("click", function(){
 	console.log("button connected");
 
-	delete_item_list = []
-
+	var delete_item_list = []
+	var cart_number = $(this).attr('data-button')
 	$(":checkbox").each(function(){
 		if ($(this).is(":checked")) {
 			var ingredientDelete = $(this).val();
 			delete_item_list.unshift(ingredientDelete)
-			console.log("looks like this box is checked");
 			console.log(delete_item_list);
-
 		};
 	});
 
 	$.ajax({
 		url : '/shopping/remove/',
 		type: 'POST',
-		data: {'delete_item_list[]': delete_item_list},
+		data: {'delete_item_list[]': delete_item_list, 'cart_number':cart_number},
 		success: function(){
 			location.reload();
 		},
@@ -62,22 +60,49 @@ $('#update-cart').on("click", function(){
 });
 
 
+// function to change address to default address
 $("input:radio[name='address']").on("click", function(){
 	selected_address= $(this).val()
-	$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-	    $("#success-alert").slideUp(500);
-	});
-
+	
 	$.ajax({
 		url : '/shopping/change/',
 		type: 'POST',
 		data: {'selected_address': selected_address},
 		success: function(){
 			console.log("address id sent to view")
+			$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+			    $("#success-alert").slideUp(500);
+			});
 		},
 	});	
 })
 
+
+
+// function to delete address
+$(".delete-link").on("click", function(){
+
+	var pk = $(this).attr('value');
+	$("#delete-address-id").val(pk)
+	var test_pk = $("#delete-address-id").val()
+	console.log(pk)
+	console.log(test_pk)
+});
+
+
+$("#delete-address").on("click", function(){
+	var pk = $("#delete-address-id").val()
+	
+	$.ajax({
+		url : '/shopping/remove-checkout-address/',
+		type: 'POST',
+		data: {'pk': pk},
+		success: function(data){
+			console.log(data);
+			location.reload();
+		},
+	});	
+})
 
 
 

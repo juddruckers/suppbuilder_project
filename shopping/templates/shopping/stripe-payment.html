@@ -1,0 +1,179 @@
+{% extends "suppbuilder/base.html" %}
+{% load carton_tags %}
+{% load static %}
+
+{% block head %}
+    
+	<link rel="stylesheet" type="text/css" href="{% static 'shopping/payment.css' %}">
+{% endblock %}
+
+{% block body%}
+<div class='container'>
+	<div class='row'>
+		<div class='col-lg-12' id='checkout-title'>
+			<h1> Checkout </h1>
+			<br>
+		</div>
+	</div>
+</div>
+
+<div class='container'>
+	<div class='row'>
+		<div class='col-lg-6 col-md-4' id='order-column'>
+			<div class='row'>
+				<div class='col-lg-12' id='shipping-row'>
+
+					<h3> Shipping address</h3>
+					
+					{% if user.is_authenticated %}
+						<a href="{% url 'update' %}">Change</a>
+						<p>{{shipping_address.first_name}} {{shipping_address.last_name}}</p>
+						<p>{{shipping_address.street_address}} <p>
+						<p>{{shipping_address.city}}, {{shipping_address.state}} {{shipping_address.zip_code}}</p>
+					{% endif %}
+
+					{% if user.is_anonymous %}
+					<a href="{% url 'edit-guest-address' %}">Edit</a>
+					<p>{{guest_first_name}} {{guest_last_name}}</p>
+					<p>{{guest_street_address}} <p>
+					<p>{{guest_city}}, {{guest_state}} {{guest_zip}}</p>
+					{% endif %}
+
+				</div>
+			</div>
+			<hr>
+			<div class='row'>
+				<div class='col-lg-12 col-xs-12' id='order-summary'>
+					<h3>Items and Shipping</h3>
+					<a href="{% url 'shopping-cart-show' %}">Review</a>
+				</div>
+			</div>
+			<div class='row'>
+				<div class='col-lg-5' id='cart-block'>
+					<h4>Cart items</h4>
+					{% get_cart as cart %}
+					{% for item in cart.items %}
+						<ul class='list'>
+							<li>{{ item.product.title}} {{item.product.serving_size}}</li>
+						</ul>
+					{% endfor %}
+				</div>
+				<div class='col-lg-7' id='shipping-block'>
+					<h4>Shipping options</h4>
+
+					{% for option in shipping_options %}
+						<div class="radio">
+							{% if option.id == order.selected_shipping_method %}
+						  		<input type="radio" name="shipping" value={{option.amount}} id='{{option.id}}' checked='checked'><span>{{option.description}} ${{option.amount}} </span>
+						  		<p>Delivery estimate : {{option.delivery_estimate}}</p>
+						  	{% else %}
+								<input type="radio" name="shipping" value={{option.amount}} id='{{option.id}}' ><span>{{option.description}} ${{option.amount}} </span>
+								<p>Delivery estimate : {{option.delivery_estimate}}</p>
+						  	{% endif %}
+						</div>
+					{% endfor %}
+  
+				</div>
+			</div>
+		</div>
+		<div class='col-lg-5 col-md-4' id='payment-column'>
+			<div class='row'>
+				<div class='col-lg-12'>
+					<h3>Order Summary</h3>
+				</div>
+			</div>
+
+			<div class='row ordersummary'>
+				<div class='col-lg-6 col-xs-5'>
+					<p>Items (<span id='cart-counter'>{{cart_count}}</span>):</p>
+					<p>Shipping & Handling:</p>
+					<p>Tax:</p>
+					<p id='discount-title'></p>
+					<div id='discount-section'>
+						{% if discount %}
+							<p>Discount applied!</p>
+						{% else %}
+							<input id='discount-code' type='text' class='form-control' value='' placeholder='enter discount code'>
+							<button id='discount' class='btn btn-info'>Apply discount</button>							
+						{% endif %}
+					</div>					
+				</div>
+				<div class='col-lg-6 col-xs-4'>
+					<p id='item-cost'>$ <span id='item-total'>{{cart.total}}</span></p>
+					<p>$ <span id='shipping-price'>{{default_shipping_amount}}</span></p>
+					<p>$ {{tax_amount}} <p>
+					{% if discount %}
+						<p>$ {{discount_amount}}</p>
+					{% else %}
+						<p id='discount-amount'></p>
+					{% endif %}
+					
+				</div>
+			</div>
+
+			<div class='row'>
+				<div class='col-lg-4 col-xs-5'>
+					<h3>Order total:</h3>	
+				</div>
+				<div class='col-lg-4 col-xs-4'>
+					<h3>$ <span id='cart-total'>{{order_amount}}</span></h3>	
+				</div>
+			</div>
+			<div class='row'>
+				<div class='col-lg-12'>
+					{% if user.is_anonymous %}
+						<form action="{% url 'stripe-payment-view' %}" method="POST" id='stripe-form'>
+							{% csrf_token %}
+						<input type='text' style="display: none;" id="order-id" value="{{order.id}}"> 
+						  <script
+						    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+						    data-key="pk_test_SlhO0v5tig7ZqVXXl0HzhZDV"
+						    data-panel-label="Complete Order"
+						    data-label="Pay with Stripe Checkout"
+						    data-name="Suppbuilder"
+						    data-description="Custom supplement stack"
+						    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+						    data-locale="auto"
+						    data-billing-address="true"
+						    data-zip-code="true"
+						    data-email="{{guest_email}}">
+						  </script>
+						</form>
+					{% endif %}
+
+					{% if user.is_authenticated %}
+						<form action="{% url 'stripe-payment-view' %}" method="POST" id='stripe-form'>
+							{% csrf_token %}
+						<input type='text' style="display: none;" id="order-id" value="{{order.id}}"> 
+						  <script
+						    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+						    data-key="pk_test_SlhO0v5tig7ZqVXXl0HzhZDV"
+						    data-panel-label="Complete Order"
+						    data-label="Pay with Stripe Checkout"
+						    data-name="Suppbuilder"
+						    data-description="Custom supplement stack for {{user.first_name}}"
+						    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+						    data-locale="auto"
+						    data-billing-address="true"
+						    data-zip-code="true"
+						    data-email="{{user.email}}">
+						  </script>
+						</form>
+					{% endif %}
+				</div>
+			</div>
+			<hr>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}
+
+
+{% block footer %}
+	<script src="https://js.stripe.com/v2/"></script>
+	<script src="https://js.stripe.com/v3/"></script>
+	<script type="text/JavaScript" src="{% static 'shopping/payment.js' %}"></script>
+	<script type="text/JavaScript" src="{% static 'shopping/accounting.js' %}"></script>
+{% endblock %}

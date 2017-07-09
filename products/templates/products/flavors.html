@@ -1,0 +1,82 @@
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          <h2>
+            Flavor :
+              {% if flavor_match %}
+                <span class='flavor-size'>{{flavor_match.0.title}}</span>
+              {% else %}
+                <span class='flavor-size'>{{flavor_products.0.title}}</span>
+              {% endif %}
+          </h2>
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if flavor_match %}
+        <div class='row collapse ' id='flavor-description'>
+      {% else %}
+        <div class='row collapse in' id='flavor-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>Select a flavor to add to your custom supplement blend. The flavor powders are organic, kosher, vegan, and gluten free.</p>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if flavor_match %}
+        <div class='row collapse' id='flavor-options'>
+      {% else %}
+        <div class='row collapse in'id='flavor-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='flavor-select'><h4>Select flavor :</h4></label>
+            
+            {% if flavor_match %}
+              <select  id="flavor-select" disabled="disabled">
+            {% else %}
+              <select  id="flavor-select">
+            {% endif %}
+
+                {% for product in flavor_products %}
+                  {% if product.id == flavor_match.0.id %}
+                    <option value="{{product.id}}" data-title='{{product.title}}'data-flavor-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-title='{{product.title}}' data-flavor-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if flavor_match %}
+            <button type="button" class="btn btn-success flavor-add remove">Add flavor to blend </button>
+            <button type="button" class="btn btn-danger flavor-remove" >Remove flavor from blend</button>
+            {% else %}
+            <button type="button" class="btn btn-success flavor-add">Add flavor to blend</button>
+            <button type="button" class="btn btn-danger flavor-remove remove" >Remove flavor from blend</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row --> 

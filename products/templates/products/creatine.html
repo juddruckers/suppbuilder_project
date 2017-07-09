@@ -1,0 +1,107 @@
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if creatine_match %}
+            <h2>
+              {{creatine.title}}
+              <span class='item-size' id='creatine-size'>
+                {{creatine_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='creatine-price'> 
+                ${{creatine_match.0.price}} (${{creatine_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{creatine.title}}
+              <span class='item-size' id='creatine-size'>
+                {{creatine.serving_size}}/serving
+              </span>
+              <span class='item-price' id='creatine-price'> 
+                ${{creatine.cost}} (${{creatine.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if creatine_match %}
+        <div class='row collapse ' id='creatine-description'>
+      {% else %}
+        <div class='row collapse in' id='creatine-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{creatine.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in creatine.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if creatine_match %}
+        <div class='row collapse' id='creatine-options'>
+      {% else %}
+        <div class='row collapse in'id='creatine-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='creatine-select'><h4>Select serving size :</h4></label>
+            
+            {%if creatine_match %}
+              <select  id="creatine-select" disabled="disabled">
+            {% else %}
+              <select  id="creatine-select">
+            {% endif %}
+
+                {% for product in creatine_products %}
+                  {% if product.id == creatine_match.0.id %}
+                    <option value="{{product.id}}" data-creatine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-creatine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if creatine_match %}
+            <button type="button" class="btn btn-success creatine-add remove">Add {{creatine.title}}</button>
+            <button type="button" class="btn btn-danger creatine-remove" >Remove {{creatine.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success creatine-add">Add {{creatine.title}}</button>
+            <button type="button" class="btn btn-danger creatine-remove remove" >Remove {{creatine.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row --> 

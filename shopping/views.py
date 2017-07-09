@@ -9,98 +9,102 @@ from django.views.generic.edit import UpdateView
 from django.views.decorators.http import require_http_methods
 
 from django.conf import settings
-import braintree
 import decimal
+import stripe
+import locale
+import json
+import time
 from allauth.account.forms import LoginForm
 from carton.cart import Cart
-from products.models import Product, Variation , Order
-from shopping.models import Guest
-from .models import Address
-from .forms import AddressForm, BillingAddressForm, EditAddressForm
+from products.models import Product, Variation , Discount
+from .models import Address, Guest, Order
+from .forms import AddressForm, EditAddressForm, AuthAddressForm, EditAuthAddressForm, NewAuthAddressForm, EditExistingAddressForm, CreateNewAddressForm
 # Create your views here.
 
 
-braintree.Configuration.configure(braintree.Environment.Sandbox,
-    merchant_id=settings.BRAINTREE_MERCHANT_ID,
-    public_key=settings.BRAINTREE_PUBLIC_KEY,
-    private_key=settings.BRAINTREE_PRIVATE_KEY)
-
-
-def add(request):
+def preWorkoutAdd(request):
+    """
+    this is the view that takes in the product id and adds it to the cart
+    """
     cart = Cart(request.session)
-    product = Product.objects.get(id=request.GET.get('id'))
+    product = Product.objects.get(id=request.POST.get('variation'))
     cart.add(product, price=product.price)
-    return render(request, 'shopping/show-cart.html')
 
+    return HttpResponse("added")
 
-def remove(request):
-    cart = Cart(request.session)
-    product_list = request.POST.getlist('delete_item_list[]')
-
-    for item in product_list:
-        product_id = int(item)
-        product = Product.objects.get(id=product_id)
-        cart.remove(product)
-        
-    return HttpResponse("Removed")
-
-
-def removeSingle(request):
+def preWorkoutRemove(request):
+    """
+    this is the view that takes in the product id and removes it from the cart
+    """
     cart = Cart(request.session)
     product_id = Product.objects.get(id=request.POST.get('product_id'))
-    # item_id = str(Product.objects.get(id=request.GET.get('product_id')))
-    print type(product_id)
     cart.remove(product_id)
 
     return HttpResponse("item removed")
 
 def DiscountFindView(request):
-    discount_list = braintree.Discount.all()
-    name = request.GET.get('name')
-    testvar = 'Invalid discount code'
+    name = request.POST.get('name')
+    order_id = request.session['order_id']
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
 
-    for discount in discount_list:
-        if discount.name == name:
-            testvar = discount.amount
+    order = stripe.Order.retrieve(order_id)
+    discount_amount = ''
 
+    for item in order['items']:
+        if item['type'] == 'discount':
 
-        
-
-    return HttpResponse(testvar)
-
-def AddressDeleteView(request, pk):
-    current_user_email = request.user.email
-    current_user = request.user
-    address = Address.objects.get(pk=pk);
-    #delete that object
-    Address.objects.filter(email=current_user_email, pk=pk).delete()
-    #make every shipping address not the default
-    Address.objects.filter(email=current_user_email, address_type='shipping').update(default_address=False)
-    #get the list of existing addresses if there are any
-    address_list = Address.objects.filter(email=current_user_email, address_type='shipping')
+            return HttpResponse('Discount already applied')
 
     try:
-        braintree.Address.delete(str(current_user.id), str(address.brain_tree_code))
-        print "deleting braintree address"
-    except braintree.exceptions.not_found_error.NotFoundError as e:
-        print "deleting address was unsuccessful"
+        coupon = stripe.Coupon.retrieve(name)
+
+        order.coupon = coupon.id
+
+        order.save()
+
+        # create a variable that contains the discounted amount add that to the data returned
+
+        for item in order['items']:
+            if item.type == 'discount':
+                discount_amount = item.amount
+        data = {
+        'order' : order,
+        'discount_amount' : discount_amount,
+        }       
+        return HttpResponse(json.dumps(data, indent=2, sort_keys=True))
+    except Exception as e:
+        coupon = "Invalid code"
+        return HttpResponse(coupon)
+
+def CheckoutAddressDeleteView(request):
     """
-    If the length of the address is > 0 set the first address in the list as the default address then go back
-    to the address list page. If the length of the list is !> 0 then redirect to the address form page
+    This view take the pk of the address that the user wants deleted
+
+    after the address is deleted query for the remaining addresses
+
+    get the first address and make it the default address
+
+    if there is no address list it should go to the auth address view
+
+    so the user can enter an address and continue to checkout
     """
+    pk = request.POST.get('pk')
+    address = Address.objects.get(id=pk)
+    address.delete()    
+    user = request.user
 
-    if len(address_list) > 0:
-        #get the first items id.
-        shipping_address = address_list[0].id
+    try:
+        new_default_address = Address.objects.filter(email=user.email, address_type='shipping').first()
+    except:
+        new_default_address = None
 
-        #update that item to be the default address
+    print new_default_address
 
-        Address.objects.filter(email=current_user_email, address_type='shipping', id=shipping_address).update(default_address=True)
+    if new_default_address != None:
+        Address.objects.filter(email=user.email, pk=new_default_address.id).update(default_address=True)
 
-        return render(request, 'shopping/shipping.html', {'address_list': address_list, 'current_user': current_user})
-    else:
-        print "there is no address_list"
-        return render(request, 'shopping/address.html', {'form': AddressForm}) 
+    return HttpResponse("address deleted sir")
+
 
 
 def AddressChangeView(request):
@@ -117,81 +121,35 @@ def AddressChangeView(request):
 def AddressUpdateView(request, pk):
 
     current_user = request.user
-    address = Address.objects.get(id=pk)
-
-    if request.user.is_anonymous:
-        guest_email = request.session['email']
-        current_user = Guest.objects.get(email=request.session['email'])
 
     if request.method == 'POST':
 
-        updated_address = AddressForm(request.POST)
-        if updated_address.is_valid():
+        address_data = AddressForm(request.POST)
 
-            print "this was a post request"
-            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
-            Address.objects.filter(email=current_user.email, address_type='shipping', id=pk).update(default_address=True)
+        if address_data.is_valid():
 
+            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)            
 
-            address = Address.objects.update_or_create(
-                        pk=pk,
-                        defaults ={
-                            'first_name' : updated_address.cleaned_data['first_name'],
-                            'last_name' : updated_address.cleaned_data['last_name'],
-                            'street_address' : updated_address.cleaned_data['street_address'],
-                            'extended_address' : updated_address.cleaned_data['extended_address'],
-                            'city' : updated_address.cleaned_data['city'], 
-                            'state' : updated_address.cleaned_data['state'],
-                            'zip_code' : updated_address.cleaned_data['zip_code'],
-                            'email' : updated_address.cleaned_data['email'],
-                            'address_type' : updated_address.cleaned_data['address_type'],
-                            'default_address' : True,
-                            'brain_tree_code' : updated_address.cleaned_data['brain_tree_code'],
-                        }
-                    )
+            address, created = Address.objects.update_or_create(
+                first_name = address_data.cleaned_data['first_name'],
+                last_name = address_data.cleaned_data['last_name'],
+                street_address= address_data.cleaned_data['street_address'],
+                extended_address= address_data.cleaned_data['extended_address'],
+                city= address_data.cleaned_data['city'], 
+                state= address_data.cleaned_data['state'],
+                zip_code= address_data.cleaned_data['zip_code'],
+                email= address_data.cleaned_data['email'],
+                address_type= address_data.cleaned_data['address_type'],                
+            )
 
-            try:
-                braintree.Address.update(str(current_user.id), str(updated_address.cleaned_data['brain_tree_code']),{
-                    'first_name' : str(updated_address.cleaned_data['first_name']),
-                    'last_name' : str(updated_address.cleaned_data['last_name']),
-                    'street_address' : str(updated_address.cleaned_data['street_address']),
-                    'extended_address' : str(updated_address.cleaned_data['extended_address']),
-                    'locality' : str(updated_address.cleaned_data['city']),
-                    'region': str(updated_address.cleaned_data['state']), 
-                    'postal_code' : str(updated_address.cleaned_data['zip_code']),
-                    'country_code_alpha2' : 'US',
-                })
-                print "updating braintree address"
-            except braintree.exceptions.authorization_error.AuthorizationError as e:
-                print e
+            address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
 
+            return render (request, 'shopping/shipping.html', {'address_list': address_list,})           
 
-            cart = Cart(request.session)
-            cart_count = 0
-            
-            for product in cart.products:
-                cart_count +=1
+    else:
 
-            if request.user.is_anonymous:
-                token = braintree.ClientToken.generate()
-            else:
-                token = braintree.ClientToken.generate({"customer_id": current_user.id})
+        address = Address.objects.get(id=pk)
 
-            shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address=True).first()
-            cart_total = cart.total + decimal.Decimal("4.99")
-            
-            context = {
-                'token': token,
-                'shipping_address': shipping_address,
-                'cart_count' : cart_count,
-                'cart_total' : cart_total
-            }
-
-
-            return render(request, 'shopping/payment_template.html', context)
-
-    else :
-        print " this was a get"
         Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
         Address.objects.filter(id=pk).update(default_address=True)
 
@@ -204,288 +162,223 @@ def AddressUpdateView(request, pk):
                 'state' : address.state,
                 'zip_code' : address.zip_code,
                 'email' : address.email,
-                'address_type' : address.address_type,
-                'default_address' : address.default_address,
-                'brain_tree_code' : address.brain_tree_code,
             })
-        
+
         pk = Address.objects.get(id=pk)
 
         return render(request, 'shopping/address_form.html', {'form': existing_address_form, 'address': address, 'pk':pk})
 
+def CheckOutAddressUpdateView(request, pk):
 
-def show(request):
-    return render(request, 'shopping/show-cart.html')
-    
+    """
+    This is the address view that the user will come across from the checkout page
+    on edit or delete of address it will return to the 
+    selected shipping address 
+    """
 
-def payment_view(request):
+    current_user = request.user
 
-
-    
     if request.method == 'POST':
 
-        cart = Cart(request.session)
-        hidden_shipping = decimal.Decimal(request.POST['hidden_shipping'])
+        address_data = AddressForm(request.POST)
 
-        payment_method_nonce = request.POST["payment_method_nonce"]
-        discount = decimal.Decimal(request.POST['hidden_discount']) 
-        discount_code = request.POST['discount_name']
-        customer_id = str(request.user.id)
-        discount_amount = decimal.Decimal("{0:.2f}".format(round(cart.total * discount,2)))
-        order_total = (hidden_shipping + cart.total) - discount_amount
+        if address_data.is_valid():
 
+            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)            
 
+            address, created = Address.objects.update_or_create(
+                first_name = address_data.cleaned_data['first_name'],
+                last_name = address_data.cleaned_data['last_name'],
+                street_address= address_data.cleaned_data['street_address'],
+                extended_address= address_data.cleaned_data['extended_address'],
+                city= address_data.cleaned_data['city'], 
+                state= address_data.cleaned_data['state'],
+                zip_code= address_data.cleaned_data['zip_code'],
+                email= address_data.cleaned_data['email'],
+                address_type= address_data.cleaned_data['address_type'],
 
-        if request.user.is_anonymous:
+            )
 
-            guest = Guest.objects.get(email=request.session.get('email'))
-            customer_id = str(guest.id)
+            if address:
+                Address.objects.filter(email=current_user.email, address_type='shipping', pk=pk).update(default_address=True) 
 
+            address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
 
-            billing_address = Address.objects.filter(email=guest.email, address_type='billing', default_address=True).first()
-            shipping_address = Address.objects.filter(email=guest.email, address_type='shipping', default_address=True).first()
-            
-            result = braintree.Transaction.sale({
-                'amount': order_total,
-                'payment_method_nonce': str(payment_method_nonce),
-                'billing_address_id': str(billing_address.brain_tree_code),
-                'shipping_address_id' : str(shipping_address.brain_tree_code),
-                'tax_amount' : '3.78',
-                'custom_fields': {
-                    'shipping_price' : str(hidden_shipping),
-                },
-            })               
-
-            if result.is_success == True:
-                cart = Cart(request.session)
-                cart_count = 0
-                transaction = result.transaction
-                grand_total = (transaction.amount + decimal.Decimal(transaction.custom_fields['shipping_price']) + decimal.Decimal(transaction.tax_amount))
-
-                for product in cart.products:
-                    cart_count +=1
-
-                order = Order(
-                    transaction_id= transaction.id,
-                    email= guest.email,
-                    first_name = transaction.shipping_details.first_name,
-                    last_name = transaction.shipping_details.last_name,
-                    date_ordered = transaction.created_at,
-                    total = cart.total,
-                    shipping = hidden_shipping,
-                    discount = discount,
-                    discount_code = discount_code,
-                    tax = 3.78
-                )
-
-                order.save()
-
-                for product in cart.products:
-                    order.product.add(product)
-                    order.save()
-
-                cart.clear()
-                subject = "Thank you for your order from Suppbuilder!"
-                message = "Here are your order details"
-                from_email = settings.EMAIL_HOST_USER
-                recipient_list = [str(guest.email)]
-
-
-
-
-                send_mail(subject, message, from_email, recipient_list, fail_silently=True) 
-
-                return render(request, 'shopping/order-summary.html', {"order" : order, "transaction" : transaction, 'grand_total' : grand_total, 'cart_count': cart_count})
-            
-            elif result.is_success == False:
-
-                print result.errors.deep_errors
-                token = braintree.ClientToken.generate({"customer_id": guest.id})
-                return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address": shipping_address,})
-
-            else:
-
-                token = braintree.ClientToken.generate({"customer_id": guest.id})
-                return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address" : shipping_address,})
-
-        else:
-            billing_address = Address.objects.filter(email=request.user.email, address_type='billing', default_address=True).first()
-            shipping_address = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True).first()
-            result = braintree.Transaction.sale({
-                'amount': order_total,
-                'payment_method_nonce': str(payment_method_nonce),
-                'customer_id' : customer_id,
-                'billing_address_id': str(billing_address.brain_tree_code),
-                'shipping_address_id' : str(shipping_address.brain_tree_code),
-                'tax_amount' : '3.78',
-                'custom_fields': {
-                    'shipping_price' : str(hidden_shipping),
-                },
-
-                'options' : {
-                    'submit_for_settlement': True,
-                    'store_in_vault_on_success' : True,
-                    'add_billing_address_to_payment_method': True,
-                },
-            })
-        
-            if result.is_success == True:
-                cart = Cart(request.session)
-                cart_count = 0
-                transaction = result.transaction
-                grand_total = (transaction.amount + decimal.Decimal(transaction.custom_fields['shipping_price']) + decimal.Decimal(transaction.tax_amount))
-
-                for product in cart.products:
-                    cart_count +=1
-
-                order = Order(
-                    transaction_id= transaction.id,
-                    email= request.user.email,
-                    first_name = transaction.shipping_details.first_name,
-                    last_name = transaction.shipping_details.last_name,
-                    date_ordered = transaction.created_at,
-                    total = cart.total,
-                    shipping = hidden_shipping,
-                    discount = discount,
-                    discount_code = discount_code,
-                    tax = 3.78
-                )
-
-                order.save()
-
-                for product in cart.products:
-                    order.product.add(product)
-                    order.save()
-
-                cart.clear()
-                subject = "Thank you for your order from Suppbuilder!"
-                message = "Here are your order details"
-                from_email = settings.EMAIL_HOST_USER
-                recipient_list = [str(current_user.email)]
-
-
-
-
-                send_mail(subject, message, from_email, recipient_list, fail_silently=True) 
-
-                return render(request, 'shopping/order-summary.html', {"order" : order, "transaction" : transaction, 'grand_total' : grand_total, 'cart_count': cart_count})
-
-            elif result.is_success == False:
-
-                print result.errors.deep_errors
-                token = braintree.ClientToken.generate({"customer_id": request.user.id})
-                return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address": shipping_address,})
-
-            else:
-
-                token = braintree.ClientToken.generate({"customer_id": request.user.id})
-                return render(request, 'shopping/payment_template.html', {"token": token, "shipping_address" : shipping_address,})
+            return render (request, 'shopping/select-shipping-address.html', {'address_list': address_list,})           
 
     else:
 
+        address = Address.objects.get(id=pk)
 
-        guest_email = request.session.get('email')
+        Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
+        Address.objects.filter(id=pk).update(default_address=True)
+
+        existing_address_form = EditAddressForm(initial={
+                'first_name' : address.first_name,
+                'last_name' : address.last_name,
+                'street_address' : address.street_address,
+                'extended_address' : address.extended_address,
+                'city' : address.city, 
+                'state' : address.state,
+                'zip_code' : address.zip_code,
+                'email' : address.email,
+            })
+
+        pk = Address.objects.get(id=pk)
+
+        return render(request, 'shopping/address_form.html', {'form': existing_address_form, 'address': address, 'pk':pk})
+
+def show(request):
+    cart = Cart(request.session)
+
+    grand_total = cart.total 
+
+    per_serving = "{0:.2f}".format(round(grand_total / 30, 2))
+
+    context = {
+        'cart' : cart,
+        'grand_total' : grand_total,
+        'per_serving' : per_serving, 
+    }
+    return render(request, 'shopping/show-cart.html', context)
+    
+
+def payment_view(request):
+    user = request.user
+
+    cart = Cart(request.session)
+    cart_count = 0
+    cart_total = cart.total
+    item_list =[]
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+
+    if user.is_anonymous():
+        
+        form = LoginForm()
+        return render(request, 'account/login.html', {'form' : form})
 
 
-        # if the user is anonymous check the session variable guest email
-        # if the guest email is none go to to the login page to either log in 
-        # or continue as a guest and create the session variable       
-        if request.user.is_anonymous:
-            guest_email = request.session.get('email')
-            print guest_email
-            guest = Guest.objects.filter(email=guest_email).first() 
-            
-            if guest_email is None:
+    if user.is_authenticated():
 
-                form = LoginForm()
-                return render(request, 'account/login.html', {'form' : form})
+        shipping_address = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True).first()
 
-            #if the session test has an email available 
+
+
+        if not shipping_address:
+            form = AuthAddressForm(initial={
+                'first_name' : user.first_name,
+                'last_name' : user.last_name,
+                'address_type' : 'shipping',
+                'email' : user.email,
+            })
+            return render(request, 'shopping/address.html', {'form': form,})
+        
+        else:
+
+            for product in cart.products:
+                b = {
+                "type" : 'sku',
+                "parent" : product.sku,
+                "quantity" : 1,
+                }
+                item_list.append(b)
+
+            if 'order_id' in request.session:
+                old_order = stripe.Order.retrieve(request.session['order_id'])
+                discount_code = ''
+                order_items = [item for item in old_order['items'] if item.type == 'sku']
+
+                if len(item_list) != len(order_items) or shipping_address.street_address != old_order['shipping'].address['line1']:
+
+                    old_order.status = 'canceled'
+                    if len(item_list) != len(order_items):
+                        old_order.metadata['cancelation'] = "Order has been canceled due to updated cart"
+                    elif shipping_address.street_address != old_order['shipping'].address['line1']:
+                        print "shipping address has been changed so creating new order"
+                        old_order.metadata['cancelation'] = "Order has been canceled due to new shipping address"
+                    elif cart_count != order_item_count and shipping_address.street_address != old_order['shipping'].address['line1']:
+                        old_order.metadata['cancelation'] = "Order has been canceled due to new shipping address and updated cart"
+                    old_order.save()
+                    order = stripe.Order.create(
+                      currency = 'usd',
+                      email = user.email,
+                      items = item_list,
+                      shipping = {
+                        "name": shipping_address.first_name + " " + shipping_address.last_name,
+                        "address":{
+                          "line1": shipping_address.street_address,
+                          "city": shipping_address.city,
+                          "country":'US',
+                          "postal_code": shipping_address.zip_code,
+                          "state" : shipping_address.state,
+                        }
+                      },
+                    )
+
+                    request.session['order_id'] = order.id
+                else:
+                    order = stripe.Order.retrieve(request.session['order_id'])
             else:
-                print "user is anonymous but the session variable has his email"
+                order = stripe.Order.create(
+                  currency = 'usd',
+                  email = user.email,
+                  items = item_list,
+                  shipping = {
+                    "name": user.first_name + " " + user.last_name,
+                    "address":{
+                      "line1": shipping_address.street_address,
+                      "city": shipping_address.city,
+                      "country":'US',
+                      "postal_code": shipping_address.zip_code,
+                      "state" : shipping_address.state,
+                    }
+                  },
+                )
 
-                shipping_address = Address.objects.filter(email=guest_email, address_type='shipping', default_address='True').first()
-                billing_address = Address.objects.filter(email=guest_email, address_type='shipping', default_address='True').first()
+                request.session['order_id'] = order.id
 
+            discount = False
+            discount_amount = 0
 
-                if shipping_address is None:
-                    return render(request, 'shopping/address.html', {'form': AddressForm,})
+            default_shipping_amount = ''
+            tax_amount = ''        
+            shipping_options = []
+            order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
 
-                if billing_address is None:
-                    form = BillingAddressForm(initial={'address_type': 'billing'})
-                    return render(request, 'shopping/billing_address.html', {'form': form})                    
-
-
-                cart = Cart(request.session)
-                cart_count = 0
-
-                for product in cart.products:
-                    cart_count +=1
-
-
-                cart_total = cart.total + decimal.Decimal("4.99")
-
-                # need to get the token using the guests email to get the braintree id
-
-                guest = Guest.objects.filter(email=guest_email).first()
-                print guest
-
-                token = braintree.ClientToken.generate({"customer_id": str(guest.id)})
-
-                context = {
-                    'token': token,
-                    'shipping_address': shipping_address,
-                    'billing_address' : billing_address,
-                    'cart_count' : cart_count,
-                    'cart_total' : cart_total
-                }
-                
-                return render(request, 'shopping/payment_template.html', context)
-
-        if request.user.is_authenticated():
-
-            # make sure that the logged in user has a billing and shipping address
-            #get a list of addresses associated with the email
-            billing_list = Address.objects.filter(email=request.user.email, address_type='billing', default_address=True)
-            shipping_list = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True)
-
+            for item in order['items']:
+                if item['type'] == 'shipping':
+                    default_shipping_amount = decimal.Decimal(item['amount']) / 100
+                elif item['type'] == 'tax':
+                    tax_amount = decimal.Decimal(item['amount']) / 100
+                elif item['type'] == 'discount':
+                    discount = True
+                    discount_amount = "%0.2f" % (decimal.Decimal(item.amount) / 100)
             
-            if len(shipping_list) < 1:
-                print "there is less than 1 shipping address available meaning none."
-                return render(request, 'shopping/address.html', {'form': AddressForm,})
-            elif len(billing_list) < 1:
-                print "there is less than 1 billing address available"
-                form = BillingAddressForm(initial={'address_type': 'billing'})
-                return render(request, 'shopping/billing_address.html', {'form': form})  
-            else: 
-
-                cart = Cart(request.session)
-                cart_count = 0
-                
-                for product in cart.products:
-                    cart_count +=1
-
-
-                cart_total = cart.total + decimal.Decimal("4.99")
-
-                token = braintree.ClientToken.generate({"customer_id": request.user.id})
-
-                single_billing = Address.objects.filter(email=request.user.email, address_type='billing', default_address=True).first()
-                single_shipping = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True).first()
-                
-                context = {
-                    'token': token,
-                    'shipping_address': single_shipping,
-                    'billing_address' : single_billing,
-                    'cart_count' : cart_count,
-                    'cart_total' : cart_total
+            for shipping_method in order.shipping_methods:
+                b = {
+                    "description" : shipping_method.description,
+                    "amount" : "%0.2f" % (decimal.Decimal(shipping_method.amount) / 100),
+                    'id' : shipping_method.id,
+                    'delivery_estimate' : shipping_method.delivery_estimate.date,
                 }
+                
+                shipping_options.append(b)
 
+            context ={
+                'shipping_address': shipping_address,
+                'cart_count' : cart_count,
+                'cart_total' : cart_total,
+                'order' : order,
+                'order_amount' : order_amount,
+                'shipping_options' : shipping_options,
+                'default_shipping_amount' : default_shipping_amount,
+                'tax_amount' : tax_amount,
+                'user' : user,
+                'discount' : discount,
+                'discount_amount' : discount_amount
+            }
 
-
-
-                return render(request, 'shopping/payment_template.html', context)
-
+            return render(request, 'shopping/stripe-payment.html', context)
 
 
 def AddressView(request):
@@ -494,25 +387,216 @@ def AddressView(request):
     current_user = request.user
     customer_id = str(current_user.id)
 
+    print 'no post data receieved'
 
-
+    form = AuthAddressForm(initial={
+        'first_name' : current_user.first_name,
+        'last_name' : current_user.last_name,
+        'email' : current_user.email,
+        })
         
+    return render(request, 'shopping/address.html', {'form': form,})    
 
 
-        # # if the user is anonymous check the session variable guest email
-        # # if the guest email is none go to to the login page to either log in 
-        # # or continue as a guest and create the session variable       
-        # if request.user.is_anonymous:
-        #     guest_email = request.session.get('email')
-        #     guest = Guest.objects.filter(email=guest_email).first() 
-            
-        #     if guest_email is None:
+@login_required(login_url='/accounts/login/')
+@require_http_methods(["GET", "POST"])
+def ShippingView(request):
 
-        #         form = LoginForm()
-        #         return render(request, 'account/login.html', {'form' : form})
+    """
+    this is the profile shipping view
+    this will display all of the users shipping addresses
+
+    on post it will validate the data and return them to the list of shipping options
+    """
+
+    current_user_email = request.user.email
+
+    current_user = request.user
+
+    address_list = Address.objects.filter(email=current_user_email, address_type='shipping')
 
 
 
+    if address_list:
+        print address_list
+        return render(request, 'shopping/shipping.html', {'address_list': address_list, 'current_user': current_user})
+    else:
+        print "there is no address_list"
+        return render(request, 'shopping/address.html', {'form': AuthAddressForm})  
+
+@login_required(login_url='/accounts/login/')
+def SelectShippingView(request):
+    """
+    this is the page where the user will find all of their address to select 
+
+    on select they will go back to the checkout page with
+    """
+
+    current_user_email = request.user.email
+
+    current_user = request.user
+
+    address_list = Address.objects.filter(email=current_user_email, address_type='shipping')
+
+    if address_list:
+        print address_list
+        return render(request, 'shopping/select-shipping-address.html', {'address_list': address_list, 'current_user': current_user})
+    else:
+        print "there is no address_list"
+        return render(request, 'shopping/address.html', {'form': AuthAddressForm}) 
+
+@login_required(login_url='/accounts/login/')
+def OrdersView(request):
+    """
+    This is the view that will display all of the current logged in users past orders
+    """
+    user = request.user
+
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+
+    order_query = Order.objects.filter(email=user.email)
+
+    orders = [str(order.order_id) for order in order_query]
+
+    stripe_orders = stripe.Order.list(ids=orders)
+
+    print stripe_orders
+    order_details = []
+
+    for order in stripe_orders:
+        b = {}
+        i = []
+        b['order_id'] = str(order.id)
+        a = decimal.Decimal(order.amount) / 100
+        b['amount'] = a
+        t = time.strftime('%Y-%m-%d', time.localtime(order.created))
+        b['order_created'] = t
+        s = order.shipping
+        b['shipping'] = s
+        for item in order['items']:
+            if item.type == 'sku':
+                i.append(item.description)
+        b['items'] = i
+        os = (order.status).title()
+        b['order_status'] = os
+        order_details.append(b)
+
+
+    # for order in stripe_orders:
+    #     b = {}
+    #     b['amount'] = decimal.Decimal(order.amount)/100
+    #     for item in order['items']:
+    #         if item['type'] == 'shipping':
+    #             a = decimal.Decimal(item['amount'])/100
+    #             b['shipping'] = a
+    #         elif item['type'] == 'tax':
+    #             t = decimal.Decimal(item['tax'])/100
+    #             b['tax'] = t
+    #     order_details.append(b)
+    return render(request, 'shopping/past-orders.html', {"order_details": order_details,})
+
+@login_required(login_url='/accounts/login/')
+def OrderDetailView(request, order_id):
+    """
+    this is the view that will take the id of the stripe order and take the to an order detail page
+    """
+
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+    
+    order = stripe.Order.retrieve(order_id)
+
+    return render(request, 'shopping/order-detail.html', {'order' : order})
+
+@login_required(login_url='/accounts/login/')
+def ProfileView(request):
+    current_user = request.user
+
+
+
+    shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping')
+
+
+    print "printing address count below"
+
+    context = {
+        'current_user' : current_user,
+        'shipping_address' : shipping_address,
+    }
+
+    return render(request, 'shopping/profile.html', context)
+
+def StripePaymentView(request):
+
+    """
+    This is the view that will process the payment and send the user to the 
+    order detail page.
+
+    The token will be recieved from the stripe payment form
+
+    the order_id will be taken from the session variable set whenever a new order is created
+
+    using the order_id retrieve the stripe order_id
+
+    using the token pay the retrieved order_id
+
+    clear the cart once the order is finished 
+
+    """
+    user = request.user 
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+    cart = Cart(request.session)
+    token = request.POST.get('stripeToken')
+    order_id = request.session['order_id']
+    # order = stripe.Order.retrieve('or_1AbxbZBjE7taidLcnf5g262l')
+    order = stripe.Order.retrieve(order_id)
+    order.pay(source = token)
+    saved_order = Order(email = user.email, order_id = order.id)
+    saved_order.save()
+
+    item_count = 0
+    tax_amount = 0
+    shipping_amount = ''
+    item_amount = 0
+    discount_amount = 0
+
+
+    total = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
+
+    for item in order['items']:
+        if item['type'] == 'sku':
+            item_count += 1
+            item_amount += decimal.Decimal(item['amount'])
+        elif item['type'] == 'tax':
+            tax_amount = "{0:.2f}".format(decimal.Decimal(item['amount']) / 100)
+        elif item['type'] == 'shipping':
+            shipping_amount = "{0:.2f}".format(decimal.Decimal(item['amount']) / 100)
+        elif item['type'] == 'discount':
+            discount_amount = "{0:.2f}".format(decimal.Decimal(item['amount']) / 100)
+
+
+    item_total = "{0:.2f}".format(decimal.Decimal(item_amount) / 100)
+
+    context = {
+    'order' : order,
+    'item_count' : item_count,
+    'total' : total,
+    'tax_amount' : tax_amount,
+    'shipping_amount' : shipping_amount,
+    'item_total' : item_total,
+    'discount_amount': discount_amount,
+    }
+
+
+    cart.clear()
+    del request.session['order_id']
+
+    return render(request, 'shopping/order-summary.html', context)
+
+def StripeGuestAddressView(request):
+    form = AddressForm()
+    current_user = request.user
+
+    # user should always be anonymous here
     if request.user.is_anonymous:
         guest_email = request.session.get('email')
         if guest_email is None:
@@ -525,129 +609,113 @@ def AddressView(request):
 
     if request.method == 'POST':
           
-
         #create a form instance from POST data
         address_data = AddressForm(request.POST)
+        user = request.user
 
         if address_data.is_valid():
 
-            #create but dont save new address instance
-            shipping_address = address_data.save(commit=False)
 
-            #modify email field to current logged in users email
-            shipping_address.email = current_user.email
+            request.session['guest_first_name'] = address_data.cleaned_data['first_name']
+            request.session['guest_last_name'] = address_data.cleaned_data['last_name']
+            request.session['guest_street_address'] = address_data.cleaned_data['street_address']
+            request.session['guest_extended_address'] = address_data.cleaned_data['extended_address']
+            request.session['city'] = address_data.cleaned_data['city']
+            request.session['state'] = address_data.cleaned_data['state']
+            request.session['zip_code'] = address_data.cleaned_data['zip_code']
 
-            #change all previously saved shipping addresses to a default address value of False
+            guest_first_name = request.session['guest_first_name'].upper()
+            guest_last_name = request.session['guest_last_name'].upper()
+            guest_street_address = request.session['guest_street_address'].upper()
+            guest_extended_address = request.session['guest_extended_address'].upper()
+            guest_city = request.session['city'].upper()
+            guest_state = request.session['state'].upper()
+            guest_zip = request.session['zip_code']
+            guest_email = request.session['email']
 
-            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
+            cart = Cart(request.session)
+            cart_count = 0
+            cart_total = cart.total
+            item_list =[]
 
-            #create the braintree address using the user ID and take the brain tree address id
-            #then save it to the address being created
-            braintree_shipping_address = braintree.Address.create({
-                'customer_id' : str(customer_id),
-                'first_name' : str(address_data.cleaned_data['first_name']),
-                'last_name' : str(address_data.cleaned_data['last_name']),
-                'street_address' : str(address_data.cleaned_data['street_address']),
-                'extended_address' : str(address_data.cleaned_data['extended_address']),
-                'locality' : str(address_data.cleaned_data['city']),
-                'region': str(address_data.cleaned_data['state']), 
-                'postal_code' : str(address_data.cleaned_data['zip_code']),
-                'country_code_alpha2' : 'US',
+            for product in cart.products:
+                b = {
+                "type" : 'sku',
+                "parent" : product.sku,
+                "quantity" : 1,
+                }
 
-            })
-            if braintree_shipping_address.is_success:
-                print "braintree shipping address saved successfully and saving the braintree code to the shipping address"
-                shipping_address.brain_tree_code = braintree_shipping_address.address.id
-                shipping_address.save()
+                item_list.append(b)
+
+            for product in cart.products:
+                cart_count +=1
+
+            stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+            
+            if 'order_id' in request.session:
+                order = stripe.Order.retrieve(request.session['order_id'])
             else:
-                print 'billing address has errors'
-                print braintree_shipping_address.errors.deep_errors
-
-
-      
-            if shipping_address.same == True:
-                print "make a new billing address"
-
-                Address.objects.filter(email=current_user.email, address_type='billing').update(default_address=False)
-                billing_address = Address.objects.get(pk=shipping_address.id)
-                billing_address.pk = None
-                billing_address.address_type = 'billing'
-                billing_address.save()
-
-                braintree_billing_address = braintree.Address.create({
-                    'customer_id' : str(current_user.id),
-                    'first_name' : str(billing_address.first_name),
-                    'last_name' : str(billing_address.last_name),
-                    'street_address' : str(billing_address.street_address ),
-                    'extended_address' : str(billing_address.extended_address),
-                    'locality' : str(billing_address.city),
-                    'region': str(billing_address.state), 
-                    'postal_code' : str(billing_address.zip_code),
-                    'country_code_alpha2' : 'US',
-                })
-
-                if braintree_billing_address.is_success:
-                    print "billing address saved successfully and saving the braintree code to the billing address"
-                    billing_address.brain_tree_code = braintree_billing_address.address.id
-                    billing_address.save()
-
-                    cart = Cart(request.session)
-                    cart_count = 0
-                    
-                    for product in cart.products:
-                        cart_count +=1
-
-
-                    cart_total = cart.total + decimal.Decimal("4.99")
-                    print cart_total
-
-                    token = braintree.ClientToken.generate({"customer_id": current_user.id})
-                    billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address='True').first()
-                    shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address='True').first()
-
-                    context = {
-                        'token': token,
-                        'shipping_address': shipping_address,
-                        'billing_address' : billing_address,
-                        'cart_count' : cart_count,
-                        'cart_total' : cart_total
+                order = stripe.Order.create(
+                  currency = 'usd',
+                  email = guest_email,
+                  items = item_list,
+                  shipping = {
+                    "name": address_data.cleaned_data['first_name'] + " " + address_data.cleaned_data['last_name'],
+                    "address":{
+                      "line1": address_data.cleaned_data['street_address'],
+                      "city": address_data.cleaned_data['city'],
+                      "country":'US',
+                      "postal_code": address_data.cleaned_data['zip_code'],
+                      "state" : address_data.cleaned_data['state'],
                     }
+                  },
+                )
 
-                    return render(request, 'shopping/payment_template.html', context)
+                request.session['order_id'] = order.id
 
-                else:
-                    print 'billing address has errors'
-                    print braintree_shipping_address.errors.deep_errors
-                    return render(request, 'shopping/address.html', {'form': AddressForm})
-            else:
-                billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address=True).first()
-                if billing_address == None:
-                    print "going to create a billing address now"
-                    form = BillingAddressForm(initial={'address_type': 'billing'})
-                    return render(request, 'shopping/billing_address.html', {'form': form})
-                else:
-                    cart = Cart(request.session)
-                    cart_count = 0
-                    
-                    for product in cart.products:
-                        cart_count +=1
+            default_shipping_amount = ''
+            tax_amount = ''        
+            shipping_options = []
+            order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
 
-                    cart_total = cart.total + decimal.Decimal("4.99")
-                    print cart_total
+            for item in order['items']:
+                if item['type'] == 'shipping':
+                    default_shipping_amount = decimal.Decimal(item['amount']) / 100
+                elif item['type'] == 'tax':
+                    tax_amount = decimal.Decimal(item['amount']) / 100
+            
+            
+            for shipping_method in order.shipping_methods:
+                b = {
+                    "description" : shipping_method.description,
+                    "amount" : decimal.Decimal(shipping_method.amount) / 100,
+                    'id' : shipping_method.id,
+                    'delivery_estimate' : shipping_method.delivery_estimate.date,
+                }
+                
+                shipping_options.append(b)
 
-                    token = braintree.ClientToken.generate({"customer_id": current_user.id})
-                    billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address='True').first()
-                    shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address='True').first()
+            context = {
+                'cart_count' : cart_count,
+                'cart_total' : cart_total,
+                'order' : order,
+                'order_amount' : order_amount,
+                'shipping_options' : shipping_options,
+                'default_shipping_amount' : default_shipping_amount,
+                'tax_amount' : tax_amount,
+                'guest_first_name' : guest_first_name,
+                'guest_last_name' : guest_last_name,
+                'guest_street_address' : guest_street_address,
+                'guest_extended_address' : guest_extended_address,
+                'guest_city' : guest_city,
+                'guest_state' :guest_state,
+                'guest_zip' : guest_zip,
+                'guest_email' : guest_email,
+                'user' : user,
+            }
 
-                    context = {
-                        'token': token,
-                        'shipping_address': shipping_address,
-                        'billing_address' : billing_address,
-                        'cart_count' : cart_count,
-                        'cart_total' : cart_total
-                    }
 
-                    return render(request, 'shopping/payment_template.html', context)
+            return render(request, 'shopping/stripe-payment.html', context)
 
         else:
             print "data is not clean"
@@ -657,249 +725,539 @@ def AddressView(request):
     else:
         print 'no post data receieved'
             
-        return render(request, 'shopping/address.html', {'form': AddressForm,})    
+        return render(request, 'shopping/address.html', {'form': AddressForm,})
 
+def NewAddressView(request):
 
+    """
+    This is the address form creation page when they are going from the checkout page
 
-def BillingAddressView(request):
-    form = BillingAddressForm()
-    current_user = request.user
-    customer_id = str(current_user.id)
+    if they click add new addresss they will get this page
 
+    from here create a new order since there is a new address and go straight to the checkout page
+    """
 
-    if request.user.is_anonymous:
-        current_user = Guest.objects.get(email=request.session['email'])
-        customer_id = current_user.id
+    user = request.user
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+    cart = Cart(request.session)
+    cart_count = 0
+    cart_total = cart.total
+    item_list =[]
 
     if request.method == 'POST':
 
-        """
-        create a new shipping address, find the braintree customer. If the braintree customer doesnt exist create it.
-        """
-          
-
-        #create a form instance from POST data
-        address_data = BillingAddressForm(request.POST)
+        address_data = NewAuthAddressForm(request.POST)
 
         if address_data.is_valid():
 
-            #create but dont save new address instance
-            billing_address = address_data.save(commit=False)
+            Address.objects.filter(email=user.email, address_type='shipping').update(default_address=False) 
 
-            #modify email field to current logged in users email
-            billing_address.email = current_user.email
-
-            #change all previously saved billing addresses to a default address value of False
-
-            Address.objects.filter(email=current_user.email, address_type='billing').update(default_address=False)
-
-            #create the braintree address using the user ID and take the brain tree address id
-            #then save it to the address being created
-            braintree_billing_address = braintree.Address.create({
-                'customer_id' : str(customer_id),
-                'first_name' : str(request.POST['first_name']),
-                'last_name' : str(request.POST['last_name']),
-                'street_address' : str(request.POST['street_address']),
-                'extended_address' : str(request.POST['extended_address']),
-                'locality' : str(request.POST['city']),
-                'region': str(request.POST['state']), 
-                'postal_code' : str(request.POST['zip_code']),
-                'country_code_alpha2' : 'US',
-
-            })
-            if braintree_billing_address.is_success:
-                print "billing address saved successfully and saving the braintree code to the billing address"
-                billing_address.brain_tree_code = braintree_billing_address.address.id            
-                billing_address.save()
-                token = braintree.ClientToken.generate({"customer_id": current_user.id})
-                shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping', default_address=True).first()
-                billing_address = Address.objects.filter(email=current_user.email, address_type='billing', default_address=True).first()
-
-                cart = Cart(request.session)
-                cart_count = 0
-                
-                for product in cart.products:
-                    cart_count +=1
-
-                cart_total = cart.total + decimal.Decimal("4.99")
-
-                
-                context = {
-                    'token': token,
-                    'shipping_address': shipping_address,
-                    'billing_address' : billing_address,
-                    'cart_count' : cart_count,
-                    'cart_total' : cart_total
+            address, created = Address.objects.update_or_create(
+                first_name = address_data.cleaned_data['first_name'],
+                last_name = address_data.cleaned_data['last_name'],
+                street_address= address_data.cleaned_data['street_address'],
+                extended_address= address_data.cleaned_data['extended_address'],
+                city= address_data.cleaned_data['city'], 
+                state= address_data.cleaned_data['state'],
+                zip_code= address_data.cleaned_data['zip_code'],
+                email= address_data.cleaned_data['email'],
+                address_type= address_data.cleaned_data['address_type'],
+                default_address= address_data.cleaned_data['default_address']                 
+            )
+            
+            for product in cart.products:
+                b = {
+                "type" : 'sku',
+                "parent" : product.sku,
+                "quantity" : 1,
                 }
-                return render(request, 'shopping/payment_template.html', context)
+                item_list.append(b)
+                cart_count += 1
+
+            order = stripe.Order.create(
+              currency = 'usd',
+              email = user.email,
+              items = item_list,
+              shipping = {
+                "name": address.first_name + " " + address.last_name,
+                "address":{
+                  "line1": address.street_address,
+                  "city": address.city,
+                  "country":'US',
+                  "postal_code": address.zip_code,
+                  "state" : address.state,
+                }
+              },
+            )
+
+            request.session['order_id'] = order.id
+
+            discount = False
+            discount_amount = 0
+
+            default_shipping_amount = ''
+            tax_amount = ''        
+            shipping_options = []
+            order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
+
+            for item in order['items']:
+                if item['type'] == 'shipping':
+                    default_shipping_amount = decimal.Decimal(item['amount']) / 100
+                elif item['type'] == 'tax':
+                    tax_amount = decimal.Decimal(item['amount']) / 100
+                elif item['type'] == 'discount':
+                    discount = True
+                    discount_amount = "%0.2f" % (decimal.Decimal(item.amount) / 100)
+            
+            for shipping_method in order.shipping_methods:
+                b = {
+                    "description" : shipping_method.description,
+                    "amount" : "%0.2f" % (decimal.Decimal(shipping_method.amount) / 100),
+                    'id' : shipping_method.id,
+                    'delivery_estimate' : shipping_method.delivery_estimate.date,
+                }
+                
+                shipping_options.append(b)
+
+            context ={
+                'shipping_address': address,
+                'cart_count' : cart_count,
+                'cart_total' : cart_total,
+                'order' : order,
+                'order_amount' : order_amount,
+                'shipping_options' : shipping_options,
+                'default_shipping_amount' : default_shipping_amount,
+                'tax_amount' : tax_amount,
+                'user' : user,
+                'discount' : discount,
+                'discount_amount' : discount_amount
+            }
+
+            return render(request, 'shopping/stripe-payment.html', context)
+
+    else:
+
+        form = NewAuthAddressForm(initial={
+                'email' : request.user.email,
+            })
+
+        return render(request, 'shopping/address.html', {'form': form})
+
+
+def StripeAddressView(request):
+
+    user = request.user
+
+    if request.method == 'POST':
+
+        address_data = AddressForm(request.POST)
+
+        if address_data.is_valid():
+
+            Address.objects.filter(email=user.email, address_type='shipping').update(default_address=False)            
+
+            address, created = Address.objects.update_or_create(
+                first_name = address_data.cleaned_data['first_name'],
+                last_name = address_data.cleaned_data['last_name'],
+                street_address= address_data.cleaned_data['street_address'],
+                extended_address= address_data.cleaned_data['extended_address'],
+                city= address_data.cleaned_data['city'], 
+                state= address_data.cleaned_data['state'],
+                zip_code= address_data.cleaned_data['zip_code'],
+                email= address_data.cleaned_data['email'],
+                address_type= address_data.cleaned_data['address_type'],                
+            )
+
+            cart = Cart(request.session)
+            cart_count = 0
+            cart_total = cart.total
+            item_list =[]
+
+            for product in cart.products:
+                b = {
+                "type" : 'sku',
+                "parent" : product.sku,
+                "quantity" : 1,
+                }
+
+                item_list.append(b)
+
+            for product in cart.products:
+                cart_count +=1
+
+            stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+            
+            if 'order_id' in request.session:
+                order = stripe.Order.retrieve(request.session['order_id'])
+
             else:
-                print 'billing address has errors'
-                print braintree_billing_address.errors.deep_errors
+                order = stripe.Order.create(
+                  currency = 'usd',
+                  email = user.email,
+                  items = item_list,
+                  shipping = {
+                    "name": user.first_name + " " + user.last_name,
+                    "address":{
+                      "line1": address.street_address,
+                      "city": address.city,
+                      "country":'US',
+                      "postal_code": address.zip_code,
+                      "state" : address.state,
+                    }
+                  },
+                )
+
+                request.session['order_id'] = order.id
+
+            default_shipping_amount = ''
+            tax_amount = ''        
+            shipping_options = []
+            order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
+
+            for item in order['items']:
+                if item['type'] == 'shipping':
+                    default_shipping_amount = decimal.Decimal(item['amount']) / 100
+                elif item['type'] == 'tax':
+                    tax_amount = decimal.Decimal(item['amount']) / 100
+            
+            
+            for shipping_method in order.shipping_methods:
+                b = {
+                    "description" : shipping_method.description,
+                    "amount" : decimal.Decimal(shipping_method.amount) / 100,
+                    'id' : shipping_method.id,
+                    'delivery_estimate' : shipping_method.delivery_estimate.date,
+                }
+                
+                shipping_options.append(b)
+
+
+            context ={
+                'shipping_address': address,
+                'cart_count' : cart_count,
+                'cart_total' : cart_total,
+                'order' : order,
+                'order_amount' : order_amount,
+                'shipping_options' : shipping_options,
+                'default_shipping_amount' : default_shipping_amount,
+                'tax_amount' : tax_amount,
+            }
+
+            return render(request, 'shopping/stripe-payment.html', context)
 
         else:
             print "data is not clean"
-            print address_data.errors
-            return render(request, 'shopping/billing_address.html', {'form': BillingAddressForm}) 
+            errors =  address_data.errors
 
+            form = AuthAddressForm(initial={
+                'first_name' : request.user.first_name,
+                'last_name' : request.user.last_name,
+                'email' : request.user.email,
+            })
+            return render(request, 'shopping/address.html', {'form': form, 'errors': errors}) 
 
     else:
-        print 'no post data receieved'
-        form = BillingAddressForm(initial={'address_type': 'billing'})
-        return render(request, 'shopping/billing_address.html', {'form': form})    
-
-
-
-@login_required(login_url='/accounts/login/')
-@require_http_methods(["GET", "POST"])
-def ShippingView(request):
-
-    """
-    This view will be the area the current logged in user will select their billing and shipping.
-    We will get the email of the current_user and make a request to addresses filtered by the
-    users email. We will then display the addresses with a choice to select or edit displayed
-    billing and shipping addresses.
-
-    """
-
-    #retrieve the current users email
-
-
-    current_user_email = request.user.email
-
-    current_user = request.user
-
-    address_list = Address.objects.filter(email=current_user_email, address_type='shipping')
-
-    braintree_customer = braintree.Customer.find(str(current_user.id))
-    # braintree_address = braintree.Address.find(current_user.id)
-    print braintree_customer.addresses
-
-
-
-
-    if address_list:
-        print address_list
-        return render(request, 'shopping/shipping.html', {'address_list': address_list, 'current_user': current_user})
-    else:
-        print "there is no address_list"
-        return render(request, 'shopping/address.html', {'form': AddressForm})  
-    
-
-def OrdersView(request):
-
-    current_user = request.user
-
-    order = Order.objects.filter(email=request.user.email).order_by("-date_ordered")
-
-    return render(request, 'shopping/past-orders.html', {"order": order,})
-
-def OrderDetailView(request, id):
-
-    current_user = request.user
-
-
-    """
-    -Use the pk from the request get the braintree transaction and use that same pk to get the order
-    -display the shipping shipping information
-    -display the billing information
-    -display the payment method
-    -display a list of the items
-    -ability to add the item back to the cart
-    -if the item is already in the cart do not display option to remove just state it is already in cart
-    -modal to add item back into cart? add serving size 
-    """
-
-    product_count = 0
-
-    transaction = braintree.Transaction.find(str(id))
-    order = Order.objects.get(transaction_id=id)
-
-    for product in order.product.all():
-        product_count += 1
-
-    print product_count
-    grand_total = (transaction.amount + decimal.Decimal(transaction.custom_fields['shipping_price']) + decimal.Decimal(transaction.tax_amount))
-
-    print grand_total
-    context = {
-        'transaction': transaction,
-        'order' : order,
-        'product_count' : product_count,
-        'grand_total' : grand_total
-    }
-
-
-    return render(request, 'shopping/order-detail.html', context)
-
-@login_required(login_url='/accounts/login/')
-def ProfileView(request):
-    current_user = request.user
-
-    try:
-        print 'attempting to find an existing braintree customer'
-        customer = braintree.Customer.find(str(current_user.id))
-        if customer:
-            print 'found a fucking customah govenah'
-    except braintree.exceptions.not_found_error.NotFoundError:
-        print " No customer found, creating customer"
-        result = braintree.Customer.create({
-            'first_name' : current_user.first_name,
-            'last_name' : current_user.last_name,
-            "email" : current_user.email,
-            "id" : current_user.id,
+        print 'no post data receieved EditAuthUserAddressView'
+            
+        form = AuthAddressForm(initial={
+            'first_name' : request.user.first_name,
+            'last_name' : request.user.last_name,
+            'email' : request.user.email,
         })
 
-        if result.is_success == True:
-            customer = result.customer
-            print "customer successfully created and printing ID"
-        elif result.is_success == False:
-            print result.errors.deep_errors
-            print "customer not created"
+        return render(request, 'shopping/address.html', {'form': form,})
 
+def StripeUpdateOrderView(request):
 
-    shipping_address = Address.objects.filter(email=current_user.email, address_type='shipping')
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+   
+    order_id = request.POST.get('order_id')
 
+    order = stripe.Order.retrieve(order_id)
+    
+    shipping_method = request.POST.get('shipping_method_id')
 
-    print "printing address count below"
+    order.selected_shipping_method = shipping_method
 
+    order.save()
 
+    shipping_price = [item.amount for item in order['items'] if item.type == 'shipping']
 
-    context = {
-        'current_user' : current_user,
-        'customer': customer,
-        'shipping_address' : shipping_address,
+    print shipping_price
+
+    print order['shipping'].address['line1']
+
+    data = {
+        'order': order,
+        'shipping_price' : shipping_price,
     }
 
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 
-    return render(request, 'shopping/profile.html', context)
+def EditGuestAddressView(request):
 
+    """
+    this is the view that takes the guest session variables and populates them into a form 
+    for the guest to edit.
+    """
+
+    guest_first_name = request.session['guest_first_name'].upper()
+    guest_last_name = request.session['guest_last_name'].upper()
+    guest_street_address = request.session['guest_street_address'].upper()
+    guest_extended_address = request.session['guest_extended_address'].upper()
+    guest_city = request.session['city'].upper()
+    guest_state = request.session['state'].upper()
+    guest_zip = request.session['zip_code']
+    guest_email = request.session['email']
+
+
+    form = AddressForm(initial={
+        'first_name': guest_first_name,
+        'last_name' : guest_last_name,
+        'street_address' : guest_street_address,
+        'extended_address' : guest_extended_address,
+        'city' : guest_city,
+        'state': guest_state,
+        'zip_code': guest_zip,
+    });
+
+    return render(request, 'shopping/edit-guest-address.html', {'form': form})
 
 @login_required(login_url='/accounts/login/')
-def PaymentView(request):
+def EditAuthCheckoutAddressView(request):
 
-    current_user = request.user
-    customer = braintree.Customer.find(str(current_user.id))
+    """
+    This is the view that takes the authenticated user to their addresses on file 
 
+    if the request is a post method it will validate the address data
+    and then create a new order using the new addresss
+    if there is an old order it will delete that old order and state in the meta data why
+    after the new address is saved and new order created they are redirected to the checkout page.
+    """
+    user = request.user
 
-    return render(request, 'shopping/payment-methods.html', {'customer' : customer})
+    if request.method == 'POST':
+        stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
 
+        address_data = EditAuthAddressForm(request.POST)
 
+        if address_data.is_valid():
 
-def DeletePaymentView(request):
+            Address.objects.filter(email=user.email, address_type='shipping').update(default_address=False)
 
-    token = str(request.POST['token'])
+            shipping_address, created = Address.objects.update_or_create(
+                first_name = address_data.cleaned_data['first_name'],
+                last_name = address_data.cleaned_data['last_name'],
+                street_address= address_data.cleaned_data['street_address'],
+                extended_address= address_data.cleaned_data['extended_address'],
+                city= address_data.cleaned_data['city'], 
+                state= address_data.cleaned_data['state'],
+                zip_code= address_data.cleaned_data['zip_code'],
+                email= address_data.cleaned_data['email'],
+                address_type= address_data.cleaned_data['address_type'],                
+            )
 
+            cart = Cart(request.session)
+            cart_count = 0
+            cart_total = cart.total
+            item_list =[]
 
-    current_user = request.user
-    result = braintree.PaymentMethod.delete(token)
+            for product in cart.products:
+                b = {
+                "type" : 'sku',
+                "parent" : product.sku,
+                "quantity" : 1,
+                }
 
-    if result.is_success:
-        print "payment method deleted"
-        return render(request, 'shopping/profile.html', {'current_user' : current_user})
+                cart_count +=1
+
+                item_list.append(b)
+
+            old_order = stripe.Order.retrieve(request.session['order_id'])
+            old_order.status = 'canceled'
+            old_order.metadata['cancelation'] = "Order canceled due to address change"
+            old_order.save()
+
+            order = stripe.Order.create(
+              currency = 'usd',
+              email = user.email,
+              items = item_list,
+              shipping = {
+                "name": shipping_address.first_name + " " + shipping_address.last_name,
+                "address":{
+                  "line1": shipping_address.street_address,
+                  "city": shipping_address.city,
+                  "country":'US',
+                  "postal_code": shipping_address.zip_code,
+                  "state" : shipping_address.state,
+                }
+              },
+            )
+            
+            request.session['order_id'] = order.id
+
+            default_shipping_amount = ''
+            tax_amount = ''        
+            shipping_options = []
+            order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
+
+            for item in order['items']:
+                if item['type'] == 'shipping':
+                    default_shipping_amount = decimal.Decimal(item['amount']) / 100
+                elif item['type'] == 'tax':
+                    tax_amount = decimal.Decimal(item['amount']) / 100
+            
+            
+            for shipping_method in order.shipping_methods:
+                b = {
+                    "description" : shipping_method.description,
+                    "amount" : decimal.Decimal(shipping_method.amount) / 100,
+                    'id' : shipping_method.id,
+                    'delivery_estimate' : shipping_method.delivery_estimate.date,
+                }
+                
+                shipping_options.append(b)        
+
+            context ={
+                'shipping_address': shipping_address,
+                'cart_count' : cart_count,
+                'cart_total' : cart_total,
+                'order' : order,
+                'order_amount' : order_amount,
+                'shipping_options' : shipping_options,
+                'default_shipping_amount' : default_shipping_amount,
+                'tax_amount' : tax_amount,
+                'shipping_address' : shipping_address,
+            }
+
+            return render(request, 'shopping/stripe-payment.html', context)
+
     else:
-        print "payment method not deleted"
-        return render(request, 'shopping/payment-methods.html', {'customer' : customer})
+
+        print "no post data received"
+
+        address_list = Address.objects.filter(email=user.email, address_type='shipping')
+
+        if len(address_list) == 0:
+            form = AuthAddressForm(initial={
+                'first_name' : user.first_name,
+                'last_name' : user.last_name,
+                'address_type' : 'shipping',
+                'email' : user.email,
+            })
+            return render(request, 'shopping/address.html', {'form': form,})
+
+        return render (request, 'shopping/select-shipping-address.html', {'address_list': address_list,})
+
+
+
+def EditExistingAddressView(request, pk):
+
+    """
+    this is the page that will take the existing address ID that is being updated
+    with the ID it  will filter the the selection using the current users email address and
+    update the object with the new values from the form 
+
+    if the request is a get method it will take the pk given from the request
+    and find that address using the pk. It will make all other addresses associated to the user 
+    default address to false and make the address being edited the default.
+
+    It will then create an address instance with the pk
+
+
+    if the request is a post method it takes the pk provided with the form
+    finds the address being updated and uses it as the instance in form 
+    if the form is valid it updates the address 
+    after the address is updated it makes the updated address the default shipping address
+
+
+    """
+
+    current_user = request.user
+
+    if request.method == 'POST':
+        instance = get_object_or_404(Address, id=pk)
+        form = EditExistingAddressForm(request.POST, instance=instance)
+
+        if form.is_valid():
+            form.save()
+            Address.objects.filter(id=pk).update(default_address=True)
+            address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
+
+            return redirect('shipping')          
+
+    else:
+
+        address = Address.objects.get(id=pk)
+
+        Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
+        Address.objects.filter(id=pk).update(default_address=True)
+
+        existing_address_form = EditExistingAddressForm(initial={
+                'first_name' : address.first_name,
+                'last_name' : address.last_name,
+                'street_address' : address.street_address,
+                'extended_address' : address.extended_address,
+                'city' : address.city, 
+                'state' : address.state,
+                'zip_code' : address.zip_code,
+                'email' : address.email,
+            }, pk = pk)
+
+        return render(request, 'shopping/address_form.html', {'form': existing_address_form, })
+
+@login_required(login_url='/accounts/login/')
+def AddNewAddressView(request):
+    """
+    this is the view that that the user will visit with a new form so they can add a new shipping address
+
+    on post they will create a new address and be redirected to their shipping list page from their profile
+    """
+
+    user = request.user
+    if request.method == 'POST':
+        form = CreateNewAddressForm(request.POST)
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect('shipping')
+
+    else:
+
+        form = CreateNewAddressForm(initial={
+            'email' : user.email,
+            })
+
+        return render(request, 'shopping/address.html', {'form' : form})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

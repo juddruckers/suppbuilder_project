@@ -1,0 +1,94 @@
+{% load static %}
+<!-- Theanine product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+  <div class='row'>
+    <div class='col-lg-12'>
+      {% if theanine_match %}
+        <h2>
+          {{theanine.title}}
+          <span id='theanine-size' class='item-size'>
+            {{theanine_match.0.serving_size}}/serving
+          </span>
+          <span id='theanine-price' class='item-price'> 
+            ${{theanine_match.0.price}} (${{theanine_match.0.thirty_day}}/serving)
+          </span>
+        </h2>
+      {% else %}
+        <h2>
+          {{theanine.title}}
+          <span id='theanine-size' class='item-size'>
+            {{theanine.serving_size}}/serving
+          </span>
+
+          <span id='theanine-price' class='item-price'> 
+            ${{theanine.price}} (${{theanine.thirty_day}}/serving) 
+          </span>
+        </h2>
+      {% endif %}
+    </div>
+  </div>
+
+
+  {% if theanine_match %}
+  <div class='row collapse'id='theanineCollapse'>
+  {% else %}
+  <div class='row collapse in'id='theanineCollapse'>
+  {%endif %}
+    <div class='col-lg-8'>
+      <h5>Product description</h5>
+      <p>{{theanine.description}}</p>
+    </div>
+    <div class='col-lg-4'>
+      <h5>Key Benefits</h5>
+        <ul>
+          {% for benefit in theanine.benefits.all %}
+            <li>{{benefit}}</li>  
+          {% endfor %}
+        </ul>
+    </div>
+  </div>
+
+
+    {% if theanine_match %}
+    <div class='row collapse' id='selectTheanine'>
+      {% else %}
+    <div class='row collapse in'id='selectTheanine'>
+    {%endif %}
+    <div class='col-lg-6'>    
+      {% if theanine_match %}
+        <label for='theanine-select'><h4>Select serving size :</h4></label>
+          <select id="theanine-select" class="theanine-select" disabled>
+            {% for product in theanine_products %}
+              {% if product.id == theanine_match.0.id %}
+                <option value="{{product.id}}" data-theanine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected> {{theanine_match.0.title}} {{theanine_match.0.serving_size}} </option>
+                {% else %}
+                <option value="{{product.id}}" data-theanine-price="{{product.price}}" data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}} </option>
+              {% endif %}
+            {% endfor %}
+          </select>
+      {% else %}
+        <label for='theanine-select'><h4>Select serving size :</h4></label>
+          <select id="theanine-select" class="theanine-select">
+            {% for product in theanine_products %}
+              <option value="{{product.id}}" data-theanine-price="{{product.price}}"data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+            {% endfor %}
+          </select> 
+      {% endif %}
+    </div>
+  </div>
+    <div class='row'>
+      <div class='col-lg-12'>
+        {% if theanine_match %}
+          <button type="button" class="btn btn-success theanine-add remove">Add {{theanine.title}}</button>
+          <button type="button" class="btn btn-danger theanine-remove" >Remove {{theanine.title}}</button>
+          {% else %}
+          <button type="button" class="btn btn-success theanine-add">Add {{theanine.title}}</button>
+          <button type="button" class="btn btn-danger theanine-remove remove" >Remove {{theanine.title}}</button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,109 @@
+{% load static %}
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if bcaa_match %}
+            <h2>
+              {{bcaa.title}}
+              <span class='item-size' id='bcaa-size'>
+                {{bcaa_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='bcaa-price'> 
+                ${{bcaa_match.0.price}} (${{bcaa_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{bcaa.title}}
+              <span class='item-size' id='bcaa-size'>
+                {{bcaa.serving_size}}/serving
+              </span>
+              <span class='item-price' id='bcaa-price'> 
+                ${{bcaa.cost}} (${{bcaa.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if bcaa_match %}
+        <div class='row collapse ' id='bcaa-description'>
+      {% else %}
+        <div class='row collapse in' id='bcaa-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{bcaa.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in bcaa.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if bcaa_match %}
+        <div class='row collapse' id='bcaa-options'>
+      {% else %}
+        <div class='row collapse in'id='bcaa-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='bcaa-select'><h4>Select serving size :</h4></label>
+            
+            {%if bcaa_match %}
+              <select  id="bcaa-select" disabled="disabled">
+            {% else %}
+              <select  id="bcaa-select">
+            {% endif %}
+
+                {% for product in bcaa_products %}
+                  {% if product.id == bcaa_match.0.id %}
+                    <option value="{{product.id}}" data-bcaa-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-bcaa-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if bcaa_match %}
+            <button type="button" class="btn btn-success bcaa-add remove">Add {{bcaa.title}}</button>
+            <button type="button" class="btn btn-danger bcaa-remove" >Remove {{bcaa.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success bcaa-add">Add {{bcaa.title}}</button>
+            <button type="button" class="btn btn-danger bcaa-remove remove" >Remove {{bcaa.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row -->

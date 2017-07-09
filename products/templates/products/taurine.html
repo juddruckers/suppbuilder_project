@@ -1,0 +1,108 @@
+<!--  product container -->
+<div class='container product-container'>
+  <div class='panel panel-default'>
+    <div class='panel-body'>
+
+  <!-- product title, serving size, and price row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+          
+          {% if taurine_match %}
+            <h2>
+              {{taurine.title}}
+              <span class='item-size' id='taurine-size'>
+                {{taurine_match.0.serving_size}}/serving
+              </span>
+              <span class='item-price' id='taurine-price'> 
+                ${{taurine_match.0.price}} (${{taurine_match.0.thirty_day}}/serving)
+              </span>
+            </h2>
+          {% else %}
+            <h2>
+              {{taurine.title}}
+              <span class='item-size' id='taurine-size'>
+                {{taurine.serving_size}}/serving
+              </span>
+              <span class='item-price' id='taurine-price'> 
+                ${{taurine.cost}} (${{taurine.thirty_day}}/serving) 
+              </span>
+            </h2>
+          {% endif %}
+
+        </div>
+      </div>
+
+
+<!-- description of product -->
+
+      {% if taurine_match %}
+        <div class='row collapse ' id='taurine-description'>
+      {% else %}
+        <div class='row collapse in' id='taurine-description'>
+      {%endif %}
+
+          <div class='col-lg-8'>
+            <h5>Product description</h5>
+            <p>{{taurine.description}}</p>
+          </div>
+
+          <div class='col-lg-4'>
+            <h5>Key Benefits</h5>
+            <ul>
+
+              {% for benefit in taurine.benefits.all %}
+                <li>{{benefit}}</li>  
+              {% endfor %}
+
+            </ul>
+          </div>
+        </div>
+
+<!-- start of product select -->
+
+      {% if taurine_match %}
+        <div class='row collapse' id='taurine-options'>
+      {% else %}
+        <div class='row collapse in'id='taurine-options'>
+      {%endif %}
+        
+        <div class='col-lg-6'>    
+            <label for='taurine-select'><h4>Select serving size :</h4></label>
+            
+            {%if taurine_match %}
+              <select  id="taurine-select" disabled="disabled">
+            {% else %}
+              <select  id="taurine-select">
+            {% endif %}
+
+                {% for product in taurine_products %}
+                  {% if product.id == taurine_match.0.id %}
+                    <option value="{{product.id}}" data-taurine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+                    {% else %}
+                    <option value="{{product.id}}" data-taurine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+        </div>
+      </div>
+
+<!-- start of product button row -->
+      <div class='row'>
+        <div class='col-lg-12'>
+
+          {% if taurine_match %}
+            <button type="button" class="btn btn-success taurine-add remove">Add {{taurine.title}}</button>
+            <button type="button" class="btn btn-danger taurine-remove" >Remove {{taurine.title}}</button>
+            {% else %}
+            <button type="button" class="btn btn-success taurine-add">Add {{taurine.title}}</button>
+            <button type="button" class="btn btn-danger taurine-remove remove" >Remove {{taurine.title}}</button>
+          {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- end of product button row --> 
