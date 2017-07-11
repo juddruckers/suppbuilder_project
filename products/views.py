@@ -4,7 +4,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from carton.cart import Cart
 import locale
-import jsonpickle
 # Create your views here.
 
 

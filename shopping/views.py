@@ -452,6 +452,10 @@ def OrdersView(request):
     """
     user = request.user
 
+    try:
+     os.environ['SECRETKEY']
+    except:
+        print "no environment variable"
     stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
 
     order_query = Order.objects.filter(email=user.email)
