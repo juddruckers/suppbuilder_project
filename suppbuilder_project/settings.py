@@ -20,7 +20,7 @@ class Base(Configuration):
     # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
     # SECURITY WARNING: keep the secret key used in production secret!
-    SECRET_KEY = os.environ.get('SECRETKEY')
+    SECRET_KEY = 'w@t$(&@2=s$sc0pl)dt=_d6qv&=w5c397^$ib^%a+be$htps5$'
 
     # SECURITY WARNING: don't run with debug turned on in production!
     if os.environ.get('PRODUCTION') is not None:
@@ -101,21 +101,26 @@ class Base(Configuration):
 
     WSGI_APPLICATION = 'suppbuilder_project.wsgi.application'
 
+    #Brain Tree
+    BRAINTREE_MERCHANT_ID = os.environ.get('BRAINTREE_MERCHANT_ID')
+    BRAINTREE_PUBLIC_KEY = os.environ.get('BRAINTREE_PUBLIC_KEY')
+    BRAINTREE_PRIVATE_KEY = os.environ.get('BRAINTREE_PRIVATE_KEY')
+
 
     # Database
     # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
     DATABASES = {
         'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DBNAME'),
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ.get('DBNAME'),
     	'USER': os.environ.get('DBUSER'),
     	'PASSWORD' : os.environ.get('DBKEY'),
     	'HOST' : 'localhost',
     	'PORT' : '',
         }
     }
-
+    # braintree environment variables
 
     # path to custom sign up form to have first and last name instead of username
 
@@ -175,11 +180,33 @@ class Base(Configuration):
     STATIC_URL = '/static/'
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+
+#local django configuration 
+class Local(Base):
+    DEBUG = True
+    
+    ALLOWED_HOSTS = []
+    
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
+
+    BRAINTREE_MERCHANT_ID = '6sxqz6v5rp9mkbtk'
+    BRAINTREE_PUBLIC_KEY = 'stg5227psrym8s8w'
+    BRAINTREE_PRIVATE_KEY = '1622cff917395f05cf8e5a587f731129'
+
+
+
     EMAIL_USE_TLS = True
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_HOST_USER = 'juddruckers@gmail.com'
     EMAIL_HOST_PASSWORD = '84{7anoV.aqu)pPZpTyLtY.rc?L66+79U[Xz#6d.m9r2FajXo['
     EMAIL_PORT = 587
+
+
 
 
 
