@@ -6,9 +6,6 @@ from carton.cart import Cart
 import locale
 # Create your views here.
 
-
-
-
 def ProteinCount(request):
 	cart = Cart(request.session)
 
@@ -31,8 +28,6 @@ def EnergyView(request):
 	cart = Cart(request.session)
 	cart_items = []
 
-	flavors = Product.objects.filter(benefits__description__startswith='flavor')
-	print flavors
 	for item in cart.items:
 		cart_items.append(item.product)
 
