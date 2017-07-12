@@ -2,7 +2,7 @@ from .base import *
 
 DEBUG = False
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRETKEY')
 
 ALLOWED_HOSTS = ['162.243.151.222']
 
