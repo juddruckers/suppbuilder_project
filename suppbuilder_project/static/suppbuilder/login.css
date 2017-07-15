@@ -1,0 +1,90 @@
+.login-block {
+
+	margin-top: 100px;
+	border: 1px #fcf9f9;
+
+}
+
+
+
+.login-block .row {
+
+	border: 1px #fcf9f9;
+
+}
+
+
+.login-block .btn {
+
+	width:100%;
+	margin-top: 10px;
+	
+}
+
+.login-title {
+	text-align: center;
+}
+
+
+
+
+.login {
+	margin-left: 25%;
+	margin-right: 25%;
+
+}
+
+.signup-block {
+	margin-top: 100px;
+}
+
+
+
+.signup-block .btn {
+
+	width:100%;
+	margin-top: 10px;
+	
+}
+
+.panel-heading{
+	text-align: center;
+}
+
+
+.panel > .panel-heading {
+    background-image: none;
+    background-color: #05C3DE;
+    color: white;
+}
+
+.panel > .panel-heading a {
+    color: white;
+    text-decoration: underline;
+}
+
+h3 {
+    color: white;
+}
+
+
+.guest-login {
+	margin-top: 100px;
+}
+
+.guest-form{
+	margin-top: 45px;
+	height: 203.5px;
+}
+
+.guest-block .panel-heading{
+	height:87px;
+}
+
+.guest-block .panel-body{
+	margin-top: px;
+}
+
+.error {
+	color:red;
+}
