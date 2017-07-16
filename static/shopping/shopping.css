@@ -9,3 +9,47 @@ h3 {
 #AddressForm{
 	height:50px;
 }
+
+
+.shipping .buttons {
+	margin-top: 45px;
+
+}
+
+.shipping .btn {
+	width: 200px;
+}
+
+.panel > .panel-heading {
+    background-image: none;
+    background-color: #05C3DE;
+    color: white;
+}
+
+.panel > .panel-body {
+	height: 200px;
+}
+
+h3 {
+    color: white;
+}
+
+.breadcrumb {
+  background-color: white;
+}
+
+
+.center{
+	text-align: center;
+	font-size: 20px;
+	color: white;
+}
+
+body p {
+	font-size: 16px;
+}
+
+
+#oldprice {
+	text-decoration: line-through;
+}

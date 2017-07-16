@@ -8,16 +8,21 @@
 	text-align: center;
 }
 
+.order-list {
+  margin-left : 10%;
+}
+
+
 h3 {
 	color:rgb(113, 124, 125);
 }
 
-.marketing .col-lg-4 {
+/*.marketing .col-lg-4 {
   margin: 20px;
   text-align: center;
   border: 1px solid gray;
 }
-
+*/
 .marketing .col-lg-3 {
   margin: 20px;
   text-align: center;
@@ -37,3 +42,25 @@ h3 {
   margin-right: 10px;
   margin-left: 10px;
 }
+
+.breadcrumb {
+  background-color: white;
+}
+
+.panel > .panel-heading {
+    background-image: none;
+    background-color: #05C3DE;
+    color: white;
+}
+
+.panel > .panel-heading h3 {
+    color: white;
+}
+
+
+.shipping-information p{
+  text-transform: uppercase;
+}
+
+
+
