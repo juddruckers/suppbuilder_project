@@ -91,12 +91,12 @@ def EnergyView(request):
 	rhodiola_rosea_research = Research.objects.all().filter(product__title='Rhodiola Rosea')
 	rhodiola_rosea_match = [item for item in rhodiola_rosea_products if item in cart_items]
 
-	hmb = Product.objects.get(id=79)
+	hmb = Product.objects.get(sku='sku_AqQ2yMg3KLYF5f')
 	hmb_products = Product.objects.all().filter(title='HMB')
 	hmb_research = Research.objects.all().filter(product__title='HMB')
 	hmb_match = [item for item in hmb_products if item in cart_items]
 
-	l_tyrosine = Product.objects.get(id=60)
+	l_tyrosine = Product.objects.get(sku='sku_Aqo3I0U188o3fF')
 	l_tyrosine_products = Product.objects.all().filter(title='L-Tyrosine')
 	l_tyrosine_research = Research.objects.all().filter(product__title='L-Tyrosine')
 	l_tyrosine_match = [item for item in l_tyrosine_products if item in cart_items]	
