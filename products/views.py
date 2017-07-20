@@ -1,6 +1,6 @@
 from django.views.generic import ListView
 from .models import Product, Variation , Research
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from carton.cart import Cart
 import locale
@@ -45,7 +45,7 @@ def EnergyView(request):
 	theanine_match = [item for item in theanine_products if item in cart_items]
 
 	#CREATINE
-	creatine = Product.objects.get(sku='sku_AiRBdtOxxHVXmD')
+	creatine = get_object_or_404(Product, sku='sku_AiRBdtOxxHVXmD')
 	creatine_products = Product.objects.all().filter(title='Creatine')
 	creatine_research = Research.objects.all().filter(product__title='Creatine')
 	creatine_match = [item for item in creatine_products if item in cart_items]
