@@ -104,29 +104,11 @@
         </a>
       </li>
       <li role="presentation">
-        <a href="#betaine" aria-controls="betaine" role="tab" data-toggle="tab">Betaine
-          {% if betaine_match %}
-          <span class="glyphicon glyphicon-ok" id='betaine-check'  aria-hidden="true"></span> 
-          {% else %}
-          <span class="glyphicon glyphicon-ok hidden" id='betaine-check'  aria-hidden="true"></span>
-          {% endif %}
-        </a>
-      </li>
-      <li role="presentation">
         <a href="#ashwagandha" aria-controls="ashwagandha" role="tab" data-toggle="tab">Ashwagandha 
           {% if ashwagandha_match %}
           <span class="glyphicon glyphicon-ok" id='ashwagandha-check' aria-hidden="true"></span> 
           {% else %}
           <span class="glyphicon glyphicon-ok hidden" id='ashwagandha-check' aria-hidden="true"></span>
-          {% endif %}
-        </a>
-      </li>
-      <li role="presentation">
-        <a href="#cordyceps" aria-controls="cordyceps" role="tab" data-toggle="tab">Cordyceps
-          {% if cordyceps_match %}
-          <span class="glyphicon glyphicon-ok" id='cordyceps-check'  aria-hidden="true"></span> 
-          {% else %}
-          <span class="glyphicon glyphicon-ok hidden" id='cordyceps-check'  aria-hidden="true"></span>
           {% endif %}
         </a>
       </li>
@@ -154,15 +136,6 @@
           <span class="glyphicon glyphicon-ok" id='acetyl_l_carnitine-check'  aria-hidden="true"></span> 
           {% else %}
           <span class="glyphicon glyphicon-ok hidden" id='acetyl_l_carnitine-check'  aria-hidden="true"></span>
-          {% endif %}
-        </a>
-      </li>
-      <li role="presentation">
-        <a href="#ornithine" aria-controls="ornithine" role="tab" data-toggle="tab">Ornithine
-          {% if ornithine_match %}
-          <span class="glyphicon glyphicon-ok" id='ornithine-check'  aria-hidden="true"></span> 
-          {% else %}
-          <span class="glyphicon glyphicon-ok hidden" id='ornithine-check'  aria-hidden="true"></span>
           {% endif %}
         </a>
       </li>
@@ -309,12 +282,6 @@
     <div role="tabpanel" class="tab-pane" id="ashwagandha">
       {% include 'products/ashwagandha.html' %}
     </div>
-    <div role="tabpanel" class="tab-pane" id="cordyceps">
-      {% include 'products/cordyceps.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="cordyceps">
-      {% include 'products/cordyceps.html' %}
-    </div>
     <div role="tabpanel" class="tab-pane" id="rhodiola-rosea">
       {% include 'products/rhodiola-rosea.html' %}
     </div>
@@ -326,9 +293,6 @@
     </div>
     <div role="tabpanel" class="tab-pane" id="carnitine">
       {% include 'products/l-carnitine.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="ornithine">
-      {% include 'products/ornithine.html' %}
     </div>
     <div role="tabpanel" class="tab-pane" id="tyrosine">
       {% include 'products/tyrosine.html' %}
