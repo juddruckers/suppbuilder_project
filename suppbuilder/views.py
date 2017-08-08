@@ -17,9 +17,6 @@ from carton.cart import Cart
 
 
 def IndexView(request):
-    
-	template_name = 'suppbuilder/index.html'
-
 	customer = request.user
 
 	session = request.session

@@ -257,12 +257,9 @@ def payment_view(request):
         form = LoginForm()
         return render(request, 'account/login.html', {'form' : form})
 
-
     if user.is_authenticated():
 
         shipping_address = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True).first()
-
-
 
         if not shipping_address:
             form = AuthAddressForm(initial={
@@ -284,27 +281,19 @@ def payment_view(request):
                 item_list.append(b)
 
             if 'order_id' in request.session:
-                old_order = stripe.Order.retrieve(request.session['order_id'])
-                discount_code = ''
-                order_items = [item for item in old_order['items'] if item.type == 'sku']
+                
+                order = stripe.Order.retrieve(request.session['order_id'])
+                order_items = [item for item in order['items'] if item.type == 'sku']
 
-                if len(item_list) != len(order_items) or shipping_address.street_address != old_order['shipping'].address['line1']:
-
-                    old_order.status = 'canceled'
-                    if len(item_list) != len(order_items):
-                        old_order.metadata['cancelation'] = "Order has been canceled due to updated cart"
-                    elif shipping_address.street_address != old_order['shipping'].address['line1']:
-                        print "shipping address has been changed so creating new order"
-                        old_order.metadata['cancelation'] = "Order has been canceled due to new shipping address"
-                    elif cart_count != order_item_count and shipping_address.street_address != old_order['shipping'].address['line1']:
-                        old_order.metadata['cancelation'] = "Order has been canceled due to new shipping address and updated cart"
-                    old_order.save()
+                if len(item_list) != len(order_items):
+                    order.metadata['cancelation'] = "Order has been canceled due to updated cart"
+                    order.save()
                     order = stripe.Order.create(
                       currency = 'usd',
                       email = user.email,
                       items = item_list,
                       shipping = {
-                        "name": shipping_address.first_name + " " + shipping_address.last_name,
+                        "name": user.first_name + " " + user.last_name,
                         "address":{
                           "line1": shipping_address.street_address,
                           "city": shipping_address.city,
@@ -314,11 +303,12 @@ def payment_view(request):
                         }
                       },
                     )
+                    print "items have changed creating new order"
 
                     request.session['order_id'] = order.id
-                else:
-                    order = stripe.Order.retrieve(request.session['order_id'])
+
             else:
+                
                 order = stripe.Order.create(
                   currency = 'usd',
                   email = user.email,
@@ -339,7 +329,6 @@ def payment_view(request):
 
             discount = False
             discount_amount = 0
-
             default_shipping_amount = ''
             tax_amount = ''        
             shipping_options = []
@@ -379,6 +368,234 @@ def payment_view(request):
             }
 
             return render(request, 'shopping/stripe-payment.html', context)
+
+def StripeAddressView(request):
+    """
+    This is the view the user will go to when they go to checkout and they have no
+    address on file for them. Once they create an address it will create an order and 
+    redirect them to the payment view.
+
+    This will also be the page where they will be directed to if they want to
+    change the address from the payment view. It will create or update a shipping
+    address and update the old order to a canceled state due to address change.
+    It will then create a new order and redirect to the payment view
+    """
+
+    user = request.user
+
+    if request.method == 'POST':
+
+        address_data = AddressForm(request.POST)
+
+        if address_data.is_valid():
+
+            """
+            if the address data is valid change all existing shipping addresses
+            default_address attribute to False.
+            """
+            Address.objects.filter(email=user.email, address_type='shipping').update(default_address=False)            
+
+            address, created = Address.objects.update_or_create(
+                first_name = address_data.cleaned_data['first_name'].lower(),
+                last_name = address_data.cleaned_data['last_name'],
+                street_address= address_data.cleaned_data['street_address'].lower(),
+                extended_address= address_data.cleaned_data['extended_address'].lower(),
+                city= address_data.cleaned_data['city'].lower() , 
+                state= address_data.cleaned_data['state'],
+                zip_code= address_data.cleaned_data['zip_code'],
+                email= address_data.cleaned_data['email'],
+                address_type= address_data.cleaned_data['address_type'],                
+            )
+
+            cart = Cart(request.session)
+            cart_count = 0
+            cart_total = cart.total
+            item_list =[]
+
+            for product in cart.products:
+                b = {
+                "type" : 'sku',
+                "parent" : product.sku,
+                "quantity" : 1,
+                }
+
+                item_list.append(b)
+
+            for product in cart.products:
+                cart_count +=1
+
+            stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+            
+            if 'order_id' in request.session:
+                order = stripe.Order.retrieve(request.session['order_id'])
+                order.metadata['cancelation'] = "Order has been canceled due to new shipping address"
+                order.save()
+                
+                order = stripe.Order.create(
+                  currency = 'usd',
+                  email = user.email,
+                  items = item_list,
+                  shipping = {
+                    "name": user.first_name + " " + user.last_name,
+                    "address":{
+                      "line1": address.street_address,
+                      "city": address.city,
+                      "country":'US',
+                      "postal_code": address.zip_code,
+                      "state" : address.state,
+                    }
+                  },
+                )
+
+                request.session['order_id'] = order.id
+                
+                return redirect('checkout-view')
+
+            else:
+                order = stripe.Order.create(
+                  currency = 'usd',
+                  email = user.email,
+                  items = item_list,
+                  shipping = {
+                    "name": user.first_name + " " + user.last_name,
+                    "address":{
+                      "line1": address.street_address,
+                      "city": address.city,
+                      "country":'US',
+                      "postal_code": address.zip_code,
+                      "state" : address.state,
+                    }
+                  },
+                )
+
+                request.session['order_id'] = order.id
+
+                return redirect('checkout-view')
+
+            # default_shipping_amount = ''
+            # tax_amount = ''        
+            # shipping_options = []
+            # order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
+
+            # for item in order['items']:
+            #     if item['type'] == 'shipping':
+            #         default_shipping_amount = decimal.Decimal(item['amount']) / 100
+            #     elif item['type'] == 'tax':
+            #         tax_amount = decimal.Decimal(item['amount']) / 100
+            
+            
+            # for shipping_method in order.shipping_methods:
+            #     b = {
+            #         "description" : shipping_method.description,
+            #         "amount" : decimal.Decimal(shipping_method.amount) / 100,
+            #         'id' : shipping_method.id,
+            #         'delivery_estimate' : shipping_method.delivery_estimate.date,
+            #     }
+                
+            #     shipping_options.append(b)
+
+
+            # context ={
+            #     'shipping_address': address,
+            #     'cart_count' : cart_count,
+            #     'cart_total' : cart_total,
+            #     'order' : order,
+            #     'order_amount' : order_amount,
+            #     'shipping_options' : shipping_options,
+            #     'default_shipping_amount' : default_shipping_amount,
+            #     'tax_amount' : tax_amount,
+            # }
+
+            # return render(request, 'shopping/stripe-payment.html', context)
+
+        else:
+            print "data is not clean"
+            errors =  address_data.errors
+
+            form = AuthAddressForm(initial={
+                'first_name' : request.user.first_name,
+                'last_name' : request.user.last_name,
+                'email' : request.user.email,
+            })
+            return render(request, 'shopping/address.html', {'form': form, 'errors': errors}) 
+
+    else:
+        print 'no post data receieved EditAuthUserAddressView'
+            
+        form = AuthAddressForm(initial={
+            'first_name' : request.user.first_name,
+            'last_name' : request.user.last_name,
+            'email' : request.user.email,
+        })
+
+        return render(request, 'shopping/address.html', {'form': form,})
+
+def StripePaymentView(request):
+
+    """
+    This is the view that will process the payment and send the user to the 
+    order detail page.
+
+    The token will be recieved from the stripe payment form
+
+    the order_id will be taken from the session variable set whenever a new order is created
+
+    using the order_id retrieve the stripe order_id
+
+    using the token pay the retrieved order_id
+
+    clear the cart once the order is finished 
+
+    """
+    user = request.user 
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+    cart = Cart(request.session)
+    token = request.POST.get('stripeToken')
+    order_id = request.session['order_id']
+    # order = stripe.Order.retrieve('or_1AbxbZBjE7taidLcnf5g262l')
+    order = stripe.Order.retrieve(order_id)
+    order.pay(source = token)
+    saved_order = Order(email = user.email, order_id = order.id)
+    saved_order.save()
+
+    item_count = 0
+    tax_amount = 0
+    shipping_amount = ''
+    item_amount = 0
+    discount_amount = 0
+
+
+    total = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
+
+    for item in order['items']:
+        if item['type'] == 'sku':
+            item_count += 1
+            item_amount += decimal.Decimal(item['amount'])
+        elif item['type'] == 'tax':
+            tax_amount = "{0:.2f}".format(decimal.Decimal(item['amount']) / 100)
+        elif item['type'] == 'shipping':
+            shipping_amount = "{0:.2f}".format(decimal.Decimal(item['amount']) / 100)
+        elif item['type'] == 'discount':
+            discount_amount = "{0:.2f}".format(decimal.Decimal(item['amount']) / 100)
+
+
+    item_total = "{0:.2f}".format(decimal.Decimal(item_amount) / 100)
+
+    context = {
+    'order' : order,
+    'item_count' : item_count,
+    'total' : total,
+    'tax_amount' : tax_amount,
+    'shipping_amount' : shipping_amount,
+    'item_total' : item_total,
+    'discount_amount': discount_amount,
+    }
+
+
+    cart.clear()
+    del request.session['order_id']
+
+    return render(request, 'shopping/order-summary.html', context)
 
 
 def AddressView(request):
@@ -848,128 +1065,7 @@ def NewAddressView(request):
         return render(request, 'shopping/address.html', {'form': form})
 
 
-def StripeAddressView(request):
 
-    user = request.user
-
-    if request.method == 'POST':
-
-        address_data = AddressForm(request.POST)
-
-        if address_data.is_valid():
-
-            Address.objects.filter(email=user.email, address_type='shipping').update(default_address=False)            
-
-            address, created = Address.objects.update_or_create(
-                first_name = address_data.cleaned_data['first_name'],
-                last_name = address_data.cleaned_data['last_name'],
-                street_address= address_data.cleaned_data['street_address'],
-                extended_address= address_data.cleaned_data['extended_address'],
-                city= address_data.cleaned_data['city'], 
-                state= address_data.cleaned_data['state'],
-                zip_code= address_data.cleaned_data['zip_code'],
-                email= address_data.cleaned_data['email'],
-                address_type= address_data.cleaned_data['address_type'],                
-            )
-
-            cart = Cart(request.session)
-            cart_count = 0
-            cart_total = cart.total
-            item_list =[]
-
-            for product in cart.products:
-                b = {
-                "type" : 'sku',
-                "parent" : product.sku,
-                "quantity" : 1,
-                }
-
-                item_list.append(b)
-
-            for product in cart.products:
-                cart_count +=1
-
-            stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
-            
-            if 'order_id' in request.session:
-                order = stripe.Order.retrieve(request.session['order_id'])
-
-            else:
-                order = stripe.Order.create(
-                  currency = 'usd',
-                  email = user.email,
-                  items = item_list,
-                  shipping = {
-                    "name": user.first_name + " " + user.last_name,
-                    "address":{
-                      "line1": address.street_address,
-                      "city": address.city,
-                      "country":'US',
-                      "postal_code": address.zip_code,
-                      "state" : address.state,
-                    }
-                  },
-                )
-
-                request.session['order_id'] = order.id
-
-            default_shipping_amount = ''
-            tax_amount = ''        
-            shipping_options = []
-            order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
-
-            for item in order['items']:
-                if item['type'] == 'shipping':
-                    default_shipping_amount = decimal.Decimal(item['amount']) / 100
-                elif item['type'] == 'tax':
-                    tax_amount = decimal.Decimal(item['amount']) / 100
-            
-            
-            for shipping_method in order.shipping_methods:
-                b = {
-                    "description" : shipping_method.description,
-                    "amount" : decimal.Decimal(shipping_method.amount) / 100,
-                    'id' : shipping_method.id,
-                    'delivery_estimate' : shipping_method.delivery_estimate.date,
-                }
-                
-                shipping_options.append(b)
-
-
-            context ={
-                'shipping_address': address,
-                'cart_count' : cart_count,
-                'cart_total' : cart_total,
-                'order' : order,
-                'order_amount' : order_amount,
-                'shipping_options' : shipping_options,
-                'default_shipping_amount' : default_shipping_amount,
-                'tax_amount' : tax_amount,
-            }
-
-            return render(request, 'shopping/stripe-payment.html', context)
-
-        else:
-            print "data is not clean"
-            errors =  address_data.errors
-
-            form = AuthAddressForm(initial={
-                'first_name' : request.user.first_name,
-                'last_name' : request.user.last_name,
-                'email' : request.user.email,
-            })
-            return render(request, 'shopping/address.html', {'form': form, 'errors': errors}) 
-
-    else:
-        print 'no post data receieved EditAuthUserAddressView'
-            
-        form = AuthAddressForm(initial={
-            'first_name' : request.user.first_name,
-            'last_name' : request.user.last_name,
-            'email' : request.user.email,
-        })
-
-        return render(request, 'shopping/address.html', {'form': form,})
 
 def StripeUpdateOrderView(request):
 

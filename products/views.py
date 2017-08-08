@@ -45,7 +45,7 @@ def EnergyView(request):
 	theanine_match = [item for item in theanine_products if item in cart_items]
 
 	#CREATINE
-	creatine = Product.objects.get(pk=5)
+	creatine = Product.objects.get(sku='sku_AiRBdtOxxHVXmD')
 	creatine_products = Product.objects.all().filter(title='Creatine')
 	creatine_research = Research.objects.all().filter(product__title='Creatine')
 	creatine_match = [item for item in creatine_products if item in cart_items]
