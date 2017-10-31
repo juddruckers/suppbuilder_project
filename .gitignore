@@ -4,3 +4,5 @@
 venv/
 local.py
 debug.log
+debug.loh
+db.dqlite3
