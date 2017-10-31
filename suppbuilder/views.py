@@ -32,7 +32,7 @@ def IndexView(request):
 	else:
 		print "no email in session captain"
 
-	return render(request, 'suppbuilder/index.html')
+	return render(request, 'suppbuilder/home.html')
 
  
 def GuestLoginView(request):

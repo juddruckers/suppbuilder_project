@@ -1,2 +1,6 @@
 *.pyc
 *.py~
+.DS_Store
+venv/
+local.py
+debug.log

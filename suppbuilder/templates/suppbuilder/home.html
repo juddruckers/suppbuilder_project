@@ -3,25 +3,20 @@
 {% load static %}
 {% block head %}
     
-<!-- <link rel="stylesheet" type="text/css" href="{% static 'suppbuilder/homepage.css' %}"> -->
 {% endblock %}
 
 {% block body %}
 
-<div class='container '>
-  <div class='row'>
-    <div class='col-lg-12 logo'>
-      <a href="{% url 'energy' %}" class="btn btn-info" role="button">Build your supplement stack</a>
-    </div>
+<header>
+  <div>
+    <h1>Custom pre-workout made by you</h1>
+    <a class="btn btn-default" href="#" role="button">Build yours now</a>
   </div>
-</div>
+  
+</header>
 
 
-<div class='container process'>
-  <div class='media'>
-    <img src="{% static 'suppbuilder/images/how-does-it-work.png' %}" style='display:block; margin: 0 auto;' >
-  </div>
-</div>
+
 
 <div class='container process'>
   
@@ -36,7 +31,7 @@
     <div class='col-lg-6'>
       <div class='panel panel-default'>
         <div class='panel-body'>
-          <div class="media">
+          <div class="">
             
             <div class="media-left">
               <img src="{% static 'suppbuilder/images/select.svg' %}" class="media-object" style="width:100px">
@@ -236,11 +231,5 @@
 
   </div>
 </div>
-
-    <footer class="footer">
-      <div class="container">
-        <p class="text-muted">Place sticky footer content here hmm.</p>
-      </div>
-    </footer>
 
 {% endblock %}
