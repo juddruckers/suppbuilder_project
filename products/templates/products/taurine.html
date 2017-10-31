@@ -34,13 +34,7 @@
 
 
 <!-- description of product -->
-
-      {% if taurine_match %}
-        <div class='row collapse ' id='taurine-description'>
-      {% else %}
-        <div class='row collapse in' id='taurine-description'>
-      {%endif %}
-
+        <div class='row' id='taurine-description'>
           <div class='col-lg-8'>
             <h5>Product description</h5>
             <p>{{taurine.description}}</p>
@@ -70,9 +64,9 @@
             <label for='taurine-select'><h4>Select serving size :</h4></label>
             
             {%if taurine_match %}
-              <select  id="taurine-select" disabled="disabled">
+              <select class='form-control selector' id="taurine-select" disabled="disabled">
             {% else %}
-              <select  id="taurine-select">
+              <select class='form-control selector' id="taurine-select">
             {% endif %}
 
                 {% for product in taurine_products %}

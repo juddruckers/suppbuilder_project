@@ -31,11 +31,7 @@
   </div>
 
 
-  {% if theanine_match %}
-  <div class='row collapse'id='theanineCollapse'>
-  {% else %}
-  <div class='row collapse in'id='theanineCollapse'>
-  {%endif %}
+  <div class='row' id='theanineCollapse'>
     <div class='col-lg-8'>
       <h5>Product description</h5>
       <p>{{theanine.description}}</p>
@@ -70,7 +66,7 @@
           </select>
       {% else %}
         <label for='theanine-select'><h4>Select serving size :</h4></label>
-          <select id="theanine-select" class="theanine-select">
+          <select class='form-control selector' id="theanine-select" class="theanine-select">
             {% for product in theanine_products %}
               <option value="{{product.id}}" data-theanine-price="{{product.price}}"data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
             {% endfor %}
@@ -88,6 +84,71 @@
           <button type="button" class="btn btn-danger theanine-remove remove" >Remove {{theanine.title}}</button>
         {% endif %}
       </div>
+    </div>
+    <hr>
+        <section id="about" class="bg-light-gray">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading">Theanine Benefits</h2>
+                        <h4 class="section-subheading text-muted">Clinical resarch on Theanine supplementation has shown the following benefits.</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ul class="timeline">
+                            <li>
+                                <div class="timeline-panel">
+                                    <div class="timeline-heading">
+                                        <h3>Enhances the benefits of caffeine</h3>
+                                    </div>
+                                    <div class="timeline-body">
+                                      <p class='text-muted'>Power Output is the ability to procure a large amount of strength in a rapid manner</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="timeline-panel">
+                                    <div class="timeline-heading">
+                                        <h3>Helps reduce side effects of caffeine</h3>
+                                    </div>
+                                    <div class="timeline-body">
+                                        <p class="text-muted">Anaerobic capacity is the maximal work performed during maximum-intensity short-term physical effort such as weightlifting, HIIT, and sprinting.  </p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="timeline-panel">
+                                    <div class="timeline-heading">
+                                        <h3>Decrease anxiety</h3>
+                                    </div>
+                                    <div class="timeline-body">
+                                        <p class="text-muted">Aerobic exercise refers to cardiovascular exercise that can be performaned for a prolonged period of time such as running, cycling, and swimming laps.</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <div class='container research-container'>
+        <div class='row'>
+          <div class='col-lg-12 col-xs-12'>
+              <h1>Caffeine Research</h1>
+              <div class='row'>
+                <div class='col-lg-12 col-xs-12'>
+                  <h3>Power output</h3>
+
+                  {% for research in caffeine_research %}
+                    {% if research.product_effect == "Power Output" %}
+                      <p><a href="{{research.research_article}}" target="_blanks">{{research}} </a></p>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+          </div>
+        </div>
     </div>
   </div>
 </div>

@@ -34,13 +34,7 @@
 
 
 <!-- description of product -->
-
-      {% if cordyceps_match %}
-        <div class='row collapse ' id='cordyceps-description'>
-      {% else %}
-        <div class='row collapse in' id='cordyceps-description'>
-      {%endif %}
-
+        <div class='row' id='cordyceps-description'>
           <div class='col-lg-8'>
             <h5>Product description</h5>
             <p>{{cordyceps.description}}</p>
@@ -70,9 +64,9 @@
             <label for='cordyceps-select'><h4>Select serving size :</h4></label>
             
             {%if cordyceps_match %}
-              <select  id="cordyceps-select" disabled="disabled">
+              <select class='form-control selector' id="cordyceps-select" disabled="disabled">
             {% else %}
-              <select  id="cordyceps-select">
+              <select class='form-control selector' id="cordyceps-select">
             {% endif %}
 
                 {% for product in cordyceps_products %}

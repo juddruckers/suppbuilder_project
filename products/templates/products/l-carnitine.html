@@ -1,3 +1,4 @@
+{% load static %}
 <!--  product container -->
 <div class='container product-container'>
   <div class='panel panel-default'>
@@ -35,12 +36,7 @@
 
 <!-- description of product -->
 
-      {% if acetyl_l_carnitine_match %}
-        <div class='row collapse ' id='acetyl_l_carnitine-description'>
-      {% else %}
-        <div class='row collapse in' id='acetyl_l_carnitine-description'>
-      {%endif %}
-
+        <div class='row' id='acetyl_l_carnitine-description'>
           <div class='col-lg-8'>
             <h5>Product description</h5>
             <p>{{acetyl_l_carnitine.description}}</p>
@@ -70,9 +66,9 @@
             <label for='acetyl_l_carnitine-select'><h4>Select serving size :</h4></label>
             
             {%if acetyl_l_carnitine_match %}
-              <select  id="acetyl_l_carnitine-select" disabled="disabled">
+              <select class='form-control selector' id="acetyl_l_carnitine-select" disabled="disabled">
             {% else %}
-              <select  id="acetyl_l_carnitine-select">
+              <select class='form-control selector' id="acetyl_l_carnitine-select">
             {% endif %}
 
                 {% for product in acetyl_l_carnitine_products %}
@@ -89,7 +85,6 @@
 <!-- start of product button row -->
       <div class='row'>
         <div class='col-lg-12'>
-
           {% if acetyl_l_carnitine_match %}
             <button type="button" class="btn btn-success acetyl_l_carnitine-add remove">Add {{acetyl_l_carnitine.title}}</button>
             <button type="button" class="btn btn-danger acetyl_l_carnitine-remove" >Remove {{acetyl_l_carnitine.title}}</button>
@@ -97,10 +92,65 @@
             <button type="button" class="btn btn-success acetyl_l_carnitine-add">Add {{acetyl_l_carnitine.title}}</button>
             <button type="button" class="btn btn-danger acetyl_l_carnitine-remove remove" >Remove {{acetyl_l_carnitine.title}}</button>
           {% endif %}
-
         </div>
       </div>
-
+      <hr>
+          <section id="about" class="bg-light-gray">
+              <div class="container">
+                  <div class="row">
+                      <div class="col-lg-12 text-center">
+                          <h2 class="section-heading">Acetyl-L Carnitine Benefits</h2>
+                          <h4 class="section-subheading text-muted">Clinical resarch on Acetyl-L Carnitine supplementation has shown the following benefits.</h4>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-lg-12">
+                          <ul class="timeline">
+                              <li>
+                                  <div class="timeline-panel">
+                                      <div class="timeline-heading">
+                                          <h3>Decrease Fat mass</h3>
+                                      </div>
+                                      <div class="timeline-body">
+                                        <p class='text-muted'>Fat mass is is simply the percentage of fat your body contains</p>
+                                      </div>
+                                  </div>
+                              </li>
+                              <li>
+                                  <div class="timeline-panel">
+                                      <div class="timeline-heading">
+                                          <h3>Decrease mental and physical fatigue</h3>
+                                      </div>
+                                      <div class="timeline-body">
+                                          <p class="text-muted">Fatigue is the lack motivation, energy and vitality.</p>
+                                      </div>
+                                  </div>
+                              </li>
+                              <li>
+                                  <div class="timeline-panel">
+                                      <div class="timeline-heading">
+                                          <h3>Decrease lactate production</h3>
+                                      </div>
+                                      <div class="timeline-body">
+                                          <p class="text-muted">Lactate can be produced during prolonged exercise, and while it is not thought to contribute to muscular failure it seems to be a good biomarker of it. Reductions in lactate production tend to be associated with prolonged physical endurance.</p>
+                                      </div>
+                                  </div>
+                              </li>
+                              <li>
+                                  <div class="timeline-panel">
+                                      <div class="timeline-heading">
+                                          <h3>Decrease muscle damage</h3>
+                                      </div>
+                                      <div class="timeline-body">
+                                          <p class="text-muted">Muscle damage refers to the breaking of muscle tissue during exercise. Reducing muscle damage may alleviate soreness from exercise.</p>
+                                      </div>
+                                  </div>
+                              </li>
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+          </section>
     </div>
   </div>
 </div>

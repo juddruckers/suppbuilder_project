@@ -34,13 +34,7 @@
 
 
 <!-- description of product -->
-
-      {% if ornithine_match %}
-        <div class='row collapse ' id='ornithine-description'>
-      {% else %}
-        <div class='row collapse in' id='ornithine-description'>
-      {%endif %}
-
+        <div class='row' id='ornithine-description'>
           <div class='col-lg-8'>
             <h5>Product description</h5>
             <p>{{ornithine.description}}</p>
@@ -70,9 +64,9 @@
             <label for='ornithine-select'><h4>Select serving size :</h4></label>
             
             {%if ornithine_match %}
-              <select  id="ornithine-select" disabled="disabled">
+              <select class='form-control selector' id="ornithine-select" disabled="disabled">
             {% else %}
-              <select  id="ornithine-select">
+              <select class='form-control selector' id="ornithine-select">
             {% endif %}
 
                 {% for product in ornithine_products %}

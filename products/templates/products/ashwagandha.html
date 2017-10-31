@@ -36,13 +36,7 @@
 
 
 <!-- description of product -->
-
-      {% if ashwagandha_match %}
-        <div class='row collapse ' id='ashwagandha-description'>
-      {% else %}
-        <div class='row collapse in' id='ashwagandha-description'>
-      {%endif %}
-
+        <div class='row' id='ashwagandha-description'>
           <div class='col-lg-8'>
             <h5>Product description</h5>
             <p>{{ashwagandha.description}}</p>
@@ -72,9 +66,9 @@
             <label for='ashwagandha-select'><h4>Select serving size :</h4></label>
             
             {%if ashwagandha_match %}
-              <select  id="ashwagandha-select" disabled="disabled">
+              <select class='form-control selector' id="ashwagandha-select" disabled="disabled">
             {% else %}
-              <select  id="ashwagandha-select">
+              <select class='form-control selector' id="ashwagandha-select">
             {% endif %}
 
                 {% for product in ashwagandha_products %}
@@ -102,7 +96,103 @@
 
         </div>
       </div>
-
+       <hr>
+      <section id="about" class="bg-light-gray">
+          <div class="container">
+              <div class="row">
+                  <div class="col-lg-12 text-center">
+                      <h2 class="section-heading">Ashwagandha benefits</h2>
+                      <h4 class="section-subheading text-muted">Ashwagandha supplementation has shown the following benefits.</h4>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-lg-12">
+                      <ul class="timeline">
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Increase Power Output and Strength</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                    <p class='text-muted'>Power Output is the ability to procure a large amount of strength in a rapid manner</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Reduce stress</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                    <p class='text-muted'>Stress is a physical, mental, or emotional factor that causes bodily or mental tension that eventually manifests negative symptoms such as fatigue or depression</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Improve endurance and increase time to exhaustion</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                      <p class="text-muted">Lean Mass is overall body mass minus fat mass.</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Improve anaerobic training capacity</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                      <p class="text-muted">Muscular endurance tends to refer to the capacities of a muscle tissue to continuously exert itself during one 'set' of exercises</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Decrease Fatigue</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                      <p class="text-muted">Muscular endurance tends to refer to the capacities of a muscle tissue to continuously exert itself during one 'set' of exercises</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Improve VO2 max</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                      <p class="text-muted">Muscular endurance tends to refer to the capacities of a muscle tissue to continuously exert itself during one 'set' of exercises</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Decrease Fat Mass</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                      <p class="text-muted">Muscular endurance tends to refer to the capacities of a muscle tissue to continuously exert itself during one 'set' of exercises</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Decrease Muscle Damage</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                      <p class="text-muted">Muscular endurance tends to refer to the capacities of a muscle tissue to continuously exert itself during one 'set' of exercises</p>
+                                  </div>
+                              </div>
+                          </li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      </section>
     </div>
   </div>
 </div>

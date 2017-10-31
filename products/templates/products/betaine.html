@@ -1,3 +1,4 @@
+{% load static %}
 <!--  product container -->
 <div class='container product-container'>
   <div class='panel panel-default'>
@@ -33,13 +34,7 @@
 
 
 <!-- description of product -->
-
-      {% if betaine_match %}
-        <div class='row collapse ' id='betaine-description'>
-      {% else %}
-        <div class='row collapse in' id='betaine-description'>
-      {%endif %}
-
+        <div class='row' id='betaine-description'>
           <div class='col-lg-8'>
             <h5>Product description</h5>
             <p>{{betaine.description}}</p>
@@ -67,13 +62,11 @@
         
         <div class='col-lg-6'>    
             <label for='betaine-select'><h4>Select serving size :</h4></label>
-            
             {%if betaine_match %}
-              <select  id="betaine-select" disabled="disabled">
+              <select class='form-control selector' id="betaine-select" disabled="disabled">
             {% else %}
-              <select  id="betaine-select">
+              <select class='form-control selector' id="betaine-select">
             {% endif %}
-
                 {% for product in betaine_products %}
                   {% if product.id == betaine_match.0.id %}
                     <option value="{{product.id}}" data-betaine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
@@ -88,7 +81,6 @@
 <!-- start of product button row -->
       <div class='row'>
         <div class='col-lg-12'>
-
           {% if betaine_match %}
             <button type="button" class="btn btn-success betaine-add remove">Add {{betaine.title}}</button>
             <button type="button" class="btn btn-danger betaine-remove" >Remove {{betaine.title}}</button>
@@ -99,7 +91,63 @@
 
         </div>
       </div>
-
+      <hr>
+      <section id="about" class="bg-light-gray">
+          <div class="container">
+              <div class="row">
+                  <div class="col-lg-12 text-center">
+                      <h2 class="section-heading">Betaine Benefits</h2>
+                      <h4 class="section-subheading text-muted">Clinical resarch on caffeine supplementation has shown the following benefits.</h4>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-lg-12">
+                      <ul class="timeline">
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Improve muscular endurance</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                    <p class='text-muted'>Fat mass is is simply the percentage of fat your body contains</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Improve power output</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                      <p class="text-muted">Fatigue is the lack motivation, energy and vitality.</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Increase training volume</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                      <p class="text-muted">Lactate can be produced during prolonged exercise, and while it is not thought to contribute to muscular failure it seems to be a good biomarker of it. Reductions in lactate production tend to be associated with prolonged physical endurance.</p>
+                                  </div>
+                              </div>
+                          </li>
+                          <li>
+                              <div class="timeline-panel">
+                                  <div class="timeline-heading">
+                                      <h3>Decrease muscle damage</h3>
+                                  </div>
+                                  <div class="timeline-body">
+                                      <p class="text-muted">Muscle damage refers to the breaking of muscle tissue during exercise. Reducing muscle damage may alleviate soreness from exercise.</p>
+                                  </div>
+                              </div>
+                          </li>
+                      </ul>
+                  </div>
+              </div>
+          </div>
+      </section>
     </div>
   </div>
 </div>

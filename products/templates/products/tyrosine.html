@@ -33,13 +33,7 @@
 
 
 <!-- description of product -->
-
-      {% if l_tyrosine_match %}
-        <div class='row collapse ' id='l_tyrosine-description'>
-      {% else %}
-        <div class='row collapse in' id='l_tyrosine-description'>
-      {%endif %}
-
+        <div class='row' id='l_tyrosine-description'>
           <div class='col-lg-8'>
             <h5>Product description</h5>
             <p>{{l_tyrosine.description}}</p>
@@ -69,9 +63,9 @@
             <label for='l_tyrosine-select'><h4>Select serving size :</h4></label>
             
             {%if l_tyrosine_match %}
-              <select  id="l_tyrosine-select" disabled="disabled">
+              <select class='form-control selector' id="l_tyrosine-select" disabled="disabled">
             {% else %}
-              <select  id="l_tyrosine-select">
+              <select class='form-control selector' id="l_tyrosine-select">
             {% endif %}
 
                 {% for product in l_tyrosine_products %}

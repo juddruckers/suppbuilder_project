@@ -34,13 +34,7 @@
 
 
 <!-- description of product -->
-
-      {% if glutamine_match %}
-        <div class='row collapse ' id='glutamine-description'>
-      {% else %}
-        <div class='row collapse in' id='glutamine-description'>
-      {%endif %}
-
+        <div class='row' id='glutamine-description'>
           <div class='col-lg-8'>
             <h5>Product description</h5>
             <p>{{glutamine.description}}</p>
@@ -70,9 +64,9 @@
             <label for='glutamine-select'><h4>Select serving size :</h4></label>
             
             {%if glutamine_match %}
-              <select  id="glutamine-select" disabled="disabled">
+              <select class='form-control selector' id="glutamine-select" disabled="disabled">
             {% else %}
-              <select  id="glutamine-select">
+              <select class='form-control selector' id="glutamine-select">
             {% endif %}
 
                 {% for product in glutamine_products %}

@@ -36,12 +36,8 @@
 
 <!-- description of product -->
 
-      {% if bcaa_match %}
-        <div class='row collapse ' id='bcaa-description'>
-      {% else %}
-        <div class='row collapse in' id='bcaa-description'>
-      {%endif %}
 
+        <div class='row' id='bcaa-description'>
           <div class='col-lg-8'>
             <h5>Product description</h5>
             <p>{{bcaa.description}}</p>
@@ -71,9 +67,9 @@
             <label for='bcaa-select'><h4>Select serving size :</h4></label>
             
             {%if bcaa_match %}
-              <select  id="bcaa-select" disabled="disabled">
+              <select class='form-control selector' id="bcaa-select" disabled="disabled">
             {% else %}
-              <select  id="bcaa-select">
+              <select class='form-control selector' id="bcaa-select">
             {% endif %}
 
                 {% for product in bcaa_products %}
@@ -90,7 +86,6 @@
 <!-- start of product button row -->
       <div class='row'>
         <div class='col-lg-12'>
-
           {% if bcaa_match %}
             <button type="button" class="btn btn-success bcaa-add remove">Add {{bcaa.title}}</button>
             <button type="button" class="btn btn-danger bcaa-remove" >Remove {{bcaa.title}}</button>
@@ -98,10 +93,66 @@
             <button type="button" class="btn btn-success bcaa-add">Add {{bcaa.title}}</button>
             <button type="button" class="btn btn-danger bcaa-remove remove" >Remove {{bcaa.title}}</button>
           {% endif %}
-
         </div>
       </div>
-
+      <hr>
+          <section id="about" class="bg-light-gray">
+              <div class="container">
+                  <div class="row">
+                      <div class="col-lg-12 text-center">
+                          <h2 class="section-heading">BCAA Benefits</h2>
+                          <h4 class="section-subheading text-muted">Clinical resarch on BCAA supplementation has shown the following benefits.</h4>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-lg-12">
+                          <ul class="timeline">
+                              <li>
+                                  <div class="timeline-panel">
+                                      <div class="timeline-heading">
+                                          <h3>Increase time to exhaustion in prolonged exercise.</h3>
+                                      </div>
+                                      <div class="timeline-body">
+                                        <p class='text-muted'>Muscular endurance tends to refer to the capacities of a muscle tissue to continuously exert itself during one 'set' of exercises</p>
+                                      </div>
+                                  </div>
+                              </li>
+                              <li>
+                                  <div class="timeline-panel">
+                                      <div class="timeline-heading">
+                                          <h3>Increase Fat oxidation in prolonged exercise </h3>
+                                      </div>
+                                      <div class="timeline-body">
+                                          <p class="text-muted">Muscular endurance tends to refer to the capacities of a muscle tissue to continuously exert itself during one 'set' of exercises</p>
+                                      </div>
+                                  </div>
+                              </li>
+                              <li>
+                                  <div class="timeline-panel">
+                                      <div class="timeline-heading">
+                                          <h3>Decrease mental fatigue</h3>
+                                      </div>
+                                      <div class="timeline-body">
+                                          <p class="text-muted">Anaerobic capacity is the maximal work performed during maximum-intensity short-term physical effort such as weightlifting, HIIT, and sprinting.  </p>
+                                      </div>
+                                  </div>
+                              </li>
+                              <li>
+                                  <div class="timeline-panel">
+                                      <div class="timeline-heading">
+                                          <h3>Decrease rate of percieved exertion</h3>
+                                      </div>
+                                      <div class="timeline-body">
+                                          <p class="text-muted">Lean Mass is overall body mass minus fat mass.</p>
+                                      </div>
+                                  </div>
+                              </li>
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+          </section>
+      <hr>
     </div>
   </div>
 </div>
