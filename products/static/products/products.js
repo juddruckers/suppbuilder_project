@@ -1,13 +1,27 @@
-
-$(".caffeine-add").on("click", function(added){
-
-	var variation = $("#caffeine-select").val();
-
+function addItem(variation){
 	$.ajax({
 		url: '/shopping/preworkout/',
 		type: 'POST',
 		data: {'variation': variation,},
-	});
+	});	
+}
+
+function removeItem(product_id){
+	$.ajax({
+		url : '/shopping/preworkout/remove/' ,
+		type : 'POST',
+		data : {'product_id': product_id},
+	})	
+}
+$(".caffeine-add").on("click", function(){
+
+	var variation = $("#caffeine-select").val();
+	var item_added = $("#caffeine-select option:selected").text();
+
+	$(".modal-body").html("<p>" + item_added + " added to stack!</p>")
+	addItem(variation);
+
+
 
 	$(this).hide();
 	
@@ -23,11 +37,7 @@ $(".caffeine-add").on("click", function(added){
 $(".caffeine-remove").on("click", function(){
 	var product_id = $("#caffeine-select").val();
 
-	$.ajax({
-		url : '/shopping/preworkout/remove/' ,
-		type : 'POST',
-		data : {'product_id': product_id},
-	})
+	removeItem(product_id);
 
 	$("#caffeine-select").attr("disabled", false);
 	$(this).hide();
@@ -40,7 +50,6 @@ $(".caffeine-remove").on("click", function(){
 
 
 $("#caffeine-select").change(function(){
-	console.log("change detected");
 	var option = Number($('option:selected', this).attr('data-caffeine-price'));
 	var caffeine_price_per_serving = (option / 30).toFixed(2);
 	var size = $('option:selected', this).attr('data-serving-size');
@@ -65,7 +74,6 @@ $(".theanine-add").on("click", function(added){
 
 	$("#theanine-select").attr('disabled', true);
 	$(".theanine-remove").show();
-	$('#theanineCollapse').collapse('hide');
 	$('#selectTheanine').collapse('hide');
 	$('#theanine-check').removeClass('hidden');
 });
@@ -83,7 +91,6 @@ $(".theanine-remove").on("click", function(){
 	$("#theanine-select").attr("disabled", false);
 	$(this).hide();
 	$(".theanine-add").show();
-	$('#theanineCollapse').collapse('show');
 	$('#selectTheanine').collapse('show');
 	$('#theanine-check').addClass('hidden');
 });
@@ -115,7 +122,6 @@ $(".creatine-add").on("click", function(added){
 	$("#creatine-select").attr('disabled', true);
 	$("#creatine-options").collapse('hide');
 	$(".creatine-remove").show();
-	$('#creatine-description').collapse('hide')
 	$('#creatine-check').removeClass('hidden')
 });
 
@@ -136,7 +142,6 @@ $(".creatine-remove").on("click", function(){
 	$("#creatine-select").attr("disabled", false);
 	$("#creatine-options").collapse('show');
 	$(".creatine-add").show();
-	$('#creatine-description').collapse('show')
 	$('#creatine-check').addClass('hidden')
 });
 
@@ -166,7 +171,6 @@ $(".beta_alanine-add").on("click", function(added){
 	$("#beta_alanine-select").attr('disabled', true);
 	$("#beta_alanine-options").collapse('hide');
 	$(".beta_alanine-remove").show();
-	$('#beta_alanine-description').collapse('hide');
 	$('#beta-alanine-check').removeClass('hidden');
 });
 
@@ -183,7 +187,6 @@ $(".beta_alanine-remove").on("click", function(){
 	$("#beta_alanine-select").attr("disabled", false);
 	$("#beta_alanine-options").collapse('show');
 	$(".beta_alanine-add").show();
-	$('#beta_alanine-description').collapse('show')
 	$('#beta-alanine-check').addClass('hidden');
 });
 
@@ -223,7 +226,7 @@ $(".bcaa-add").on("click", function(added){
 	$("#bcaa-select").attr('disabled', true);
 	$("#bcaa-options").collapse('hide');
 	$(".bcaa-remove").show();
-	$('#bcaa-description').collapse('hide');
+
 	$('#bcaa-check').removeClass('hidden');
 
 });
@@ -243,7 +246,6 @@ $(".bcaa-remove").on("click", function(){
 	$("#bcaa-select").attr("disabled", false);
 	$("#bcaa-options").collapse('show');
 	$(".bcaa-add").show();
-	$('#bcaa-description').collapse('show');
 	$("#bcaa-check").addClass('hidden');
 });
 
@@ -272,7 +274,6 @@ $(".citrulline_malate-add").on("click", function(added){
 	$("#citrulline_malate-select").attr('disabled', true);
 	$("#citrulline_malate-options").collapse('hide');
 	$(".citrulline_malate-remove").show();
-	$('#citrulline_malate-description').collapse('hide');
 	$("#citrulline-malate-check").removeClass('hidden');
 
 });
@@ -290,7 +291,6 @@ $(".citrulline_malate-remove").on("click", function(){
 	$("#citrulline_malate-select").attr("disabled", false);
 	$("#citrulline_malate-options").collapse('show');
 	$(".citrulline_malate-add").show();
-	$('#citrulline_malate-description').collapse('show');
 	$('#citrulline-malate-check').addClass('hidden');
 });
 
@@ -320,7 +320,6 @@ $(".glutamine-add").on("click", function(added){
 	$("#glutamine-select").attr('disabled', true);
 	$("#glutamine-options").collapse('hide');
 	$(".glutamine-remove").show();
-	$('#glutamine-description').collapse('hide')
 	$('#glutamine-check').removeClass('hidden');
 });
 
@@ -337,7 +336,6 @@ $(".glutamine-remove").on("click", function(){
 	$("#glutamine-select").attr("disabled", false);
 	$("#glutamine-options").collapse('show');
 	$(".glutamine-add").show();
-	$('#glutamine-description').collapse('show');
 	$('#glutamine-check').addClass('hidden');
 
 });
@@ -369,7 +367,6 @@ $(".acetyl_l_carnitine-add").on("click", function(added){
 	$("#acetyl_l_carnitine-select").attr('disabled', true);
 	$("#acetyl_l_carnitine-options").collapse('hide');
 	$(".acetyl_l_carnitine-remove").show();
-	$('#acetyl_l_carnitine-description').collapse('hide')
 	$('#acetyl_l_carnitine-check').removeClass('hidden');
 });
 
@@ -387,7 +384,6 @@ $(".acetyl_l_carnitine-remove").on("click", function(){
 	$("#acetyl_l_carnitine-select").attr("disabled", false);
 	$("#acetyl_l_carnitine-options").collapse('show');
 	$(".acetyl_l_carnitine-add").show();
-	$('#acetyl_l_carnitine-description').collapse('show');
 	$('#acetyl_l_carnitine-check').addClass('hidden');
 
 });
@@ -419,7 +415,6 @@ $(".ornithine-add").on("click", function(added){
 	$("#ornithine-select").attr('disabled', true);
 	$("#ornithine-options").collapse('hide');
 	$(".ornithine-remove").show();
-	$('#ornithine-description').collapse('hide');
 	$('#ornithine-check').removeClass('hidden');
 });
 
@@ -437,7 +432,6 @@ $(".ornithine-remove").on("click", function(){
 	$("#ornithine-select").attr("disabled", false);
 	$("#ornithine-options").collapse('show');
 	$(".ornithine-add").show();
-	$('#ornithine-description').collapse('show');
 	$('#ornithine-check').addClass('hidden');
 });
 
@@ -468,7 +462,6 @@ $(".taurine-add").on("click", function(added){
 	$("#taurine-select").attr('disabled', true);
 	$("#taurine-options").collapse('hide');
 	$(".taurine-remove").show();
-	$('#taurine-description').collapse('hide');
 	$("#taurine-check").removeClass('hidden');
 
 });
@@ -487,7 +480,6 @@ $(".taurine-remove").on("click", function(){
 	$("#taurine-select").attr("disabled", false);
 	$("#taurine-options").collapse('show');
 	$(".taurine-add").show();
-	$('#taurine-description').collapse('show');
 	$('taurine-check').addClass('hidden');
 });
 
@@ -518,7 +510,6 @@ $(".cordyceps-add").on("click", function(added){
 	$("#cordyceps-select").attr('disabled', true);
 	$("#cordyceps-options").collapse('hide');
 	$(".cordyceps-remove").show();
-	$('#cordyceps-description').collapse('hide')
 	$("#cordyceps-check").removeClass('hidden');
 });
 
@@ -536,7 +527,6 @@ $(".cordyceps-remove").on("click", function(){
 	$("#cordyceps-select").attr("disabled", false);
 	$("#cordyceps-options").collapse('show');
 	$(".cordyceps-add").show();
-	$('#cordyceps-description').collapse('show');
 	$('#cordyceps-check').addClass('hidden');
 });
 
@@ -566,7 +556,6 @@ $(".rhodiola_rosea-add").on("click", function(added){
 	$("#rhodiola_rosea-select").attr('disabled', true);
 	$("#rhodiola_rosea-options").collapse('hide');
 	$(".rhodiola_rosea-remove").show();
-	$('#rhodiola_rosea-description').collapse('hide');
 	$('#rhodiola-rosea-check').removeClass('hidden');
 
 });
@@ -585,7 +574,6 @@ $(".rhodiola_rosea-remove").on("click", function(){
 	$("#rhodiola_rosea-select").attr("disabled", false);
 	$("#rhodiola_rosea-options").collapse('show');
 	$(".rhodiola_rosea-add").show();
-	$('#rhodiola_rosea-description').collapse('show');
 	$('#rhodiola-rosea-check').addClass('hidden');
 });
 
@@ -602,9 +590,6 @@ $("#rhodiola_rosea-select").change(function(){
 $(".hmb-add").on("click", function(added){
 
 	var variation = $("#hmb-select").val();
-
-	
-	
 	$.ajax({
 		url: '/shopping/preworkout/',
 		type: 'POST',
@@ -616,7 +601,6 @@ $(".hmb-add").on("click", function(added){
 	$("#hmb-select").attr('disabled', true);
 	$("#hmb-options").collapse('hide');
 	$(".hmb-remove").show();
-	$('#hmb-description').collapse('hide');
 	$('#hmb-check').removeClass('hidden');
 
 });
@@ -635,7 +619,6 @@ $(".hmb-remove").on("click", function(){
 	$("#hmb-select").attr("disabled", false);
 	$("#hmb-options").collapse('show');
 	$(".hmb-add").show();
-	$('#hmb-description').collapse('show');
 	$('hmb-check').addClass('hidden');
 });
 
@@ -666,7 +649,6 @@ $(".ashwagandha-add").on("click", function(added){
 	$("#ashwagandha-select").attr('disabled', true);
 	$("#ashwagandha-options").collapse('hide');
 	$(".ashwagandha-remove").show();
-	$('#ashwagandha-description').collapse('hide');
 	$("#ashwagandha-check").removeClass('hidden');
 });
 
@@ -684,7 +666,6 @@ $(".ashwagandha-remove").on("click", function(){
 	$("#ashwagandha-select").attr("disabled", false);
 	$("#ashwagandha-options").collapse('show');
 	$(".ashwagandha-add").show();
-	$('#ashwagandha-description').collapse('show')
 	$("#ashwagandha-check").addClass('hidden')
 });
 
@@ -714,7 +695,6 @@ $(".l_tyrosine-add").on("click", function(added){
 	$("#l_tyrosine-select").attr('disabled', true);
 	$("#l_tyrosine-options").collapse('hide');
 	$(".l_tyrosine-remove").show();
-	$('#l_tyrosine-description').collapse('hide')
 	$("#l-tyrosine-check").removeClass('hidden');
 });
 
@@ -732,7 +712,6 @@ $(".l_tyrosine-remove").on("click", function(){
 	$("#l_tyrosine-select").attr("disabled", false);
 	$("#l_tyrosine-options").collapse('show');
 	$(".l_tyrosine-add").show();
-	$('#l_tyrosine-description').collapse('show');
 	$('#l-tyrosine-check').addClass('hidden');
 });
 
@@ -762,7 +741,6 @@ $(".betaine-add").on("click", function(added){
 	$("#betaine-select").attr('disabled', true);
 	$("#betaine-options").collapse('hide');
 	$(".betaine-remove").show();
-	$('#betaine-description').collapse('hide')
 	$('#betaine-check').removeClass('hidden')
 });
 
@@ -780,7 +758,6 @@ $(".betaine-remove").on("click", function(){
 	$("#betaine-select").attr("disabled", false);
 	$("#betaine-options").collapse('show');
 	$(".betaine-add").show();
-	$('#betaine-description').collapse('show')
 	$('#betaine-check').addClass('hidden')
 });
 
@@ -811,7 +788,6 @@ $(".flavor-add").on("click", function(added){
 	$("#flavor-select").attr('disabled', true);
 	$("#flavor-options").collapse('hide');
 	$(".flavor-remove").show();
-	$('#flavor-description').collapse('hide')
 
 });
 
@@ -829,8 +805,6 @@ $(".flavor-remove").on("click", function(){
 	$("#flavor-select").attr("disabled", false);
 	$("#flavor-options").collapse('show');
 	$(".flavor-add").show();
-	$('#flavor-description').collapse('show')
-
 });
 
 $("#flavor-select").change(function(){

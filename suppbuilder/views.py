@@ -6,7 +6,6 @@ from django.views.generic.base import TemplateView
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
-import braintree
 import decimal
 from allauth.account.forms import LoginForm
 from allauth.account.views import *

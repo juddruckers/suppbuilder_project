@@ -1,0 +1,246 @@
+
+{% extends 'suppbuilder/base.html' %}
+{% load static %}
+{% block head %}
+    
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'suppbuilder/homepage.css' %}"> -->
+{% endblock %}
+
+{% block body %}
+
+<div class='container '>
+  <div class='row'>
+    <div class='col-lg-12 logo'>
+      <a href="{% url 'energy' %}" class="btn btn-info" role="button">Build your supplement stack</a>
+    </div>
+  </div>
+</div>
+
+
+<div class='container process'>
+  <div class='media'>
+    <img src="{% static 'suppbuilder/images/how-does-it-work.png' %}" style='display:block; margin: 0 auto;' >
+  </div>
+</div>
+
+<div class='container process'>
+  
+  <div class="page-header">
+    <h1>How does it work?</h1>
+  </div>
+
+  <!-- start of steps row one -->
+  <div class='row'>
+    
+
+    <div class='col-lg-6'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <div class="media">
+            
+            <div class="media-left">
+              <img src="{% static 'suppbuilder/images/select.svg' %}" class="media-object" style="width:100px">
+            </div>
+
+            <div class="media-body">
+              <h2 class="media-heading">1. Choose your supplements.</h2>
+              <p>You get to pick which supplements you want in your stack, what effective dose you want, and what flavor. Customize the supplement stack based on your life style goals.</p>
+        
+              <!-- Nested media object -->
+              <div class="media">
+
+                  <div class="media">
+                    <div class="media-left">
+                      <img src="{% static 'suppbuilder/images/einstein.svg' %}" class="media-object" style="width:80px">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">Backed by research</h4>
+                      <p>All supplements provided are backed by scientific research</p>
+                    </div>
+                  </div>
+
+                  <div class="media">
+                    <div class="media-left">
+                      <img src="{% static 'suppbuilder/images/scoop.svg' %}" class="media-object" style="width:80px">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">No Underdosed ingredients</h4>
+                      <p>The serving sizes of each supplement are only provided at what has been shown as effective in scientific studies. We do not under dose an ingredient just so that we can place the ingredient on the label. </p>
+                    </div>
+                  </div>
+
+                  <div class="media">
+                    <div class="media-left">
+                      <img src="{% static 'suppbuilder/images/melon.svg' %}" class="media-object" style="width:80px">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">Organic Flavor Powder without food coloring</h4>
+                      <p>Our supplements are unflavored. We understand that everyone has their own ritual when it comes to taking their supplements. Since our supplements are unflavored this gives you the opportunity to add it to your protein shakes, smoothies, or favorite beverage. In the event you want your supplements flavored we offer a nice selection of Organic flavor powders sweetened with stevia. No toxins or chemicals and uncessary food coloring agents here.</p>
+                    </div>
+                  </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- end column one -->
+
+    <!-- column two -->
+    <div class='col-lg-6'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <div class="media">
+            
+            <div class="media-left">
+              <img src="{% static 'suppbuilder/images/select.svg' %}" class="media-object" style="width:100px">
+            </div>
+
+            <div class="media-body">
+              <h2 class="media-heading">1. Choose your supplements.</h2>
+              <p>You get to pick which supplements you want in your stack, what effective dose you want, and what flavor. Customize the supplement stack based on your life style goals.</p>
+        
+              <!-- Nested media object -->
+              <div class="media">
+                <div class="media-left">
+                  <img src="{% static 'suppbuilder/images/usada.svg' %}" class="media-object" style="width:80px">
+                </div>
+               
+                <div class="media-body">
+                  <h4 class="media-heading">Quality Ingredients</h4>
+                  <p>All the supplements included in your stack are third party tested for quaility and purity.</p>
+                </div>
+
+                  <div class="media">
+                    <div class="media-left">
+                      <img src="{% static 'suppbuilder/images/einstein.svg' %}" class="media-object" style="width:80px">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">Backed by research</h4>
+                      <p>All supplements provided are backed by scientific research</p>
+                    </div>
+                  </div>
+
+                  <div class="media">
+                    <div class="media-left">
+                      <img src="{% static 'suppbuilder/images/scoop.svg' %}" class="media-object" style="width:80px">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">No Underdosed ingredients</h4>
+                      <p>The serving sizes of each supplement are only provided at what has been shown as effective in scientific studies. We do not under dose an ingredient just so that we can place the ingredient on the label. </p>
+                    </div>
+                  </div>
+
+                  <div class="media">
+                    <div class="media-left">
+                      <img src="{% static 'suppbuilder/images/melon.svg' %}" class="media-object" style="width:80px">
+                    </div>
+                    <div class="media-body">
+                      <h4 class="media-heading">No added color, natural flavors</h4>
+                      <p>The pre and post workout formulas and protein powders are flavored and sweetened using natural flavors and ingredients. We also dont add any unnecessary coloring agents.</p>
+                    </div>
+                  </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+  <!-- end of row one -->
+
+
+
+  <!-- row two -->
+  <div class='row'>
+
+    <!-- column one -->
+    <div class='col-lg-6'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <div class="media">
+            <div class="media-left">
+              <img src="{% static 'suppbuilder/images/drink.svg' %}" class="media-object" style="width:100px">
+            </div>
+
+            <div class="media-body">
+                <h2 class="media-heading">3. Reap the benefits.</h2>
+                  <p>You will be given a thirty day supply of your custom supplements. </p>
+          
+            <!-- Nested media object -->
+                <div class="media">
+                  <div class="media-left">
+                    <img src="{% static 'suppbuilder/images/weightlifting.svg' %}" class="media-object" style="width:80px">
+                  </div>
+                 
+                    <div class="media-body">
+                      <h4 class="media-heading">Adjust</h4>
+                      <p>Consume products based on your training regiment and goals</p>
+                    </div>
+                <div class="media">
+                  <div class="media-left">
+                    <img src="{% static 'suppbuilder/images/empty.svg' %}" class="media-object" style="width:80px">
+                  </div>
+                  <div class="media-body">
+                    <h4 class="media-heading">Re order</h4>
+                      <p>Re order when you are close to running out!</p>
+                  </div>
+                </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- column two -->
+    <div class='col-lg-6'>
+      <div class='panel panel-default'>
+        <div class='panel-body'>
+          <div class="media">
+            <div class="media-left">
+              <img src="{% static 'suppbuilder/images/exercise.svg' %}" class="media-object" style="width:100px">
+            </div>
+
+            <div class="media-body">
+                <h2 class="media-heading">4. Share and earn.</h2>
+                  <p>If you are a coach, personal trainer, or a nutritionist you can now recommend customized dietary supplements for your clients instead of turning them to competitors. </p>
+          
+            <!-- Nested media object -->
+                <div class="media">
+                  <div class="media-left">
+                    <img src="{% static 'suppbuilder/images/decision.svg' %}" class="media-object" style="width:80px">
+                  </div>
+                 
+                    <div class="media-body">
+                      <h4 class="media-heading">Customers choose</h4>
+                      <p>Customers have total control. The customer still decides on every ingredient going into their custom supplement. The power is in their hands</p>
+                    </div>
+                <div class="media">
+                  <div class="media-left">
+                    <img src="{% static 'suppbuilder/images/money.svg' %}" class="media-object" style="width:80px">
+                  </div>
+                  <div class="media-body">
+                    <h4 class="media-heading">Earn</h4>
+                      <p>Earn a percentage per transaction instead of turning your clients to the competitors.</p>
+                  </div>
+                </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Place sticky footer content here hmm.</p>
+      </div>
+    </footer>
+
+{% endblock %}

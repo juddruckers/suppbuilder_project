@@ -7,7 +7,6 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.views.generic.edit import UpdateView
 from django.views.decorators.http import require_http_methods
-
 from django.conf import settings
 import decimal
 import stripe
@@ -263,8 +262,6 @@ def payment_view(request):
 
         if not shipping_address:
             form = AuthAddressForm(initial={
-                'first_name' : user.first_name,
-                'last_name' : user.last_name,
                 'address_type' : 'shipping',
                 'email' : user.email,
             })
@@ -552,7 +549,6 @@ def StripePaymentView(request):
     cart = Cart(request.session)
     token = request.POST.get('stripeToken')
     order_id = request.session['order_id']
-    # order = stripe.Order.retrieve('or_1AbxbZBjE7taidLcnf5g262l')
     order = stripe.Order.retrieve(order_id)
     order.pay(source = token)
     saved_order = Order(email = user.email, order_id = order.id)

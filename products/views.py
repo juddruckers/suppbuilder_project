@@ -21,7 +21,6 @@ def ProteinCount(request):
 	return HttpResponse(protein_count)
 	
 
-
 def EnergyView(request):
 	locale.setlocale(locale.LC_ALL, "")
 	# CART CHECK
@@ -35,70 +34,75 @@ def EnergyView(request):
 
 	caffeine = Product.objects.get(sku='sku_AjCPW5deSOW5Ok')
 	caffeine_products = Product.objects.all().filter(title='Caffeine')
-	caffeine_research = Research.objects.all().filter(product__title='Caffeine')
+	caffeine_research = Research.objects.all().filter(product='caffeine')
 	caffeine_match = [item for item in caffeine_products if item in cart_items]
 
 	#THEANINE
 	theanine = Product.objects.get(sku='sku_AjCTzoc3SpDsvv')
 	theanine_products = Product.objects.all().filter(title='Theanine')
-	theanine_research = Research.objects.all().filter(product__title='Theanine')
+	theanine_research = Research.objects.all().filter(product='theanine')
 	theanine_match = [item for item in theanine_products if item in cart_items]
 
 	#CREATINE
 	creatine = Product.objects.get(sku='sku_AiRBdtOxxHVXmD')
 	creatine_products = Product.objects.all().filter(title='Creatine')
-	creatine_research = Research.objects.all().filter(product__title='Creatine')
+	creatine_research = Research.objects.all().filter(product='creatine')
 	creatine_match = [item for item in creatine_products if item in cart_items]
 
 	# BETA ALANINE
 	beta_alanine = Product.objects.get(sku='sku_AqO5mh84XD7LNZ')
 	beta_alanine_products = Product.objects.all().filter(title='Beta Alanine')
-	beta_alanine_research = Research.objects.all().filter(product__title='Beta Alanine')
+	beta_alanine_research = Research.objects.all().filter(product='Beta Alanine')
 	beta_alanine_match = [item for item in beta_alanine_products if item in cart_items]
 
 	bcaa = Product.objects.get(sku='sku_AqPlcHYlaX0HLe')
 	bcaa_products = Product.objects.all().filter(title__contains='BCAA')
-	bcaa_research = Research.objects.all().filter(product__title='BCAA')
+	bcaa_research = Research.objects.all().filter(product='BCAA')
 	bcaa_match = [item for item in bcaa_products if item in cart_items]
+
+	betaine = Product.objects.get(sku="sku_AqQRw6JU29OghA")
+	betaine_products = Product.objects.all().filter(title__contains='Betaine')
+	betaine_research = Research.objects.all().filter(product='Betaine')
+	betaine_match = [item for item in betaine_products if item in cart_items]
 
 	citrulline_malate = Product.objects.get(sku='sku_AqQEqx6kwtGsk6')
 	citrulline_malate_products = Product.objects.all().filter(title='Citrulline Malate')
-	citrulline_malate_research = Research.objects.all().filter(product__title='Citrulline Malate')
+	citrulline_malate_research = Research.objects.all().filter(product='Citrulline Malate')
 	citrulline_malate_match = [item for item in citrulline_malate_products if item in cart_items]
 
 	glutamine = Product.objects.get(sku='sku_AqQNp9zCgUabiG')
 	glutamine_products = Product.objects.all().filter(title='Glutamine')
-	glutamine_research = Research.objects.all().filter(product__title='Glutamine')
+	glutamine_research = Research.objects.all().filter(product='Glutamine')
 	glutamine_match = [item for item in glutamine_products if item in cart_items]
 
 	acetyl_l_carnitine = Product.objects.get(sku='sku_AqkleOGefL2kTB')
 	acetyl_l_carnitine_products = Product.objects.all().filter(title='Acetyl-L Carnitine')
-	acetyl_l_carnitine_research = Research.objects.all().filter(product__title='Acetyl-L Carnitine')
+	acetyl_l_carnitine_research = Research.objects.all().filter(product='Acetyl-L Carnitine')
 	acetyl_l_carnitine_match = [item for item in acetyl_l_carnitine_products if item in cart_items]
 
 	taurine = Product.objects.get(sku='sku_Aqjis5ijv3XpRj')
 	taurine_products = Product.objects.all().filter(title='Taurine')
-	taurine_research = Research.objects.all().filter(product__title='Taurine')
+	taurine_research = Research.objects.all().filter(product='Taurine')
 	taurine_match = [item for item in taurine_products if item in cart_items]
 
 	ashwagandha = Product.objects.get(sku='sku_Aqj6QtHxXQwwOd')
 	ashwagandha_products = Product.objects.all().filter(title='Ashwagandha')
-	ashwagandha_research = Research.objects.all().filter(product__title='Ashwagandha')
+	ashwagandha_research = Research.objects.all().filter(product='Ashwagandha')
 	ashwagandha_match = [item for item in ashwagandha_products if item in cart_items]
 
 	rhodiola_rosea = Product.objects.get(sku='sku_Aqo86NBtqrIuPH')
 	rhodiola_rosea_products = Product.objects.all().filter(title='Rhodiola Rosea')
-	rhodiola_rosea_research = Research.objects.all().filter(product__title='Rhodiola Rosea')
+	rhodiola_rosea_research = Research.objects.all().filter(product='Rhodiola Rosea')
 	rhodiola_rosea_match = [item for item in rhodiola_rosea_products if item in cart_items]
 
 	hmb = Product.objects.get(sku='sku_AqQ2yMg3KLYF5f')
 	hmb_products = Product.objects.all().filter(title='HMB')
-	hmb_research = Research.objects.all().filter(product__title='HMB')
+	hmb_research = Research.objects.all().filter(product='HMB')
 	hmb_match = [item for item in hmb_products if item in cart_items]
 
 	l_tyrosine = Product.objects.get(sku='sku_Aqo3I0U188o3fF')
 	l_tyrosine_products = Product.objects.all().filter(title='L-Tyrosine')
-	l_tyrosine_research = Research.objects.all().filter(product__title='L-Tyrosine')
+	l_tyrosine_research = Research.objects.all().filter(product='L-Tyrosine')
 	l_tyrosine_match = [item for item in l_tyrosine_products if item in cart_items]	
 
 	flavor_products = Product.objects.filter(categories__title__startswith='flavor')
@@ -130,6 +134,10 @@ def EnergyView(request):
 		'bcaa' : bcaa,
 		'bcaa_products' : bcaa_products,
 		'bcaa_research' : bcaa_research,
+		'betaine_match' : betaine_match,
+		'betaine' : betaine,
+		'betaine_products' : betaine_products,
+		'betaine_research' : betaine_research,
 		'citrulline_malate_match' : citrulline_malate_match,
 		'citrulline_malate' : citrulline_malate,
 		'citrulline_malate_products' : citrulline_malate_products,

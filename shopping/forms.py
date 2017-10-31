@@ -71,7 +71,7 @@ class AuthAddressForm(ModelForm):
 
         self.helper.layout = Layout(
             Fieldset(
-                'Where should we ship your supps?',
+                'Where should we ship your supplement stack?',
                 Field('first_name',id = "shipping-first-name",),
                 Field('last_name', id="shipping-last-name"),
                 Field('street_address', id="shipping-street-address"),
@@ -85,7 +85,7 @@ class AuthAddressForm(ModelForm):
             ),
             FormActions(
             Submit('save', 'Proceed to checkout'),
-            HTML("{% if request.user.is_authenticated %} <a href='{% url 'shipping' %}' class='btn btn-default' id='cancel-button'> Cancel</a>{% endif %}")
+            HTML("<a href='{% url 'shopping-cart-show' %}' class='btn btn-default' id='cancel-button'> Back to cart</a>")
         )
 
         )
@@ -243,6 +243,7 @@ class EditAddressForm(ModelForm):
             ),
             FormActions(
             Submit('save', 'Save changes'),
+            HTML("{% if request.user.is_authenticated %} <a href='{% url 'shipping' %}' class='btn btn-default' id='cancel-button'> Cancel</a>{% endif %}")
             ),
         )
 
@@ -354,6 +355,7 @@ class EditExistingAddressForm(ModelForm):
             ),
             FormActions(
             Submit('save', 'Save changes'),
+            HTML("<a href='{% url 'shipping' %}' class='btn btn-default' id='cancel-button'> Cancel</a>")
             ),
         )
 
@@ -407,7 +409,7 @@ class CreateNewAddressForm(ModelForm):
                 Field('default_address', id="shipping-default-address"),
             ),
             FormActions(
-            Submit('save', 'Proceed to checkout'),
+            Submit('save', 'Save address'),
             HTML("{% if request.user.is_authenticated %} <a href='{% url 'shipping' %}' class='btn btn-default' id='cancel-button'> Cancel</a>{% endif %}")
         )
 

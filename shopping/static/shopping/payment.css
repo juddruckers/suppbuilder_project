@@ -8,9 +8,6 @@
 	border-top: 1px solid #eee;
 }
 
-#checkout-title {
-	text-align: center;
-}
 
 #order-summary h3 {
 	display: inline-block;
@@ -37,6 +34,10 @@
 
 #shipping-block h4 {
 	color: rgb(0, 58, 112);
+}
+
+#shipping-block{
+	padding-left:23px;
 }
 
 #order-button {
