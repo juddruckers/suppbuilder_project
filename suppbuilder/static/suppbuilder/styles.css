@@ -26,6 +26,8 @@ body {
 	visibility: hidden;
 }
 
+/*-------------LANDING PAGE----------------- */
+
 .welcome-image {
 	background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),url('/static/suppbuilder/images/suppbuilder_box_background.png');
 	background-size:cover;
@@ -34,6 +36,18 @@ body {
 	background-attachment: fixed;
 }
 
+.welcome-text{
+	margin:0 auto;
+	text-align: center;
+	padding-top: 20%;
+}
+
+.welcome-text h1{
+	color:white;
+}
+
+
+/*------------- NAVAR ------------------- */
 .navbar {
 	margin-bottom: 0;
 }
