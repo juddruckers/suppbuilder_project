@@ -14,7 +14,6 @@ class Product(models.Model):
 	sku = models.CharField(max_length=120)
 
 	def __str__(self):
-
 		return self.title + " " + self.serving_size
 
 	def thirty_day(self):
@@ -22,7 +21,6 @@ class Product(models.Model):
 
 	def cost(self):
 		return "{0:.2f}".format(self.price)
-
 
 
 class Variation(models.Model):
@@ -33,14 +31,21 @@ class Variation(models.Model):
 	def __str__(self):
 		return self.title
 
-
-class Research(models.Model):
-	product = models.ForeignKey(Product)
-	research_title = models.CharField(max_length=120)
-	research_article = models.CharField(max_length=120)
+class Benefit(models.Model):
+	description = models.CharField(max_length=120)
 
 	def __str__(self):
-		return self.research_title
+		return self.description
+
+class Research(models.Model):
+	product = models.CharField(max_length=120)
+	title = models.CharField(max_length=300)
+	article = models.CharField(max_length=300)
+	product_effect = models.ManyToManyField(Benefit)
+
+	def __str__(self):
+		product_and_study = str(self.product) + ": " + str(self.title)
+		return product_and_study
 
 
 class Category(models.Model):
@@ -48,13 +53,6 @@ class Category(models.Model):
 
 	def __str__(self):
 		return self.title
-
-class Benefit(models.Model):
-	description = models.CharField(max_length=120)
-
-	def __str__(self):
-		return self.description
-
   
 class Discount(models.Model):
 	discount = models.DecimalField(decimal_places=0, max_digits=6)
