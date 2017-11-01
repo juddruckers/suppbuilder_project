@@ -82,12 +82,14 @@ body {
 	color:white;
 	transition:color 0.2s;
 	text-shadow: none;
+	font-weight:400;
 }
 
 .navbar-default .navbar-nav >li >a{
 	color:white;
 	transition:color 0.2s;
 	text-shadow: none;
+	font-weight: 400;
 }
 
 .navbar-default .navbar-nav >li >a:hover,
