@@ -47,7 +47,50 @@ body {
 }
 
 
-/*------------- NAVAR ------------------- */
-.navbar {
+/*------------- NAVBAR ------------------- */
+.navbar-default {
 	margin-bottom: 0;
+	background-color:rgba(52, 152, 219,1.0);
+	background-image:none;
+	background-repeat: no-repeat;
+	border: 1px solid rgba(52, 152, 219,1.0);
+	border-radius: 0;
+}
+
+.navbar-default .navbar-brand {
+	color:white;
+	transition:color 0.2s;
+}
+
+.navbar-default .navbar-nav >li >a{
+	color:white;
+	transition:color 0.2s;
+}
+
+.navbar-default .navbar-nav >li >a:hover,
+.navbar-default .navbar-brand:hover{
+	color:rgba(189, 195, 199,1.0);
+}
+
+
+ul.nav.navbar-nav .dropdown.open .dropdown-toggle{
+  background-color: white;
+  background-image:none;
+  border: 1px solid white;
+  transition-property: 2s;
+}
+
+.navbar-default .navbar-toggle{
+	border-color:white;
+	background-color:white;
+	transition: background-color 0.2s, border 0.2s;
+}
+
+.navbar-default .navbar-toggle .icon-bar{
+	background-color: rgba(52, 152, 219,1.0);
+}
+
+.navbar-default .navbar-toggle:focus, .navbar-default .navbar-toggle:hover{
+	border:1px solid rgba(189, 195, 199,1.0);
+	background-color:rgba(189, 195, 199,1.0);
 }
