@@ -1,3 +1,5 @@
+/*navbar color  rgba(52, 152, 219,1.0)*/
+
 * {
 	margin:0;
 	padding:0;
@@ -44,11 +46,30 @@ body {
 
 .welcome-text h1{
 	color:white;
+	text-transform: uppercase;
+	font-size: 150%;
+	word-spacing: 2px;
+	letter-spacing: 1px;
 }
 
+.welcome-text .btn-default{
+	margin-top: 10px;
+	background-image: none;
+	background-color:white;
+	color:rgba(52, 152, 219,1.0);
+	text-shadow: none;
+	border:1px solid rgba(52, 152, 219,1.0);
+	transition: all 0.2s;
+}
+
+.welcome-text .btn-default:hover{
+	background-color:rgba(52, 152, 219,1.0);
+	color:white;
+}
 
 /*------------- NAVBAR ------------------- */
 .navbar-default {
+	font-size: 90%;
 	margin-bottom: 0;
 	background-color:rgba(52, 152, 219,1.0);
 	background-image:none;
@@ -60,11 +81,13 @@ body {
 .navbar-default .navbar-brand {
 	color:white;
 	transition:color 0.2s;
+	text-shadow: none;
 }
 
 .navbar-default .navbar-nav >li >a{
 	color:white;
 	transition:color 0.2s;
+	text-shadow: none;
 }
 
 .navbar-default .navbar-nav >li >a:hover,
