@@ -28,6 +28,22 @@ body {
 	visibility: hidden;
 }
 
+h1,
+h2 {
+	word-spacing: 2px;
+	letter-spacing: 1px;
+}
+
+h2:after {
+	display:block;
+	height:2px;
+	background-color: rgba(52, 152, 219,1.0);
+	content: " ";
+	width: 25%;
+	margin: 0 auto;
+	margin-top: 20px;
+}
+
 /*-------------LANDING PAGE----------------- */
 
 .welcome-image {
@@ -35,6 +51,7 @@ body {
 	background-size:cover;
 	background-position: center;
 	height: 100vh;
+	min-height: 602px;
 	background-attachment: fixed;
 }
 
@@ -47,9 +64,8 @@ body {
 .welcome-text h1{
 	color:white;
 	text-transform: uppercase;
-	font-size: 150%;
-	word-spacing: 2px;
-	letter-spacing: 1px;
+	font-size: 170%;
+	margin-bottom: 2%;
 }
 
 .welcome-text .btn-default{
@@ -119,3 +135,45 @@ ul.nav.navbar-nav .dropdown.open .dropdown-toggle{
 	border:1px solid rgba(189, 195, 199,1.0);
 	background-color:rgba(189, 195, 199,1.0);
 }
+
+
+/*-------------- HOW DOES IT WORK ------------------*/
+
+.how-does-it-work {
+	padding:2em 0;
+}
+
+.how-does-it-work p{
+	font-size: 85%;
+	line-height: 150%;
+}
+
+.icon-large {
+	font-size: 400%;
+	color: rgba(52, 152, 219,1.0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
