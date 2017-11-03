@@ -12,6 +12,12 @@ $(document).ready(function() {
     offset: "70%"
   });
 
+  /*
+  make the mission statement logo fade in when the 
+  user scrolls down to that section.
+  offset by 70%, default value would leave the page blank
+  fade in needs to happen sooner.
+  */
 
     $(".js--wp-2").waypoint(function(direction){
     $(".js--wp-2").addClass('animated fadeIn');
