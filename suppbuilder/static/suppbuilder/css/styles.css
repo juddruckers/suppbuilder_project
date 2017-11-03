@@ -44,6 +44,15 @@ h2:after {
 	margin-top: 20px;
 }
 
+.section-title {
+	text-transform: uppercase;
+	margin-bottom: 1em;
+}
+
+.steps{
+	padding:2em 0;
+}
+
 /*-------------LANDING PAGE----------------- */
 
 .welcome-image {
@@ -139,9 +148,9 @@ ul.nav.navbar-nav .dropdown.open .dropdown-toggle{
 
 /*-------------- HOW DOES IT WORK ------------------*/
 
-.how-does-it-work {
+/*.how-does-it-work {
 	padding:2em 0;
-}
+}*/
 
 .how-does-it-work p{
 	font-size: 85%;
@@ -162,8 +171,21 @@ ul.nav.navbar-nav .dropdown.open .dropdown-toggle{
 }
 
 
+/*-------------- MISSION STATEMENT ------------------*/
 
+.mission-statement {
+	background-color: #f4f4f4;;
+}
 
+.mission-statement img {
+	width:35%;
+	margin-bottom:1em;
+	opacity: 0;
+}
+
+.mission-statement p {
+	font-size:85%;
+}
 
 
 
