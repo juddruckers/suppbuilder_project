@@ -7,29 +7,26 @@ from shopping.models import Address
 class Product(models.Model):
 	title = models.CharField(max_length=120)
 	description = models.TextField()
-	categories = models.ManyToManyField('Category')
-	benefits = models.ManyToManyField('Benefit')
-	serving_size = models.CharField(max_length=120)
-	price = models.DecimalField(decimal_places=2, max_digits=6)
-	sku = models.CharField(max_length=120)
+	categories = models.ManyToManyField('Category', blank=True)
+	benefits = models.ManyToManyField('Benefit', blank=True)
 
 	def __str__(self):
-		return self.title + " " + self.serving_size
+		return self.title
+
+class Variation(models.Model):
+	product = models.ForeignKey(Product)
+	sku = models.CharField(max_length=120)
+	price = models.DecimalField(decimal_places=2, max_digits=6)
+	serving_size = models.CharField(max_length=120)
+
+	def __str__(self):
+		return self.product.title + ": " + self.serving_size
 
 	def thirty_day(self):
 		return "{0:.2f}".format(round(self.price / 30, 2))
 
 	def cost(self):
 		return "{0:.2f}".format(self.price)
-
-
-class Variation(models.Model):
-	product = models.ForeignKey(Product)
-	title = models.CharField(max_length=120)
-	price = models.DecimalField(decimal_places=2, max_digits=6)
-
-	def __str__(self):
-		return self.title
 
 class Benefit(models.Model):
 	description = models.CharField(max_length=120)
