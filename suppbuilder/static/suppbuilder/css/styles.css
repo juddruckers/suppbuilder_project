@@ -153,8 +153,13 @@ ul.nav.navbar-nav .dropdown.open .dropdown-toggle{
 	color: rgba(52, 152, 219,1.0);
 }
 
+.js--wp-1 {
+	opacity: 0;
+}
 
-
+.js--wp-1.animated {
+	opacity: 1;
+}
 
 
 
