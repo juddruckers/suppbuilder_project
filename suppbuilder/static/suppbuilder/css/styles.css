@@ -34,7 +34,7 @@ h2 {
 	letter-spacing: 1px;
 }
 
-h2:after {
+.heading:after {
 	display:block;
 	height:2px;
 	background-color: rgba(52, 152, 219,1.0);
