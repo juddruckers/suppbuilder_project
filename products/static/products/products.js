@@ -13,25 +13,51 @@ function removeItem(product_id){
 		data : {'product_id': product_id},
 	})	
 }
-$(".caffeine-add").on("click", function(){
 
-	var variation = $("#caffeine-select").val();
-	var item_added = $("#caffeine-select option:selected").text();
+$(".product-add").on("click", function(){
+	/*
+	get the previous sibling which is a select bar
+	*/
+		var select = $(this).prev();
+		var value = select.val();
 
-	$(".modal-body").html("<p>" + item_added + " added to stack!</p>")
-	addItem(variation);
+	//disable the select bar after adding product
+		select.attr("disabled", true);
 
+	// make the checkmark show on the added product
+		$('#caffeine-check').removeClass("hidden");
 
+	// hide the button and show the remove product button
+		$(this).hide();
+		$(this).next().show();
 
-	$(this).hide();
-	
-	$("#caffeine-select").attr('disabled', true);
-	$(".caffeine-remove").show();
-	$('#caffeineCollapse').collapse('hide')
-	$('#selectCaffeine').collapse('hide')
-	$('#caffeine-check').removeClass('hidden')
+	// add the item to the cart
+
+	addItem(value)
 
 });
+
+$(".product-remove").on("click", function(){
+
+})
+
+// $(".caffeine-add").on("click", function(){
+
+// 	var variation = $("#caffeine-select").val();
+// 	var item_added = $("#caffeine-select option:selected").text();
+
+// 	$(".modal-body").html("<p>" + item_added + " added to stack!</p>")
+// 	addItem(variation);
+
+// 	$(this).hide();
+	
+// 	$("#caffeine-select").attr('disabled', true);
+// 	$(".caffeine-remove").show();
+// 	$('#caffeineCollapse').collapse('hide')
+// 	$('#selectCaffeine').collapse('hide')
+// 	$('#caffeine-check').removeClass('hidden')
+
+// });
 
 
 $(".caffeine-remove").on("click", function(){

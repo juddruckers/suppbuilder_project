@@ -23,12 +23,14 @@ from .forms import AddressForm, EditAddressForm, AuthAddressForm, EditAuthAddres
 
 def preWorkoutAdd(request):
     """
-    this is the view that takes in the product id and adds it to the cart
+    this is the view that takes in the variation id and adds it to the cart
     """
     cart = Cart(request.session)
-    product = Product.objects.get(id=request.POST.get('variation'))
-    cart.add(product, price=product.price)
+    variation = Variation.objects.get(id=request.POST.get('variation'))
+    cart.add(variation, price=variation.price)
 
+    for item in cart.items:
+        print item
     return HttpResponse("added")
 
 def preWorkoutRemove(request):

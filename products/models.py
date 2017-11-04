@@ -9,7 +9,7 @@ class Product(models.Model):
 	description = models.TextField()
 	categories = models.ManyToManyField('Category', blank=True)
 	benefits = models.ManyToManyField('Benefit', blank=True)
-
+	
 	def __str__(self):
 		return self.title
 
