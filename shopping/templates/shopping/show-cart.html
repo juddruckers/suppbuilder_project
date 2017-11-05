@@ -25,7 +25,7 @@
                 </tr>
                 {% for item in cart.items %}
                 <tr>
-                    <td>{{ item.product.title }}</td>
+                    <td>{{ item.product.product.title }}</td>
                     <td>{{ item.product.serving_size }}</td>
                     <td>${{item.price}}</td>
                     <td>${{item.product.thirty_day}}</td>

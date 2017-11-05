@@ -6,11 +6,11 @@ function addItem(variation){
 	});	
 }
 
-function removeItem(product_id){
+function removeItem(variation){
 	$.ajax({
 		url : '/shopping/preworkout/remove/' ,
 		type : 'POST',
-		data : {'product_id': product_id},
+		data : {'variation': variation},
 	})	
 }
 
@@ -39,8 +39,8 @@ $(".product-add").on("click", function(){
 $(".product-remove").on("click", function(){
 	// grab the previous sibling select
 	var select = $(this).prevAll("select:first");
-	var value = select.val();
-
+	var variation = select.val();
+	console.log(variation);
 	//enable the select bar after removing product
 	select.attr("disabled", false);
 
@@ -50,7 +50,8 @@ $(".product-remove").on("click", function(){
 	$(this).hide();
 	$(this).prev().show();
 
-	// 
+	//add the item to the cart
+	removeItem(variation) 
 
 });
 

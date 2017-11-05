@@ -24,6 +24,11 @@ from .forms import AddressForm, EditAddressForm, AuthAddressForm, EditAuthAddres
 def preWorkoutAdd(request):
     """
     this is the view that takes in the variation id and adds it to the cart
+
+    the view receives the the variation ID via ajax. The ID should be
+    an integer.
+
+    Find the variation using the variation ID and add it to the cart.
     """
     cart = Cart(request.session)
     variation = Variation.objects.get(id=request.POST.get('variation'))
@@ -34,12 +39,37 @@ def preWorkoutAdd(request):
 def preWorkoutRemove(request):
     """
     this is the view that takes in the product id and removes it from the cart
+    
+    the view receives the the variation ID via ajax. The ID should be
+    an integer.
+
+    Find the variation using the variation ID and renmove it to the cart.
     """
+
+    # retrieve the cart session object
+
     cart = Cart(request.session)
-    product_id = Product.objects.get(id=request.POST.get('product_id'))
-    cart.remove(product_id)
+    variation = Variation.objects.get(id=request.POST.get('variation'))
+    cart.remove(variation)
 
     return HttpResponse("item removed")
+
+def show(request):
+    cart = Cart(request.session)
+    # cart.clear()
+
+    grand_total = cart.total 
+
+    per_serving = "{0:.2f}".format(round(grand_total / 30, 2))
+
+    context = {
+        'cart' : cart,
+        'grand_total' : grand_total,
+        'per_serving' : per_serving, 
+    }
+
+    return render(request, 'shopping/show-cart.html', context)
+
 
 def DiscountFindView(request):
     name = request.POST.get('name')
@@ -226,25 +256,6 @@ def CheckOutAddressUpdateView(request, pk):
         pk = Address.objects.get(id=pk)
 
         return render(request, 'shopping/address_form.html', {'form': existing_address_form, 'address': address, 'pk':pk})
-
-def show(request):
-    cart = Cart(request.session)
-
-    grand_total = cart.total 
-
-    per_serving = "{0:.2f}".format(round(grand_total / 30, 2))
-
-    context = {
-        'cart' : cart,
-        'grand_total' : grand_total,
-        'per_serving' : per_serving, 
-    }
-
-    print len(cart.items)
-    for item in cart.items:
-        print item.product.product.title
-    return render(request, 'shopping/show-cart.html', context)
-    
 
 def payment_view(request):
     user = request.user
