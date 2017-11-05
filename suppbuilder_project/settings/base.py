@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 ]
 
 
-CART_PRODUCT_MODEL = 'products.models.Product'
+CART_PRODUCT_MODEL = 'products.models.Variation'
 
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/suppbuilder'

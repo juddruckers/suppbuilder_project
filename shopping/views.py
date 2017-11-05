@@ -29,8 +29,6 @@ def preWorkoutAdd(request):
     variation = Variation.objects.get(id=request.POST.get('variation'))
     cart.add(variation, price=variation.price)
 
-    for item in cart.items:
-        print item
     return HttpResponse("added")
 
 def preWorkoutRemove(request):
@@ -241,6 +239,10 @@ def show(request):
         'grand_total' : grand_total,
         'per_serving' : per_serving, 
     }
+
+    print len(cart.items)
+    for item in cart.items:
+        print item.product.product.title
     return render(request, 'shopping/show-cart.html', context)
     
 

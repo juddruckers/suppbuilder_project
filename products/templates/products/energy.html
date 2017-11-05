@@ -26,9 +26,9 @@
       <div class="row">
         <div class="col-sm-6">
           <p>{{product.description}}<p>
-          <select class="form-control {{product.title}}-select">
+          <select class="form-control select" >
             {% for variation in product.variation_set.all %}
-              <option value={{variation.id}}>{{variation.product.title|title}} {{variation.serving_size}}</option>
+              <option value={{variation.id}} data-title={{variation.product.title}}>{{variation.product.title|title}} {{variation.serving_size}}</option>
             {% endfor %}            
           </select>
           <button class="btn btn-default product-add">Add {{product.title}}</button>

@@ -19,8 +19,8 @@ $(".product-add").on("click", function(){
 	get the previous sibling which is a select bar
 	*/
 		var select = $(this).prev();
-		var value = select.val();
-
+		var variation = select.val();
+		var title = select.find(":selected").data("variation-title");
 	//disable the select bar after adding product
 		select.attr("disabled", true);
 
@@ -32,14 +32,27 @@ $(".product-add").on("click", function(){
 		$(this).next().show();
 
 	// add the item to the cart
-
-	addItem(value)
+		addItem(variation);
 
 });
 
 $(".product-remove").on("click", function(){
+	// grab the previous sibling select
+	var select = $(this).prevAll("select:first");
+	var value = select.val();
 
-})
+	//enable the select bar after removing product
+	select.attr("disabled", false);
+
+	// hide the checkmark because the item is remove
+
+	// hide this button and show the product add button
+	$(this).hide();
+	$(this).prev().show();
+
+	// 
+
+});
 
 // $(".caffeine-add").on("click", function(){
 
@@ -60,29 +73,29 @@ $(".product-remove").on("click", function(){
 // });
 
 
-$(".caffeine-remove").on("click", function(){
-	var product_id = $("#caffeine-select").val();
+// $(".caffeine-remove").on("click", function(){
+// 	var product_id = $("#caffeine-select").val();
 
-	removeItem(product_id);
+// 	removeItem(product_id);
 
-	$("#caffeine-select").attr("disabled", false);
-	$(this).hide();
-	$(".caffeine-add").show();
-	$('#caffeineCollapse').collapse('show');
-	$('#selectCaffeine').collapse('show');
-	$('#caffeine-check').addClass('hidden')
+// 	$("#caffeine-select").attr("disabled", false);
+// 	$(this).hide();
+// 	$(".caffeine-add").show();
+// 	$('#caffeineCollapse').collapse('show');
+// 	$('#selectCaffeine').collapse('show');
+// 	$('#caffeine-check').addClass('hidden')
 
-});
+// });
 
 
-$("#caffeine-select").change(function(){
-	var option = Number($('option:selected', this).attr('data-caffeine-price'));
-	var caffeine_price_per_serving = (option / 30).toFixed(2);
-	var size = $('option:selected', this).attr('data-serving-size');
-	$("#caffeine-size").text(size+ "/serving")
-	$("#caffeine-price").text(" $" + option + " ($" + caffeine_price_per_serving + "/serving)")
+// $("#caffeine-select").change(function(){
+// 	var option = Number($('option:selected', this).attr('data-caffeine-price'));
+// 	var caffeine_price_per_serving = (option / 30).toFixed(2);
+// 	var size = $('option:selected', this).attr('data-serving-size');
+// 	$("#caffeine-size").text(size+ "/serving")
+// 	$("#caffeine-price").text(" $" + option + " ($" + caffeine_price_per_serving + "/serving)")
 
-})
+// })
 
 
 $(".theanine-add").on("click", function(added){
