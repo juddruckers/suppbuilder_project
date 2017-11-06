@@ -23,17 +23,29 @@ def ProteinCount(request):
 
 def EnergyView(request):
 	locale.setlocale(locale.LC_ALL, "")
-	# CART CHECK
-	cart = Cart(request.session)
 
+	"""
+	This view will first check if any of the products exist in the session cart
+
+	cart_items will contain the name of the product (string)
+
+	variation_list will contain the ID's of the variations that 
+	have already been added to the cart.
+	
+	"""
+	cart = Cart(request.session)
 	cart_items = []
 	variation_list = []
 
-
+	"""
+	for each already added item add the product name into the
+	cart items list and the variation id into the variation_list
+	"""
 	for item in cart.items:
 		variation_list.append(item.product.id)
 		cart_items.append(str(item.product.product.title))
 
+	# retreive all products to be displayed on the products page.
 	products = Product.objects.all()
 
 	context = {
