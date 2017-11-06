@@ -1,6 +1,7 @@
 {% extends 'suppbuilder/base.html' %}
 {% load static %}
 {% load carton_tags %}
+{% get_cart as cart %}
 {% block head %}
     
 <link rel="stylesheet" type="text/css" href="{% static 'shopping/cart.css' %}">

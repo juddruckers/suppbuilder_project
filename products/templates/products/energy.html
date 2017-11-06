@@ -1,6 +1,7 @@
 {% extends 'suppbuilder/base.html' %}
 {% load static %}
 {% load carton_tags %}
+{% get_cart as cart %}
 {% block head %}
     
 <link rel="stylesheet" type="text/css" href="{% static 'products/product.css' %}">
@@ -19,18 +20,30 @@
       <div class="row">
         <div class="col-lg-12">
           {% with product.variation_set.all|first as product %}
-            <h2> {{product.product.title|title}} </h2>
+            <h2> {{product.product.title|title}}: ${{product.cost}} - ${{product.thirty_day}}/per serving </h2>
           {% endwith %}
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
           <p>{{product.description}}<p>
-          <select class="form-control select" >
+
+          <select class="form-control select" {% if product.title in cart_items %} disabled {%endif%}>
             {% for variation in product.variation_set.all %}
-              <option value={{variation.id}} data-title={{variation.product.title}}>{{variation.product.title|title}} {{variation.serving_size}}</option>
+
+              <!-- if the variation id is in the variation_list that option is selected -->
+              {% if variation.id in variation_list %}
+                <option value={{variation.id}} data-title={{variation.product.title}} selected>{{variation.product.title|title}} {{variation.serving_size}}
+                </option>
+              {% else %}
+                <option value={{variation.id}} data-title={{variation.product.title}}>{{variation.product.title|title}} {{variation.serving_size}}
+                </option>
+              {% endif %}
+
             {% endfor %}            
           </select>
+
+
           <button class="btn btn-default product-add">Add {{product.title}}</button>
           <button class="btn btn-default product-remove remove">Remove {{product.title}}</button>
         </div>

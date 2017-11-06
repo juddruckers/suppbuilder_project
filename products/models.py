@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.core.urlresolvers import reverse
 from django.db import models
 from shopping.models import Address
+import decimal
 
 # Create your models here.
 class Product(models.Model):
@@ -23,10 +24,23 @@ class Variation(models.Model):
 		return self.product.title + ": " + self.serving_size
 
 	def thirty_day(self):
-		return "{0:.2f}".format(round(self.price / 30, 2))
+		"""
+		this method returns price per serving for a 30 day supply
+
+		initial = the variations price divided for 30 to
+				  symbolize a 30 day supply.
+		
+		use the quantize method to round the number up
+		when necessary
+		"""
+		initial = decimal.Decimal(self.price / 30, 2)
+		cents = decimal.Decimal('.01')
+		total = initial.quantize(cents, decimal.ROUND_HALF_UP)
+		return total
 
 	def cost(self):
 		return "{0:.2f}".format(self.price)
+
 
 class Benefit(models.Model):
 	description = models.CharField(max_length=120)

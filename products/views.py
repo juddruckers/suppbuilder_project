@@ -25,14 +25,28 @@ def EnergyView(request):
 	locale.setlocale(locale.LC_ALL, "")
 	# CART CHECK
 	cart = Cart(request.session)
+
 	cart_items = []
+	variation_list = []
+
 
 	for item in cart.items:
-		cart_items.append(item.product)
+		variation_list.append(item.product.id)
+		cart_items.append(str(item.product.product.title))
 
 	products = Product.objects.all()
 
-	return render (request, 'products/energy.html', {"products" :products})
+	context = {
+
+		"products" :products, 
+		"cart": cart, 
+		"cart_items": cart_items, 
+		"variation_list": variation_list
+	}
+
+	print variation_list
+
+	return render (request, 'products/energy.html', context)
 
 
 def VitaminView(request):
