@@ -32,20 +32,19 @@
             {% for variation in product.variation_set.all %}
 
               <!-- if the variation id is in the variation_list that option is selected -->
-              {% if variation.id in variation_list %}
-                <option value={{variation.id}} data-title={{variation.product.title}} selected>{{variation.product.title|title}} {{variation.serving_size}}
-                </option>
-              {% else %}
-                <option value={{variation.id}} data-title={{variation.product.title}}>{{variation.product.title|title}} {{variation.serving_size}}
-                </option>
-              {% endif %}
-
+                <option value={{variation.id}} data-title={{variation.product.title}} {% if variation.id in variation_list %}selected{% endif %}>{{variation.product.title|title}} {{variation.serving_size}}
+                </option>              
             {% endfor %}            
           </select>
 
-
-          <button class="btn btn-default product-add">Add {{product.title}}</button>
-          <button class="btn btn-default product-remove remove">Remove {{product.title}}</button>
+          {% if product.title in cart_items %}
+            <button class="btn btn-default product-add remove" data-toggle="modal" data-target="#myModal">Add {{product.title}}</button>
+            <button class="btn btn-default product-remove">Remove {{product.title}}</button>
+          {% else %}
+            <button class="btn btn-default product-add" data-toggle="modal" data-target="#myModal">Add {{product.title}}</button>
+            <button class="btn btn-default product-remove remove">Remove {{product.title}}</button>
+          {% endif %}
+          
         </div>
         <div class="col-sm-12">
 
@@ -143,6 +142,8 @@
     </div>
 <hr>
 
+
+<!-- research container -->
 <section id='research'>
   <div class='container research-container'>
       <div class='row'>
@@ -162,6 +163,10 @@
       </div>
   </div>
 </section>
+<!-- end reserach container -->
+
+
+
 </div>
 </div>
 </div>

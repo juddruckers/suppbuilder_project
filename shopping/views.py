@@ -56,7 +56,7 @@ def preWorkoutRemove(request):
 
 def show(request):
     cart = Cart(request.session)
-    # cart.clear()
+    cart.clear()
 
     grand_total = cart.total 
 
