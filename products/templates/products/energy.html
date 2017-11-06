@@ -14,208 +14,89 @@
   <!-- Tab panes -->
 <div class="container">
   <div class="tab-content">
-    <div role="tabpanel" class="tab-page fade in active" id="home">
-      {% for product in products %} 
-      {% if product.title == 'caffeine' %}      
-      
-      <!-- if the product exists in the cart_items list then display the cost of the item that exists in the cart -->
-      <div class="row">
-        {% if product.title in cart_items %}
-          <div class="col-lg-12">
-            {% for variation in product.variation_set.all %}
-              {% if variation.id in variation_list %}
-                <h2>{{variation.product.title|title}} 
-                  $<span class="cost">{{variation.cost}}</span> - $
-                  <span class="serving-cost">{{variation.thirty_day}}</span>/per serving
-                </h2>
-              {% endif %}
-            {% endfor %}
-          </div>
-          {% else %}
-
-          <!-- if the item does not exist in the cart display the first variation in the set -->
-          <div class="col-lg-12">
-            {% with product.variation_set.all|first as variation %}
-                <h2>{{variation.product.title|title}} 
-                  $<span class="cost">{{variation.cost}}</span> - $
-                  <span class="serving-cost">{{variation.thirty_day}}</span>/per serving
-                </h2>
-            {% endwith %}
-          </div>              
-        {% endif %}    
-      </div>
-
-
-      <div class="row">
-        <div class="col-sm-6">
-          <p>{{product.description}}<p>
-
-          <!-- disable the select dropdown if the product is already inside the cart -->
-          <select class="form-control select product-select" {% if product.title in cart_items %} disabled {%endif%}>
-
-            <!-- if the variation id is in the variation_list that option is selected -->
-            {% for variation in product.variation_set.all %}
-                <option value={{variation.id}} 
-                        data-title={{variation.product.title}} 
-                        data-price={{variation.price}}
-                        data-serving={{variation.thirty_day}}
+    <div role="tabpanel" class="tab-pane fade in active" id="home">
+        <div class='panel panel-default'>
+          <div class="panel-body">
+            {% for product in products %} 
+              {% if product.title == 'caffeine' %}      
+              
+              <!-- if the product exists in the cart_items list then display the cost of the item that exists in the cart -->
+                <div class="row">
+                  {% if product.title in cart_items %}
+                    <div class="col-lg-12">
+                      {% for variation in product.variation_set.all %}
                         {% if variation.id in variation_list %}
-                          selected
-                        {% endif %}>
-                        {{variation.product.title|title}} {{variation.serving_size}}
-                </option>              
-            {% endfor %}            
-          </select>
+                          <h2>{{variation.product.title|title}} 
+                            $<span class="cost">{{variation.cost}}</span> - $
+                            <span class="serving-cost">{{variation.thirty_day}}</span>/per serving
+                          </h2>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                    {% else %}
 
-          {% if product.title in cart_items %}
-            <button class="btn btn-default product-add remove" data-toggle="modal" data-target="#myModal">Add {{product.title}}</button>
-            <button class="btn btn-default product-remove">Remove {{product.title}}</button>
-          {% else %}
-            <button class="btn btn-default product-add" data-toggle="modal" data-target="#myModal">Add {{product.title}}</button>
-            <button class="btn btn-default product-remove remove">Remove {{product.title}}</button>
-          {% endif %} 
-        </div>
-      </div>
-      {% endif %}
-      {% endfor %}
-    </div>
-  </div>  
-</div>
+                    <!-- if the item does not exist in the cart display the first variation in the set -->
+                    <div class="col-lg-12">
+                      {% with product.variation_set.all|first as variation %}
+                          <h2>{{variation.product.title|title}} 
+                            $<span class="cost">{{variation.cost}}</span> - $
+                            <span class="serving-cost">{{variation.thirty_day}}</span>/per serving
+                          </h2>
+                      {% endwith %}
+                    </div>              
+                  {% endif %}    
+                </div>
 
+                <div class="row">
+                  <div class="col-sm-6">
+                    <p>{{product.description}}<p>
 
+                    <!-- disable the select dropdown if the product is already inside the cart -->
+                    <select class="form-control select product-select" {% if product.title in cart_items %} disabled {%endif%}>
 
+                      <!-- if the variation id is in the variation_list that option is selected -->
+                      {% for variation in product.variation_set.all %}
+                          <option value={{variation.id}} 
+                                  data-title={{variation.product.title}} 
+                                  data-price={{variation.price}}
+                                  data-serving={{variation.thirty_day}}
+                                  {% if variation.id in variation_list %}
+                                    selected
+                                  {% endif %}>
+                                  {{variation.product.title|title}} {{variation.serving_size}}
+                          </option>              
+                      {% endfor %}            
+                    </select>
 
+                    {% if product.title in cart_items %}
+                      <button class="btn btn-default product-add remove" data-toggle="modal" data-target="#myModal">Add {{product.title}}</button>
+                      <button class="btn btn-default product-remove">Remove {{product.title}}</button>
+                    {% else %}
+                      <button class="btn btn-default product-add" data-toggle="modal" data-target="#myModal">Add {{product.title}}</button>
+                      <button class="btn btn-default product-remove remove">Remove {{product.title}}</button>
+                    {% endif %} 
+                  </div>
 
-
-
-
-
-
-
-
-
-<div class="tab-content">
-<div role="tabpanel" class="tab-pane fade in active" id="home">
-<div class='container product-container'>
-<div class='panel panel-default'>
-  <div class='panel-body'>
-  <div class='row'>
-    <div class='col-lg-12'>
-      {% if caffeine_match %}
-        <h2>
-          {{caffeine.title}}
-          <span id='caffeine-size' class='item-size' >
-            {{caffeine_match.0.serving_size}}/serving
-          </span>
-          <span id='caffeine-price' class='item-price'> 
-            ${{caffeine_match.0.price}} (${{caffeine_match.0.thirty_day}}/serving)
-          </span>
-        </h2>
-      {% else %}
-        <h2>
-          {{caffeine.title}}
-          <span id='caffeine-size' class='item-size'>
-            {{caffeine.serving_size}}/serving
-          </span>
-          <span id='caffeine-price' class='item-price'> 
-            ${{caffeine.price}} (${{caffeine.thirty_day}}/serving) 
-          </span>
-        </h2>
-      {% endif %}
-    </div>
-  </div>
-
-  {% if caffeine_match %}
-  <div>
-  {% else %}
-  <div>
-  {%endif %}
-    <div class='col-lg-8'>  
-      <h5>Product description</h5>
-      <p>{{caffeine.description}}</p>
-    </div>
-    <div class='col-lg-4'>
-      <h5>Key Benefits</h5>
-        <ul>
-          {% for benefit in caffeine.benefits.all %}
-            <li>{{benefit}}</li>  
-          {% endfor %}
-        </ul>
-    </div>
-  </div>
-
-  {% if caffeine_match %}
-  <div class='row collapse' id='selectCaffeine'>
-  {% else %}
-  <div class='row collapse in'id='selectCaffeine'>
-  {%endif %}
-    <div class='col-lg-6'>    
-        <label for='caffeine-select'><h4>Select serving size :</h4></label>
-        {%if caffeine_match %}
-          <select class='form-control selector' id="caffeine-select" disabled="disabled">
-          {% else %}
-          <select class='form-control selector' id="caffeine-select">
-        {% endif %}
-            {% for product in caffeine_products %}
-              {% if product.id == caffeine_match.0.id %}
-                <option value="{{product.id}}" data-caffeine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected> {{product.title}} {{product.serving_size}}</option>
-                {% else %}
-                <option value="{{product.id}}" data-caffeine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
+                  <div class="col-sm-6">
+                    <ul class="list-group">
+                    {% for benefit in product.benefits.all %}
+                      <li class="list-group-item">{{benefit}}</li>
+                    {% endfor %}
+                    </ul>
+                  </div>
+                </div>
               {% endif %}
             {% endfor %}
-          </select>
-    </div>
-  </div>
-    <div class='row'>
-      <div class='col-lg-12'>
-        {% if caffeine_match %}
-          <button type="button" class="btn btn-success caffeine-add remove" data-toggle="modal" data-target="#myModal">Add {{caffeine.title}}</button>
-          <button type="button" class="btn btn-danger caffeine-remove" >Remove {{caffeine.title}}</button>
-          {% else %}
-          <button type="button" class="btn btn-success caffeine-add" data-toggle="modal" data-target="#myModal">Add {{caffeine.title}}</button>
-          <button type="button" class="btn btn-danger caffeine-remove remove" >Remove {{caffeine.title}}</button>
-        {% endif %}
-      </div>
-    </div>
-<hr>
-
-
-<!-- research container -->
-<section id='research'>
-  <div class='container research-container'>
-      <div class='row'>
-        <div class='col-lg-12 col-xs-12'>
-            <h1>Caffeine Research</h1>
-            <div class='row'>
-              <div class='col-lg-12 col-xs-12'>
-                <h3>Power output</h3>
-                {% for research in caffeine_research %}
-                  {% if research.product_effect == "Power Output" %}
-                    <p><a href="{{research.research_article}}" target="_blanks">{{research}} </a></p>
-                  {% endif %}
-                {% endfor %}
-              </div>
-            </div>
         </div>
       </div>
-  </div>
-</section>
-<!-- end reserach container -->
-
-
-
-</div>
-</div>
-</div>
-
-  </div>
+    </div>
     <div role="tabpanel" class="tab-pane fade" id="creatine">
       {% include 'products/creatine.html' %}
     </div>
     <div role="tabpanel" class="tab-pane fade" id="caffeine">
       {% include 'products/caffeine.html' %}
     </div>
-    <div role="tabpanel" class="tab-pane" id="theanine">
+    <div role="tabpanel" class="tab-pane fade" id="theanine">
       {% include 'products/theanine.html' %}
     </div>
     <div role="tabpanel" class="tab-pane" id="beta-alanine">
@@ -242,9 +123,9 @@
     <div role="tabpanel" class="tab-pane" id="carnitine">
       {% include 'products/l-carnitine.html' %}
     </div>
-  </div>
+  </div>  
 </div>
-</div>
+
 
 <div class='container'>
   <div class='row'>
