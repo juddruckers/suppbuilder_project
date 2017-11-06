@@ -56,8 +56,6 @@ def EnergyView(request):
 		"variation_list": variation_list
 	}
 
-	print variation_list
-
 	return render (request, 'products/energy.html', context)
 
 

@@ -40,7 +40,6 @@ $(".product-remove").on("click", function(){
 	// grab the previous sibling select
 	var select = $(this).prevAll("select:first");
 	var variation = select.val();
-	console.log(variation);
 	//enable the select bar after removing product
 	select.attr("disabled", false);
 
@@ -55,48 +54,19 @@ $(".product-remove").on("click", function(){
 
 });
 
-// $(".caffeine-add").on("click", function(){
+$(".product-select").change(function(){
+	// on change the price of the product displayed should change
 
-// 	var variation = $("#caffeine-select").val();
-// 	var item_added = $("#caffeine-select option:selected").text();
+	// retrieve the price and the per serving cost from the selected option
+	var selected = $(this).find(":selected"),
+			price = selected.data("price"),
+			serving = selected.data("serving");
 
-// 	$(".modal-body").html("<p>" + item_added + " added to stack!</p>")
-// 	addItem(variation);
+	// update the old price and old serving cost with the new option selected
+	$("span.cost").text(price);
+	$("span.serving-cost").text(serving);	
 
-// 	$(this).hide();
-	
-// 	$("#caffeine-select").attr('disabled', true);
-// 	$(".caffeine-remove").show();
-// 	$('#caffeineCollapse').collapse('hide')
-// 	$('#selectCaffeine').collapse('hide')
-// 	$('#caffeine-check').removeClass('hidden')
-
-// });
-
-
-// $(".caffeine-remove").on("click", function(){
-// 	var product_id = $("#caffeine-select").val();
-
-// 	removeItem(product_id);
-
-// 	$("#caffeine-select").attr("disabled", false);
-// 	$(this).hide();
-// 	$(".caffeine-add").show();
-// 	$('#caffeineCollapse').collapse('show');
-// 	$('#selectCaffeine').collapse('show');
-// 	$('#caffeine-check').addClass('hidden')
-
-// });
-
-
-// $("#caffeine-select").change(function(){
-// 	var option = Number($('option:selected', this).attr('data-caffeine-price'));
-// 	var caffeine_price_per_serving = (option / 30).toFixed(2);
-// 	var size = $('option:selected', this).attr('data-serving-size');
-// 	$("#caffeine-size").text(size+ "/serving")
-// 	$("#caffeine-price").text(" $" + option + " ($" + caffeine_price_per_serving + "/serving)")
-
-// })
+});
 
 
 $(".theanine-add").on("click", function(added){
