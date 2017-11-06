@@ -1,184 +1,73 @@
 {% load static %}
-<!--  product container -->
-<div class='container product-container'>
-  <div class='panel panel-default'>
-    <div class='panel-body'>
-  <!-- product title, serving size, and price row -->
-      <div class='row'>
-        <div class='col-lg-12'>
-          
-          {% if creatine_match %}
-            <h2>
-              {{creatine.title}}
-              <span class='item-size' id='creatine-size'>
-                {{creatine_match.0.serving_size}}/serving
-              </span>
-              <span class='item-price' id='creatine-price'> 
-                ${{creatine_match.0.price}} (${{creatine_match.0.thirty_day}}/serving)
-              </span>
-            </h2>
-          {% else %}
-            <h2>
-              {{creatine.title}}
-              <span class='item-size' id='creatine-size'>
-                {{creatine.serving_size}}/serving
-              </span>
-              <span class='item-price' id='creatine-price'> 
-                ${{creatine.cost}} (${{creatine.thirty_day}}/serving) 
-              </span>
-            </h2>
-          {% endif %}
-
-        </div>
-      </div>
-
-
-<!-- description of product -->
-
-        <div class='row'>
-          <div class='col-lg-8'>
-            <h5>Product description</h5>
-            <p>{{creatine.description}}</p>
-          </div>
-
-          <div class='col-lg-4'>
-            <h5>Key Benefits</h5>
-            <ul>
-
-              {% for benefit in creatine.benefits.all %}
-                <li>{{benefit}}</li>  
-              {% endfor %}
-
-            </ul>
-          </div>
-        </div>
-
-<!-- start of product select -->
-
-      {% if creatine_match %}
-        <div class='row collapse' id='creatine-options'>
-      {% else %}
-        <div class='row collapse in'id='creatine-options'>
-      {%endif %}
-        
-        <div class='col-lg-6'>    
-            <label for='creatine-select'><h4>Select serving size :</h4></label>
-            
-            {%if creatine_match %}
-              <select class='form-control selector'  id="creatine-select" disabled="disabled">
-            {% else %}
-              <select class='form-control selector'  id="creatine-select">
-            {% endif %}
-
-                {% for product in creatine_products %}
-                  {% if product.id == creatine_match.0.id %}
-                    <option value="{{product.id}}" data-creatine-price='{{product.price}}' data-serving-size='{{product.serving_size}}' selected>{{product.title}} {{product.serving_size}}</option>
+      
+        <div class='panel panel-default'>
+          <div class="panel-body">  
+              <!-- if the product exists in the cart_items list then display the cost of the item that exists in the cart -->
+                <div class="row">
+                  {% if product.title in cart_items %}
+                    <div class="col-lg-12">
+                      {% for variation in product.variation_set.all %}
+                        {% if variation.id in variation_list %}
+                          <h2>{{variation.product.title|title}} 
+                            $<span class="{{product.title}}-cost">{{variation.cost}}</span> - $
+                            <span class="{{product.title}}-serving-cost">{{variation.thirty_day}}</span>/per serving
+                          </h2>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
                     {% else %}
-                    <option value="{{product.id}}" data-creatine-price='{{product.price}}'data-serving-size='{{product.serving_size}}'> {{product.title}} {{product.serving_size}}</option>
-                  {% endif %}
-                {% endfor %}
-              </select>
-        </div>
-      </div>
 
-<!-- start of product button row -->
-      <div class='row'>
-        <div class='col-lg-12'>
-          {% if creatine_match %}
-            <button type="button" class="btn btn-success creatine-add remove">Add {{creatine.title}}</button>
-            <button type="button" class="btn btn-danger creatine-remove" >Remove {{creatine.title}}</button>
-            {% else %}
-            <button type="button" class="btn btn-success creatine-add">Add {{creatine.title}}</button>
-            <button type="button" class="btn btn-danger creatine-remove remove" >Remove {{creatine.title}}</button>
-          {% endif %}
-        </div>
-      </div>
-      <hr>
-    <section id="about" class="bg-light-gray">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2 class="section-heading">Creatine Benefits</h2>
-                    <h4 class="section-subheading text-muted">Creatine supplementation has shown the following benefits.</h4>
+                    <!-- if the item does not exist in the cart display the first variation in the set -->
+                    <div class="col-lg-12">
+                      {% with product.variation_set.all|first as variation %}
+                          <h2>{{variation.product.title|title}} 
+                            $<span class="{{product.title}}-cost">{{variation.cost}}</span> - $
+                            <span class="{{product.title}}-serving-cost">{{variation.thirty_day}}</span>/per serving
+                          </h2>
+                      {% endwith %}
+                    </div>              
+                  {% endif %}    
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <ul class="timeline">
-                        <li>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h3>Increase Power Output and Strength</h3>
-                                </div>
-                                <div class="timeline-body">
-                                  <p class='text-muted'>Power Output is the ability to procure a large amount of strength in a rapid manner</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h3>Improve Anaerobic capacity</h3>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Anaerobic capacity is the maximal work performed during maximum-intensity short-term physical effort such as weightlifting, HIIT, and sprinting.  </p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h3>Increase lean mass</h3>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Lean Mass is overall body mass minus fat mass.</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h3>Improve muscular endurance</h3>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Muscular endurance tends to refer to the capacities of a muscle tissue to continuously exert itself during one 'set' of exercises</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h3>Increase VO2 max</h3>
-                                </div>
-                                <div class="timeline-body">
-                                    <p class="text-muted">Muscular endurance tends to refer to the capacities of a muscle tissue to continuously exert itself during one 'set' of exercises</p>
-                                </div>
-                            </div>
-                        </li>
+
+                <div class="row">
+                  <div class="col-sm-6">
+                    <p>{{product.description}}<p>
+
+                    <!-- disable the select dropdown if the product is already inside the cart -->
+                    <select class="form-control select product-select" {% if product.title in cart_items %} disabled {%endif%}>
+
+                      <!-- if the variation id is in the variation_list that option is selected -->
+                      {% for variation in product.variation_set.all %}
+                          <option value={{variation.id}} 
+                                  data-title={{variation.product.title}} 
+                                  data-price={{variation.price}}
+                                  data-serving={{variation.thirty_day}}
+                                  {% if variation.id in variation_list %}
+                                    selected
+                                  {% endif %}>
+                                  {{variation.product.title|title}} {{variation.serving_size}}
+                          </option>              
+                      {% endfor %}            
+                    </select>
+
+                    {% if product.title in cart_items %}
+                      <button class="btn btn-default product-add remove" data-toggle="modal" data-target="#myModal">Add {{product.title}}</button>
+                      <button class="btn btn-default product-remove">Remove {{product.title}}</button>
+                    {% else %}
+                      <button class="btn btn-default product-add" data-toggle="modal" data-target="#myModal">Add {{product.title}}</button>
+                      <button class="btn btn-default product-remove remove">Remove {{product.title}}</button>
+                    {% endif %} 
+                  </div>
+
+                  <div class="col-sm-6">
+                    <ul class="list-group">
+                    {% for benefit in product.benefits.all %}
+                      <li class="list-group-item">{{benefit}}</li>
+                    {% endfor %}
                     </ul>
+                  </div>
                 </div>
-            </div>
         </div>
-    </section>
-<hr>
-<div class='container research-container'>
-    <div class='row'>
-      <div class='col-lg-12 col-xs-12'>
-          <h1>Caffeine Research</h1>
-          <div class='row'>
-            <div class='col-lg-12 col-xs-12'>
-              <h3>Power output</h3>
-
-              {% for research in creatine_research %}
-                {{research.product_effect.all}}
-              {% endfor %}
-            </div>
-          </div>
       </div>
-    </div>
-</div>
-    </div>
-  </div>
-</div>
 
 <!-- end of product button row --> 

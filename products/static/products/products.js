@@ -20,7 +20,8 @@ $(".product-add").on("click", function(){
 	*/
 		var select = $(this).prev();
 		var variation = select.val();
-		var title = select.find(":selected").data("variation-title");
+		var title = select.find(":selected").data("title");
+		console.log(title);
 	//disable the select bar after adding product
 		select.attr("disabled", true);
 
@@ -61,10 +62,11 @@ $(".product-select").change(function(){
 	var selected = $(this).find(":selected"),
 			price = selected.data("price"),
 			serving = selected.data("serving");
+			title = selected.data("title")
 
 	// update the old price and old serving cost with the new option selected
-	$("span.cost").text(price);
-	$("span.serving-cost").text(serving);	
+	$("." + title + "-cost").text(price);
+	$("." + title + "-serving-cost").text(serving);	
 
 });
 

@@ -19,7 +19,7 @@
           <div class="panel-body">
             {% for product in products %} 
               {% if product.title == 'caffeine' %}      
-              
+  
               <!-- if the product exists in the cart_items list then display the cost of the item that exists in the cart -->
                 <div class="row">
                   {% if product.title in cart_items %}
@@ -27,8 +27,8 @@
                       {% for variation in product.variation_set.all %}
                         {% if variation.id in variation_list %}
                           <h2>{{variation.product.title|title}} 
-                            $<span class="cost">{{variation.cost}}</span> - $
-                            <span class="serving-cost">{{variation.thirty_day}}</span>/per serving
+                            $<span class="{{product.title}}-cost">{{variation.cost}}</span> - $
+                            <span class="{{product.title}}-serving-cost">{{variation.thirty_day}}</span>/per serving
                           </h2>
                         {% endif %}
                       {% endfor %}
@@ -39,8 +39,8 @@
                     <div class="col-lg-12">
                       {% with product.variation_set.all|first as variation %}
                           <h2>{{variation.product.title|title}} 
-                            $<span class="cost">{{variation.cost}}</span> - $
-                            <span class="serving-cost">{{variation.thirty_day}}</span>/per serving
+                            $<span class="{{product.title}}-cost">{{variation.cost}}</span> - $
+                            <span class="{{product.title}}-serving-cost">{{variation.thirty_day}}</span>/per serving
                           </h2>
                       {% endwith %}
                     </div>              
@@ -90,9 +90,21 @@
         </div>
       </div>
     </div>
-    <div role="tabpanel" class="tab-pane fade" id="creatine">
-      {% include 'products/creatine.html' %}
-    </div>
+    
+    <!-- 
+      TODO: create for loop to produce a tab panel for each product if 
+      that products title is not equal to caffeine
+     -->
+
+      {% for product in products %} 
+        {% if product.title == 'creatine' %}
+        <div role="tabpanel" class="tab-pane fade" id="creatine">
+          {% include 'products/creatine.html' %}
+        </div> 
+        {% endif %}
+      {% endfor %}  
+
+
     <div role="tabpanel" class="tab-pane fade" id="caffeine">
       {% include 'products/caffeine.html' %}
     </div>
