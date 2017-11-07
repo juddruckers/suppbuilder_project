@@ -29,105 +29,21 @@
   <div class='row ingredient-list'>
     <div class='col-xs-10 col-xs-offset-1'>
       <ul>
-        <li role="presentation" class='active'>
-          <a href="#home" aria-controls="home" role="tab" data-toggle="tab">Caffeine
-            {% if caffeine_match %}
-            <span class="glyphicon glyphicon-ok" id='caffeine-check'  aria-hidden="true"></span> 
+        {% for product in products %}
+            {% if product.title == 'caffeine' %}
+              <li role="presentation" class='active'>
+                <a href="#home" aria-controls="home" role="tab" data-toggle="tab">{{product.title}}
+                  <span class="glyphicon glyphicon-ok hidden" id='caffeine-check'  aria-hidden="true"></span>
+                </a>
+              </li>  
             {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='caffeine-check'  aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#creatine" aria-controls="creatine" role="tab" data-toggle="tab">Creatine
-            {% if creatine_match %}
-            <span class="glyphicon glyphicon-ok" id='creatine-check'  aria-hidden="true"></span> 
-            {% else %}
-            <span class='glyphicon glyphicon-ok hidden' id='creatine-check'  aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#theanine" aria-controls="theanine" role="tab" data-toggle="tab">Theanine
-            {% if theanine_match %}
-            <span class="glyphicon glyphicon-ok" id='theanine-check'  aria-hidden="true"></span> 
-            {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='theanine-check' aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#beta-alanine" aria-controls="beta-alanine" role="tab" data-toggle="tab">Beta Alanine
-            {% if beta_alanine_match %}
-            <span class="glyphicon glyphicon-ok" id='beta-alanine-check' aria-hidden="true"></span> 
-            {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='beta-alanine-check' aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#bcaa" aria-controls="bcaa" role="tab" data-toggle="tab">BCAA
-            {% if bcaa_match %}
-            <span class="glyphicon glyphicon-ok" id='bcaa-check'  aria-hidden="true"></span> 
-            {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='bcaa-check'  aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#betaine" aria-controls="bcaa" role="tab" data-toggle="tab">Betaine
-            {% if betaine_match %}
-            <span class="glyphicon glyphicon-ok" id='betaine-check'  aria-hidden="true"></span> 
-            {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='betaine-check'  aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#hmb" aria-controls="hmb" role="tab" data-toggle="tab">HMB
-            {% if hmb_match %}
-            <span class="glyphicon glyphicon-ok" id='hmb-check'  aria-hidden="true"></span> 
-            {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='hmb-check'  aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#citrulline-malate" aria-controls="citrulline-malate" role="tab" data-toggle="tab">L-Citrulline Malate
-            {% if citrulline_malate_match %}
-            <span class="glyphicon glyphicon-ok" id='citrulline-malate-check'  aria-hidden="true"></span> 
-            {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='citrulline-malate-check'  aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#ashwagandha" aria-controls="ashwagandha" role="tab" data-toggle="tab">Ashwagandha 
-            {% if ashwagandha_match %}
-            <span class="glyphicon glyphicon-ok" id='ashwagandha-check' aria-hidden="true"></span> 
-            {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='ashwagandha-check' aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#rhodiola-rosea" aria-controls="rhodiola-rosea" role="tab" data-toggle="tab">Rhodiola Rosea
-            {% if rhodiola_rosea_match %}
-            <span class="glyphicon glyphicon-ok" id='rhodiola-rosea-check'  aria-hidden="true"></span> 
-            {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='rhodiola-rosea-check'  aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
-        <li role="presentation">
-          <a href="#carnitine" aria-controls="carnitine" role="tab" data-toggle="tab">Acetyl L-Carnitine
-            {% if acetyl_l_carnitine_match %}
-            <span class="glyphicon glyphicon-ok" id='acetyl_l_carnitine-check'  aria-hidden="true"></span> 
-            {% else %}
-            <span class="glyphicon glyphicon-ok hidden" id='acetyl_l_carnitine-check'  aria-hidden="true"></span>
-            {% endif %}
-          </a>
-        </li>
+              <li role="presentation">
+                <a href="#{{product.title|cut:' '}}" aria-controls="{{product.title|cut:' '}}" role="tab" data-toggle="tab">{{product.title}}
+                  <span class='glyphicon glyphicon-ok hidden' id='creatine-check'  aria-hidden="true"></span>
+                </a>
+              </li>                
+            {% endif %}     
+        {% endfor %}
         </ul>
       </div>
   </div>

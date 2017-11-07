@@ -91,50 +91,13 @@
       </div>
     </div>
     
-    <!-- 
-      TODO: create for loop to produce a tab panel for each product if 
-      that products title is not equal to caffeine
-     -->
-
-      {% for product in products %} 
-        {% if product.title == 'creatine' %}
-        <div role="tabpanel" class="tab-pane fade" id="creatine">
-          {% include 'products/creatine.html' %}
-        </div> 
-        {% endif %}
-      {% endfor %}  
-
-
-    <div role="tabpanel" class="tab-pane fade" id="caffeine">
-      {% include 'products/caffeine.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane fade" id="theanine">
-      {% include 'products/theanine.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="beta-alanine">
-      {% include 'products/beta-alanine.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="bcaa">
-      {% include 'products/bcaa.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="citrulline-malate">
-      {% include 'products/citrulline-malate.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="betaine">
-      {% include 'products/betaine.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="ashwagandha">
-      {% include 'products/ashwagandha.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="rhodiola-rosea">
-      {% include 'products/rhodiola-rosea.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="hmb">
-      {% include 'products/hmb.html' %}
-    </div>
-    <div role="tabpanel" class="tab-pane" id="carnitine">
-      {% include 'products/l-carnitine.html' %}
-    </div>
+    {% for product in products %} 
+      {% if product.title != 'caffeine' %}
+      <div role="tabpanel" class="tab-pane fade" id="{{product.title|cut:' '}}">
+        {% include 'products/product.html' %}
+      </div> 
+      {% endif %}
+    {% endfor %}  
   </div>  
 </div>
 
