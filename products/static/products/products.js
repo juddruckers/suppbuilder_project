@@ -20,8 +20,16 @@ $(".product-add").on("click", function(){
 	*/
 		var select = $(this).prev();
 		var variation = select.val();
-		var title = select.find(":selected").data("title");
-		console.log(title);
+
+		// get the product id
+		var option = select.find(":selected").data("product-id");
+
+		// use the product id to find the product title
+		var title = $("." + option + "-title").text();
+
+		// update modal body using the title
+		$(".modal-body").html("<p>" + title + " added to the cart" +"</p>");
+
 	//disable the select bar after adding product
 		select.attr("disabled", true);
 
@@ -65,6 +73,8 @@ $(".product-select").change(function(){
 			title = selected.data("title")
 
 	// update the old price and old serving cost with the new option selected
+	// use the title of the product to make sure that the appropriate
+	// products price and per serving cost is updated.
 	$("." + title + "-cost").text(price);
 	$("." + title + "-serving-cost").text(serving);	
 

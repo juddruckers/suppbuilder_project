@@ -46,7 +46,7 @@ def EnergyView(request):
 		cart_items.append(str(item.product.product.title))
 
 	# retreive all products to be displayed on the products page.
-	products = Product.objects.all()
+	products = Product.objects.all().order_by('id')
 
 	context = {
 
