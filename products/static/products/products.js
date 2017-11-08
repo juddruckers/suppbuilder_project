@@ -34,7 +34,7 @@ $(".product-add").on("click", function(){
 		select.attr("disabled", true);
 
 	// make the checkmark show on the added product
-		$('#caffeine-check').removeClass("hidden");
+		$("."+ option + "-check").toggleClass("hidden");
 
 	// hide the button and show the remove product button
 		$(this).hide();
@@ -49,10 +49,15 @@ $(".product-remove").on("click", function(){
 	// grab the previous sibling select
 	var select = $(this).prevAll("select:first");
 	var variation = select.val();
+
+	// get the product id 
+	var option = select.find(":selected").data("product-id");
+
 	//enable the select bar after removing product
 	select.attr("disabled", false);
 
 	// hide the checkmark because the item is remove
+	$("."+ option + "-check").toggleClass("hidden");
 
 	// hide this button and show the product add button
 	$(this).hide();

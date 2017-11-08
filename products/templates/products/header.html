@@ -35,19 +35,25 @@
               <li role="presentation" class='active'>
                 <a href="#home" aria-controls="home" role="tab" data-toggle="tab">{{product.title|title}}
                   {% if product.title in cart_items %}
-                    <span><i class="ion-checkmark"></i></span>
+                    <span class="{{product.id}}-check">
+                    {% else %}
+                    <span class="{{product.id}}-check hidden">
                   {% endif %}
+                    <i class="ion-checkmark"></i></span>
                 </a>
               </li>  
             {% else %}
               <li role="presentation">
                 <a href="#{{product.id}}" aria-controls="{{product.id}}" role="tab" data-toggle="tab">{{product.title|title}}
                   {% if product.title in cart_items %}
-                    <span><i class="ion-checkmark"></i></span>
+                    <span class="{{product.id}}-check">
+                    {% else %}
+                    <span class="{{product.id}}-check hidden">
                   {% endif %}
+                    <i class="ion-checkmark"></i></span>
                 </a>
-              </li>                
-            {% endif %}     
+              </li>
+            {% endif %}
         {% endfor %}
         </ul>
       </div>
