@@ -55,17 +55,33 @@ def preWorkoutRemove(request):
     return HttpResponse("item removed")
 
 def show(request):
+    """
+    this page will show the cart and all the products inside of the cart
+    """
+    
+    #request the cart in the session
     cart = Cart(request.session)
-    cart.clear()
 
-    grand_total = cart.total 
+    # this is the total of all the items prices added up 
 
-    per_serving = "{0:.2f}".format(round(grand_total / 30, 2))
+    grand_total = cart.total
+
+    # divide the total by 30 to get a price of serving size. The value is still a decimal type
+    price_per = (cart.total/30)
+
+    print type(price_per)
+
+    """
+    use quantize and round half up to account for times where the price lands at a half
+
+    example: 2.005 => 2.01, 2.015 => 2.02
+    """
+    serving = price_per.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_HALF_UP)
 
     context = {
         'cart' : cart,
         'grand_total' : grand_total,
-        'per_serving' : per_serving, 
+        'per_serving' : serving, 
     }
 
     return render(request, 'shopping/show-cart.html', context)
