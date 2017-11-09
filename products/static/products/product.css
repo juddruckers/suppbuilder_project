@@ -26,31 +26,39 @@
 	width: 25%;
 }
 
+.hidden{
+  visibility : hidden;
+}
+
+/*--------JUMBOTRON---------*/
+.jumbotron {
+  background-color: white;
+  padding-bottom: 0px;
+}
+
+.jumbotron h1{
+  color: #3498db;
+}
+
+/*-------ITEM INFO ----------*/
 .item-size {
 	color:rgb(5,195,222);
 	font-size: 22px;
 }
 
+.ion-social-usd{
+  color:#2ecc71;
+  font-size: 95%;
+  font-weight:lighter;
+}
+
 .item-price {
-	color:rgb(132,189,0);
-	font-size: 18px;
+	color:#2ecc71;
 }
 
 .remove {
 	display: none;
 }
-
-.product-container {
-	width: 95%;
-	border: 1px white solid;
-	margin-bottom: 10px;
-}
-
-.nav-buttons {
-	width: 70%;
-	margin-bottom: 10px;	
-}
-
 
 .product-price {
 	color:rgb(132,189,0);
@@ -64,15 +72,7 @@
 	text-align: center;		
 }
 
-.forward {
-	float:right;
-}
-
-.backwards {
-	float:left;
-}
-
-
+/*--------RESEARCH----------*/
 .research-container h1{
 	text-align: center;
 	color:rgb(132,189,0);
@@ -87,41 +87,8 @@
 	color:rgb(113,124,125);
 }
 
-.jumbotron {
-	background-color: white;
-	padding-bottom: 0px;
-}
-
-.jumbotron h1{
-	color: rgb(0,58,112);
-}
-
-
-.breadcrumb{
-	background-color: white;
-}
-
-.panel > .panel-heading {
-    background-image: none;
-    background-color: #F8F8F8;
-    color: #05C3DE;
-}
-
-.stacks{
-	text-align: center;
-	margin-bottom: 50px;
-}
-
-.hidden{
-	visibility:  : hidden;
-}
-
 .research-info{
 	margin:10px;
-}
-
-.selector{
-	margin-bottom:5px;
 }
 
 
