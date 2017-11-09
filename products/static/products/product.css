@@ -1,5 +1,9 @@
 /*------PRODUCT LINKS--------*/
 
+.ingredient-list {
+  margin-bottom:1em;
+}
+
 .ingredient-list ul {
     -moz-column-count: 3;
     -moz-column-gap: 1em;
@@ -41,38 +45,38 @@
 }
 
 /*-------ITEM INFO ----------*/
-.item-size {
-	color:rgb(5,195,222);
-	font-size: 22px;
-}
-
-.ion-social-usd{
-  color:#2ecc71;
-  font-size: 95%;
-  font-weight:lighter;
-}
-
-.item-price {
-	color:#2ecc71;
-}
 
 .remove {
 	display: none;
 }
 
-.product-price {
-	color:rgb(132,189,0);
-	font-size: 18px;
+.panel-body p {
+  font-size:90%;
 }
 
-
-.research-container{
-	width: 80%;
-	margin-bottom: 10px;
-	text-align: center;		
+.panel-body ul li{
+  font-size: 80%;
 }
+
+/*--------BUTTON------------*/
+.panel-body button {
+  margin-top:1em;
+}
+
+/*--------SELECT------------*/
+.panel-body .product-select {
+  width:60%;
+  margin-top: 1em;
+}
+
 
 /*--------RESEARCH----------*/
+.research-container{
+  width: 80%;
+  margin-bottom: 10px;
+  text-align: center;   
+}
+
 .research-container h1{
 	text-align: center;
 	color:rgb(132,189,0);
