@@ -33,7 +33,8 @@
         {% for product in products %}
             {% if product.title == 'caffeine' %}
               <li role="presentation" class='active'>
-                <a href="#home" aria-controls="home" role="tab" data-toggle="tab">{{product.title|title}}
+                <a href="#home" aria-controls="home" role="tab" data-toggle="tab">
+                    {{product.title|upper}}
                   {% if product.title in cart_items %}
                     <span class="{{product.id}}-check">
                     {% else %}
@@ -44,7 +45,8 @@
               </li>  
             {% else %}
               <li role="presentation">
-                <a href="#{{product.id}}" aria-controls="{{product.id}}" role="tab" data-toggle="tab">{{product.title|title}}
+                <a href="#{{product.id}}" aria-controls="{{product.id}}" role="tab" data-toggle="tab">
+                    {{product.title|upper}}
                   {% if product.title in cart_items %}
                     <span class="{{product.id}}-check">
                     {% else %}

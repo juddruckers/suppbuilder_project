@@ -1,34 +1,30 @@
 {% load static %}
       
         <div class='panel panel-default'>
-          <div class="panel-body">  
-              <!-- if the product exists in the cart_items list then display the cost of the item that exists in the cart -->
+          <div class="panel-body">
                 <div class="row">
-                  {% if product.title in cart_items %}
-                    <div class="col-lg-12">
-                      {% for variation in product.variation_set.all %}
-                        {% if variation.id in variation_list %}
-                          <h2>
+                  <div class="col-lg-12">
+                    <h2>
+                       <!-- if the product exists in the cart_items list then display the cost of the item that exists in the cart -->
+                      {% if product.title in cart_items %}
+                        {% for variation in product.variation_set.all %}
+                          {% if variation.id in variation_list %}
                             <span class="{{product.id}}-title">{{variation.product.title|title}}</span> 
                             $<span class="{{product.title}}-cost">{{variation.cost}}</span> - $
                             <span class="{{product.title}}-serving-cost">{{variation.thirty_day}}</span>/per serving
-                          </h2>
-                        {% endif %}
-                      {% endfor %}
-                    </div>
-                    {% else %}
+                          {% endif %}
+                        {% endfor %}
 
-                    <!-- if the item does not exist in the cart display the first variation in the set -->
-                    <div class="col-lg-12">
-                      {% with product.variation_set.all|first as variation %}
-                          <h2>
+                      {% else %}
+
+                        {% with product.variation_set.all|first as variation %}
                             <span class="{{product.id}}-title">{{variation.product.title|title}}</span> 
                             $<span class="{{product.title}}-cost">{{variation.cost}}</span> - $
-                            <span class="{{product.title}}-serving-cost">{{variation.thirty_day}}</span>/per serving
-                          </h2>
-                      {% endwith %}
-                    </div>              
-                  {% endif %}    
+                            <span class="{{product.title}}-serving-cost">{{variation.thirty_day}}</span>/per serving                         
+                        {% endwith %}
+                      {% endif %}
+                    </h2>
+                  </div>
                 </div>
 
                 <div class="row">

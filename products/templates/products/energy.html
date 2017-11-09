@@ -14,101 +14,22 @@
   <!-- Tab panes -->
 <div class="container">
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane fade in active" id="home">
-        <div class='panel panel-default'>
-          <div class="panel-body">
-            {% for product in products %} 
-              {% if product.title == 'caffeine' %}      
-              <!-- if the product exists in the cart_items list then display the cost of the item that exists in the cart -->
-                <div class="row">
-                  {% if product.title in cart_items %}
-                    <div class="col-lg-12">
-                      {% for variation in product.variation_set.all %}
-                        {% if variation.id in variation_list %}
-                          <h2>
-                            <span class="{{product.id}}-title">{{variation.product.title|title}}</span> 
-                            $<span class="{{product.title}}-cost">{{variation.cost}}</span> - $
-                            <span class="{{product.title}}-serving-cost">{{variation.thirty_day}}</span>/per serving
-                          </h2>
-                        {% endif %}
-                      {% endfor %}
-                    </div>
-                    {% else %}
-
-                    <!-- if the item does not exist in the cart display the first variation in the set -->
-                    <div class="col-lg-12">
-                      {% with product.variation_set.all|first as variation %}
-                          <h2>
-                            <span class="{{product.id}}-title">{{variation.product.title|title}}</span> 
-                            $<span class="{{product.title}}-cost">{{variation.cost}}</span> - $
-                            <span class="{{product.title}}-serving-cost">{{variation.thirty_day}}</span>/per serving
-                          </h2>
-                      {% endwith %}
-                    </div>              
-                  {% endif %}    
-                </div>
-
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p>{{product.description}}<p>
-
-                    <!-- disable the select dropdown if the product is already inside the cart -->
-                    <select class="form-control select product-select" {% if product.title in cart_items %} disabled {%endif%}>
-
-                      <!-- if the variation id is in the variation_list that option is selected -->
-                      {% for variation in product.variation_set.all %}
-                          <option value={{variation.id}} 
-                                  data-title={{variation.product.title}} 
-                                  data-price={{variation.price}}
-                                  data-serving={{variation.thirty_day}}
-                                  data-product-id={{variation.prouduct.id}}
-                                  {% if variation.id in variation_list %}
-                                    selected
-                                  {% endif %}>
-                                  {{variation.product.title|title}} {{variation.serving_size}}
-                          </option>              
-                      {% endfor %}            
-                    </select>
-
-                    {% if product.title in cart_items %}
-                      <button class="btn btn-default product-add remove" data-toggle="modal" data-target="#myModal">Add {{product.title|title}}</button>
-                      <button class="btn btn-default product-remove">Remove {{product.title|title}}</button>
-                    {% else %}
-                      <button class="btn btn-default product-add" data-toggle="modal" data-target="#myModal">Add {{product.title|title}}</button>
-                      <button class="btn btn-default product-remove remove">Remove {{product.title|title}}</button>
-                    {% endif %} 
-                  </div>
-
-                  <div class="col-sm-6">
-                    <ul class="list-group">
-                    {% for benefit in product.benefits.all %}
-                      <li class="list-group-item">{{benefit}}</li>
-                    {% endfor %}
-                    </ul>
-                  </div>
-                </div>
-              {% endif %}
-            {% endfor %}
-        </div>
-      </div>
-    </div>
-    
     <!-- 
       create a tab panel for each product and include the template for each product other than caffeine.
 
-      cut the spaces out of the product.title because the ID cannot have a space. It is interpreted as two
-      seperate ID's. The ID also has to match with the ID of the link associated to each tab. 
-     -->
-    {% for product in products %} 
-      {% if product.title != 'caffeine' %}
-      <div role="tabpanel" class="tab-pane fade" id="{{product.id}}">
-        {% include 'products/product.html' %}
-      </div> 
+      The ID also has to match with the ID of the link associated to each tab. Using the product ID tag.
+     --> 
+    {% for product in products %}
+      {% if product.title == 'caffeine' %}
+        <div role="tabpanel" class="tab-pane fade in active" id="home">
+        {% else %}    
+        <div role="tabpanel" class="tab-pane fade" id="{{product.id}}">
       {% endif %}
-    {% endfor %}  
+      {% include 'products/product.html' %}
+      </div>
+    {% endfor %} 
   </div>  
 </div>
-
 
 <div class='container'>
   <div class='row'>
