@@ -31,7 +31,6 @@ class Variation(models.Model):
 				  symbolize a 30 day supply.
 		
 		use the quantize method to round the number up
-		when necessary
 		"""
 		initial = decimal.Decimal(self.price / 30, 2)
 		cents = decimal.Decimal('.01')
