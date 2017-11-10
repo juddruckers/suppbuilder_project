@@ -106,7 +106,7 @@
 			<div class='row'>
 				<div class='col-lg-12'>
 					<h3>Payment Information</h3>
-						<form action="{% url 'checkout-view' %}" id="checkout" method="post" autocomplete="off">
+						<form action="{% url 'payment' %}" id="checkout" method="post" autocomplete="off">
 							{% csrf_token %}                      
 							<input type="text" data-shipping-price=4.99 class='hidden' name="hidden_shipping" value=4.99></input>
 							<input type="hidden" name="hidden_discount" value=0.00></input>
@@ -121,15 +121,6 @@
 	</div>
 </div>
 
-
-<script src="https://js.braintreegateway.com/js/braintree-2.30.0.min.js"></script>
-
-
-<script>
-braintree.setup("{{token}}", "dropin", {
-	container : "dropin-container",
-});
-</script>
 
 {% endblock %}
 
