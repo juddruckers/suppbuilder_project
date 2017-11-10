@@ -9,10 +9,12 @@ urlpatterns = [
     url(r'^item/remove/$', views.remove_item, name='remove-item'),
     url(r'^cart/$', views.cart, name='cart'),
     url(r'^checkout/$', views.payment, name='payment'),
+    url(r'^address/create$', views.create_address, name='create-address'),
+
     url(r'^stripe-payment/$', views.StripePaymentView, name='stripe-payment-view'),
     url(r'^stripe-update-order/$', views.StripeUpdateOrderView, name='stripe-update-order-view'),
     url(r'^guest-address/$', views.StripeGuestAddressView, name='stripe-guest-address-view'),
-    url(r'^address/$', views.StripeAddressView, name='stripe-address-view'),
+    
     url(r'^edit-guest-address/$', views.EditGuestAddressView, name='edit-guest-address'),     
     url(r'^order$', views.OrdersView, name='past-orders'),
     url(r'^order-detail/(?P<pk>\d+)/$', views.OrderDetailView, name='order-detail'),

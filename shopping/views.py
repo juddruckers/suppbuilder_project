@@ -115,6 +115,10 @@ def payment(request):
 
     if user.is_authenticated():
 
+        """
+        if the currently logged in user has no address
+        redirect them to the create address page
+        """
         shipping_address = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True).first()
 
         if not shipping_address:
@@ -223,7 +227,7 @@ def payment(request):
 
             return render(request, 'shopping/stripe-payment.html', context)
 
-def StripeAddressView(request):
+def create_address(request):
     """
     This is the view the user will go to when they go to checkout and they have no
     address on file for them. Once they create an address it will create an order and 
@@ -303,7 +307,7 @@ def StripeAddressView(request):
 
                 request.session['order_id'] = order.id
                 
-                return redirect('checkout-view')
+                return redirect('payment')
 
             else:
                 order = stripe.Order.create(
@@ -324,7 +328,7 @@ def StripeAddressView(request):
 
                 request.session['order_id'] = order.id
 
-                return redirect('checkout-view')
+                return redirect('payment')
 
         else:
             print "data is not clean"
@@ -1336,36 +1340,4 @@ def AddNewAddressView(request):
             })
 
         return render(request, 'shopping/address.html', {'form' : form})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
