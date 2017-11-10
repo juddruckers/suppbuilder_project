@@ -21,7 +21,7 @@ from .forms import AddressForm, EditAddressForm, AuthAddressForm, EditAuthAddres
 # Create your views here.
 
 
-def preWorkoutAdd(request):
+def add_item(request):
     """
     this is the view that takes in the variation id and adds it to the cart
 
@@ -36,7 +36,7 @@ def preWorkoutAdd(request):
 
     return HttpResponse("added")
 
-def preWorkoutRemove(request):
+def remove_item(request):
     """
     this is the view that takes in the product id and removes it from the cart
     
@@ -54,7 +54,7 @@ def preWorkoutRemove(request):
 
     return HttpResponse("item removed")
 
-def show(request):
+def cart(request):
     """
     this page will show the cart and all the products inside of the cart
 
@@ -99,194 +99,7 @@ def show(request):
 
         return render(request, 'shopping/show-cart.html', context)
 
-
-def DiscountFindView(request):
-    name = request.POST.get('name')
-    order_id = request.session['order_id']
-    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
-
-    order = stripe.Order.retrieve(order_id)
-    discount_amount = ''
-
-    for item in order['items']:
-        if item['type'] == 'discount':
-
-            return HttpResponse('Discount already applied')
-
-    try:
-        coupon = stripe.Coupon.retrieve(name)
-
-        order.coupon = coupon.id
-
-        order.save()
-
-        # create a variable that contains the discounted amount add that to the data returned
-
-        for item in order['items']:
-            if item.type == 'discount':
-                discount_amount = item.amount
-        data = {
-        'order' : order,
-        'discount_amount' : discount_amount,
-        }       
-        return HttpResponse(json.dumps(data, indent=2, sort_keys=True))
-    except Exception as e:
-        coupon = "Invalid code"
-        return HttpResponse(coupon)
-
-def CheckoutAddressDeleteView(request):
-    """
-    This view take the pk of the address that the user wants deleted
-
-    after the address is deleted query for the remaining addresses
-
-    get the first address and make it the default address
-
-    if there is no address list it should go to the auth address view
-
-    so the user can enter an address and continue to checkout
-    """
-    pk = request.POST.get('pk')
-    address = Address.objects.get(id=pk)
-    address.delete()    
-    user = request.user
-
-    try:
-        new_default_address = Address.objects.filter(email=user.email, address_type='shipping').first()
-    except:
-        new_default_address = None
-
-    print new_default_address
-
-    if new_default_address != None:
-        Address.objects.filter(email=user.email, pk=new_default_address.id).update(default_address=True)
-
-    return HttpResponse("address deleted sir")
-
-
-
-def AddressChangeView(request):
-    current_user = request.user
-    current_address = request.POST.get('selected_address')
-
-    print current_address
-    address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
-    Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
-    Address.objects.filter(id=current_address).update(default_address=True)
-    
-    return HttpResponse('address changed')
-
-def AddressUpdateView(request, pk):
-
-    current_user = request.user
-
-    if request.method == 'POST':
-
-        address_data = AddressForm(request.POST)
-
-        if address_data.is_valid():
-
-            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)            
-
-            address, created = Address.objects.update_or_create(
-                first_name = address_data.cleaned_data['first_name'],
-                last_name = address_data.cleaned_data['last_name'],
-                street_address= address_data.cleaned_data['street_address'],
-                extended_address= address_data.cleaned_data['extended_address'],
-                city= address_data.cleaned_data['city'], 
-                state= address_data.cleaned_data['state'],
-                zip_code= address_data.cleaned_data['zip_code'],
-                email= address_data.cleaned_data['email'],
-                address_type= address_data.cleaned_data['address_type'],                
-            )
-
-            address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
-
-            return render (request, 'shopping/shipping.html', {'address_list': address_list,})           
-
-    else:
-
-        address = Address.objects.get(id=pk)
-
-        Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
-        Address.objects.filter(id=pk).update(default_address=True)
-
-        existing_address_form = EditAddressForm(initial={
-                'first_name' : address.first_name,
-                'last_name' : address.last_name,
-                'street_address' : address.street_address,
-                'extended_address' : address.extended_address,
-                'city' : address.city, 
-                'state' : address.state,
-                'zip_code' : address.zip_code,
-                'email' : address.email,
-            })
-
-        pk = Address.objects.get(id=pk)
-
-        return render(request, 'shopping/address_form.html', {'form': existing_address_form, 'address': address, 'pk':pk})
-
-def CheckOutAddressUpdateView(request, pk):
-
-    """
-    This is the address view that the user will come across from the checkout page
-    on edit or delete of address it will return to the 
-    selected shipping address 
-    """
-
-    current_user = request.user
-
-    if request.method == 'POST':
-
-        address_data = AddressForm(request.POST)
-
-        if address_data.is_valid():
-
-            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)            
-
-            address, created = Address.objects.update_or_create(
-                first_name = address_data.cleaned_data['first_name'],
-                last_name = address_data.cleaned_data['last_name'],
-                street_address= address_data.cleaned_data['street_address'],
-                extended_address= address_data.cleaned_data['extended_address'],
-                city= address_data.cleaned_data['city'], 
-                state= address_data.cleaned_data['state'],
-                zip_code= address_data.cleaned_data['zip_code'],
-                email= address_data.cleaned_data['email'],
-                address_type= address_data.cleaned_data['address_type'],
-
-            )
-
-            if address:
-                Address.objects.filter(email=current_user.email, address_type='shipping', pk=pk).update(default_address=True) 
-
-            address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
-
-            return render (request, 'shopping/select-shipping-address.html', {'address_list': address_list,})           
-
-    else:
-
-        address = Address.objects.get(id=pk)
-
-        Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
-        Address.objects.filter(id=pk).update(default_address=True)
-
-        existing_address_form = EditAddressForm(initial={
-                'first_name' : address.first_name,
-                'last_name' : address.last_name,
-                'street_address' : address.street_address,
-                'extended_address' : address.extended_address,
-                'city' : address.city, 
-                'state' : address.state,
-                'zip_code' : address.zip_code,
-                'email' : address.email,
-            })
-
-        pk = Address.objects.get(id=pk)
-
-        return render(request, 'shopping/address_form.html', {'form': existing_address_form, 'address': address, 'pk':pk})
-
-def payment_view(request):
+def payment(request):
     user = request.user
 
     cart = Cart(request.session)
@@ -513,42 +326,6 @@ def StripeAddressView(request):
 
                 return redirect('checkout-view')
 
-            # default_shipping_amount = ''
-            # tax_amount = ''        
-            # shipping_options = []
-            # order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
-
-            # for item in order['items']:
-            #     if item['type'] == 'shipping':
-            #         default_shipping_amount = decimal.Decimal(item['amount']) / 100
-            #     elif item['type'] == 'tax':
-            #         tax_amount = decimal.Decimal(item['amount']) / 100
-            
-            
-            # for shipping_method in order.shipping_methods:
-            #     b = {
-            #         "description" : shipping_method.description,
-            #         "amount" : decimal.Decimal(shipping_method.amount) / 100,
-            #         'id' : shipping_method.id,
-            #         'delivery_estimate' : shipping_method.delivery_estimate.date,
-            #     }
-                
-            #     shipping_options.append(b)
-
-
-            # context ={
-            #     'shipping_address': address,
-            #     'cart_count' : cart_count,
-            #     'cart_total' : cart_total,
-            #     'order' : order,
-            #     'order_amount' : order_amount,
-            #     'shipping_options' : shipping_options,
-            #     'default_shipping_amount' : default_shipping_amount,
-            #     'tax_amount' : tax_amount,
-            # }
-
-            # return render(request, 'shopping/stripe-payment.html', context)
-
         else:
             print "data is not clean"
             errors =  address_data.errors
@@ -570,6 +347,193 @@ def StripeAddressView(request):
         })
 
         return render(request, 'shopping/address.html', {'form': form,})
+
+
+def DiscountFindView(request):
+    name = request.POST.get('name')
+    order_id = request.session['order_id']
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+
+    order = stripe.Order.retrieve(order_id)
+    discount_amount = ''
+
+    for item in order['items']:
+        if item['type'] == 'discount':
+
+            return HttpResponse('Discount already applied')
+
+    try:
+        coupon = stripe.Coupon.retrieve(name)
+
+        order.coupon = coupon.id
+
+        order.save()
+
+        # create a variable that contains the discounted amount add that to the data returned
+
+        for item in order['items']:
+            if item.type == 'discount':
+                discount_amount = item.amount
+        data = {
+        'order' : order,
+        'discount_amount' : discount_amount,
+        }       
+        return HttpResponse(json.dumps(data, indent=2, sort_keys=True))
+    except Exception as e:
+        coupon = "Invalid code"
+        return HttpResponse(coupon)
+
+def CheckoutAddressDeleteView(request):
+    """
+    This view take the pk of the address that the user wants deleted
+
+    after the address is deleted query for the remaining addresses
+
+    get the first address and make it the default address
+
+    if there is no address list it should go to the auth address view
+
+    so the user can enter an address and continue to checkout
+    """
+    pk = request.POST.get('pk')
+    address = Address.objects.get(id=pk)
+    address.delete()    
+    user = request.user
+
+    try:
+        new_default_address = Address.objects.filter(email=user.email, address_type='shipping').first()
+    except:
+        new_default_address = None
+
+    print new_default_address
+
+    if new_default_address != None:
+        Address.objects.filter(email=user.email, pk=new_default_address.id).update(default_address=True)
+
+    return HttpResponse("address deleted sir")
+
+
+
+def AddressChangeView(request):
+    current_user = request.user
+    current_address = request.POST.get('selected_address')
+
+    print current_address
+    address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
+    Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
+    Address.objects.filter(id=current_address).update(default_address=True)
+    
+    return HttpResponse('address changed')
+
+def AddressUpdateView(request, pk):
+
+    current_user = request.user
+
+    if request.method == 'POST':
+
+        address_data = AddressForm(request.POST)
+
+        if address_data.is_valid():
+
+            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)            
+
+            address, created = Address.objects.update_or_create(
+                first_name = address_data.cleaned_data['first_name'],
+                last_name = address_data.cleaned_data['last_name'],
+                street_address= address_data.cleaned_data['street_address'],
+                extended_address= address_data.cleaned_data['extended_address'],
+                city= address_data.cleaned_data['city'], 
+                state= address_data.cleaned_data['state'],
+                zip_code= address_data.cleaned_data['zip_code'],
+                email= address_data.cleaned_data['email'],
+                address_type= address_data.cleaned_data['address_type'],                
+            )
+
+            address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
+
+            return render (request, 'shopping/shipping.html', {'address_list': address_list,})           
+
+    else:
+
+        address = Address.objects.get(id=pk)
+
+        Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
+        Address.objects.filter(id=pk).update(default_address=True)
+
+        existing_address_form = EditAddressForm(initial={
+                'first_name' : address.first_name,
+                'last_name' : address.last_name,
+                'street_address' : address.street_address,
+                'extended_address' : address.extended_address,
+                'city' : address.city, 
+                'state' : address.state,
+                'zip_code' : address.zip_code,
+                'email' : address.email,
+            })
+
+        pk = Address.objects.get(id=pk)
+
+        return render(request, 'shopping/address_form.html', {'form': existing_address_form, 'address': address, 'pk':pk})
+
+def CheckOutAddressUpdateView(request, pk):
+
+    """
+    This is the address view that the user will come across from the checkout page
+    on edit or delete of address it will return to the 
+    selected shipping address 
+    """
+
+    current_user = request.user
+
+    if request.method == 'POST':
+
+        address_data = AddressForm(request.POST)
+
+        if address_data.is_valid():
+
+            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)            
+
+            address, created = Address.objects.update_or_create(
+                first_name = address_data.cleaned_data['first_name'],
+                last_name = address_data.cleaned_data['last_name'],
+                street_address= address_data.cleaned_data['street_address'],
+                extended_address= address_data.cleaned_data['extended_address'],
+                city= address_data.cleaned_data['city'], 
+                state= address_data.cleaned_data['state'],
+                zip_code= address_data.cleaned_data['zip_code'],
+                email= address_data.cleaned_data['email'],
+                address_type= address_data.cleaned_data['address_type'],
+
+            )
+
+            if address:
+                Address.objects.filter(email=current_user.email, address_type='shipping', pk=pk).update(default_address=True) 
+
+            address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
+
+            return render (request, 'shopping/select-shipping-address.html', {'address_list': address_list,})           
+
+    else:
+
+        address = Address.objects.get(id=pk)
+
+        Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
+        Address.objects.filter(id=pk).update(default_address=True)
+
+        existing_address_form = EditAddressForm(initial={
+                'first_name' : address.first_name,
+                'last_name' : address.last_name,
+                'street_address' : address.street_address,
+                'extended_address' : address.extended_address,
+                'city' : address.city, 
+                'state' : address.state,
+                'zip_code' : address.zip_code,
+                'email' : address.email,
+            })
+
+        pk = Address.objects.get(id=pk)
+
+        return render(request, 'shopping/address_form.html', {'form': existing_address_form, 'address': address, 'pk':pk})
 
 def StripePaymentView(request):
 

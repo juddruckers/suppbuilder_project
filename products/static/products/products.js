@@ -1,6 +1,6 @@
 function addItem(variation){
 	$.ajax({
-		url: '/shopping/preworkout/',
+		url: '/shopping/item/add/',
 		type: 'POST',
 		data: {'variation': variation,},
 	});	
@@ -8,7 +8,7 @@ function addItem(variation){
 
 function removeItem(variation){
 	$.ajax({
-		url : '/shopping/preworkout/remove/' ,
+		url : '/shopping/item/remove/' ,
 		type : 'POST',
 		data : {'variation': variation},
 	})	

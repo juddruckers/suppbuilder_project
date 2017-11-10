@@ -5,10 +5,10 @@ from . import views
 
 
 urlpatterns = [
-    url(r'^preworkout/$', views.preWorkoutAdd, name='add pre workout'),
-    url(r'^preworkout/remove/$', views.preWorkoutRemove, name='single-item-remove'),
-    url(r'^show/$', views.show, name='shopping-cart-show'),
-    url(r'^checkout/$', views.payment_view, name='checkout-view'),
+    url(r'^item/add$', views.add_item, name='add-item'),
+    url(r'^item/remove/$', views.remove_item, name='remove-item'),
+    url(r'^cart/$', views.cart, name='cart'),
+    url(r'^checkout/$', views.payment, name='payment'),
     url(r'^stripe-payment/$', views.StripePaymentView, name='stripe-payment-view'),
     url(r'^stripe-update-order/$', views.StripeUpdateOrderView, name='stripe-update-order-view'),
     url(r'^guest-address/$', views.StripeGuestAddressView, name='stripe-guest-address-view'),

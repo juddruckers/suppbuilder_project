@@ -32,6 +32,7 @@ function getCookie(name) {
 
 });
 
+
 $('.update-cart').on("click", function(){
 	// empty array to hold the ID's of items to be deleted
 	var delete_item_list = []

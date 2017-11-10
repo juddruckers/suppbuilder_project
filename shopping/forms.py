@@ -85,7 +85,7 @@ class AuthAddressForm(ModelForm):
             ),
             FormActions(
             Submit('save', 'Proceed to checkout'),
-            HTML("<a href='{% url 'shopping-cart-show' %}' class='btn btn-default' id='cancel-button'> Back to cart</a>")
+            HTML("<a href='{% url 'cart' %}' class='btn btn-default' id='cancel-button'> Back to cart</a>")
         )
 
         )
