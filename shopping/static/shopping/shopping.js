@@ -47,7 +47,7 @@ $('.update-cart').on("click", function(){
 
 	// send the array of item ID's and reload the page on success
 	$.ajax({
-		url : '/shopping/show/',
+		url : '/shopping/cart/',
 		type: 'POST',
 		data: {'delete_item_list': delete_item_list},
 		success: function(){
