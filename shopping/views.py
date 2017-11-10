@@ -354,27 +354,39 @@ def create_address(request):
 
 
 def DiscountFindView(request):
+    """
+    this view will attempt to find a valid coupon and apply it to the current
+    order.
+
+    keyword arguments:
+    name -- the name of the coupon the user is trying to apply to the order
+    order_id -- the current active orders ID
+    """
+
     name = request.POST.get('name')
     order_id = request.session['order_id']
+
+    # change this key to be an environemnt variable in production
     stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
 
     order = stripe.Order.retrieve(order_id)
     discount_amount = ''
-
+    
+    # check to see if there is already a discount applied to this order
     for item in order['items']:
         if item['type'] == 'discount':
-
             return HttpResponse('Discount already applied')
 
+    # attempt to retrieve coupon from stripe API
     try:
         coupon = stripe.Coupon.retrieve(name)
 
+        # if there is a coupon add coupon to the order and save the order
         order.coupon = coupon.id
 
         order.save()
 
         # create a variable that contains the discounted amount add that to the data returned
-
         for item in order['items']:
             if item.type == 'discount':
                 discount_amount = item.amount
@@ -384,8 +396,9 @@ def DiscountFindView(request):
         }       
         return HttpResponse(json.dumps(data, indent=2, sort_keys=True))
     except Exception as e:
-        coupon = "Invalid code"
-        return HttpResponse(coupon)
+        # if the coupon does not exist return the response
+        # the response text (e.responseText) should say "No such coupon"
+        return HttpResponse(e)
 
 def CheckoutAddressDeleteView(request):
     """
