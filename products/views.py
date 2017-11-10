@@ -20,7 +20,6 @@ def ProteinCount(request):
 		
 	return HttpResponse(protein_count)
 	
-
 def EnergyView(request):
 	locale.setlocale(locale.LC_ALL, "")
 

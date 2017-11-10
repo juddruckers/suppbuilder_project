@@ -30,13 +30,13 @@
                     <td>{{ item.product.serving_size }}</td>
                     <td>${{item.price}}</td>
                     <td>${{item.product.thirty_day}}</td>
-                    <td><input type='checkbox' class='item-in' value='{{item.product.id}}'></input></td>
+                    <td><input type='checkbox' class='delete-item' value='{{item.product.id}}'></input></td>
                 </tr>   
                 {% endfor %}
             </table>
 
         {% if cart.items|length > 0 %}
-        <button type="button" class="btn-small btn-danger update-cart" data-button='1' >Update Custom Supplement Stack</button>
+        <button type="button" class="btn-small btn-danger update-cart" >Update Custom Supplement Stack</button>
 
             <div class='row'>
                 <div class='col-lg-12' id='cart-total'>

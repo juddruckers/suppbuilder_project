@@ -1,8 +1,6 @@
 $(document).ready(function() {
-
-
 	
-	function getCookie(name) {
+function getCookie(name) {
 	    var cookieValue = null;
 	    if (document.cookie && document.cookie !== '') {
 	        var cookies = document.cookie.split(';');
@@ -34,31 +32,30 @@ $(document).ready(function() {
 
 });
 
-
-
 $('.update-cart').on("click", function(){
-	console.log("button connected");
-
+	// empty array to hold the ID's of items to be deleted
 	var delete_item_list = []
-	var cart_number = $(this).attr('data-button')
+
+	// select all checkboxes
 	$(":checkbox").each(function(){
+		// if the checkbox is checked push the cart item ID to delete_item_list
 		if ($(this).is(":checked")) {
-			var ingredientDelete = $(this).val();
-			delete_item_list.unshift(ingredientDelete)
-			console.log(delete_item_list);
+			delete_item_list.push($(this).val());
 		};
 	});
 
+	// send the array of item ID's and reload the page on success
 	$.ajax({
-		url : '/shopping/remove/',
+		url : '/shopping/show/',
 		type: 'POST',
-		data: {'delete_item_list[]': delete_item_list, 'cart_number':cart_number},
+		data: {'delete_item_list': delete_item_list},
 		success: function(){
+			console.log("success");
 			location.reload();
 		},
-	});	
+	});
 });
-
+ 
 
 // function to change address to default address
 $("input:radio[name='address']").on("click", function(){
@@ -103,7 +100,4 @@ $("#delete-address").on("click", function(){
 		},
 	});	
 })
-
-
-
 
