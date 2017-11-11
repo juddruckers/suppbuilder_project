@@ -47,9 +47,10 @@ def remove_item(request):
     """
 
     # retrieve the cart session object
-
     cart = Cart(request.session)
     variation = Variation.objects.get(id=request.POST.get('variation'))
+    print (request.POST.get("variation"))
+    print variation
     cart.remove(variation)
 
     return HttpResponse("item removed")
@@ -78,7 +79,6 @@ def cart(request):
 
     else:        
 
-        # this is the total of all the items prices added up 
         grand_total = cart.total
 
         # divide the total by 30 to get a price of serving size. The value is still a decimal type
@@ -88,8 +88,13 @@ def cart(request):
         use quantize and round half up to account for times where the price lands at a half
 
         example: 2.005 => 2.01, 2.015 => 2.02
+
+        if there is no items in the cart trying to quantize 0 will throw an error
         """
-        serving = price_per.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_HALF_UP)
+        if price_per != 0:
+            serving = price_per.quantize(decimal.Decimal('.01'), rounding=decimal.ROUND_HALF_UP)
+        else:
+            serving = None
 
         context = {
             'cart' : cart,
@@ -100,28 +105,33 @@ def cart(request):
         return render(request, 'shopping/show-cart.html', context)
 
 def payment(request):
-    user = request.user
 
+    """
+    View creates a stripe order for the user and directs them to the order confirmation page where
+    they can finalize their order and input their payment information using stripe.
+
+    """
+    user = request.user
+    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
     cart = Cart(request.session)
     cart_count = 0
     cart_total = cart.total
-    item_list =[]
-    stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
 
-    if user.is_anonymous():
-        
+    # if the user is not logged in or a guest send them to login page
+    if user.is_anonymous():        
         form = LoginForm()
         return render(request, 'account/login.html', {'form' : form})
 
+    # if user is logged in
     if user.is_authenticated():
 
-        """
-        if the currently logged in user has no address
-        redirect them to the create address page
-        """
+        # find the users addresses and retrieve the default address to be used
         shipping_address = Address.objects.filter(email=request.user.email, address_type='shipping', default_address=True).first()
 
+        # if there is no shipping address redirect them to create an address.
         if not shipping_address:
+            # create shipping default value of address type is shipping
+            # fill in the email with the current logged in users email
             form = AuthAddressForm(initial={
                 'address_type' : 'shipping',
                 'email' : user.email,
@@ -130,27 +140,7 @@ def payment(request):
         
         else:
 
-            for product in cart.products:
-                b = {
-                "type" : 'sku',
-                "parent" : product.sku,
-                "quantity" : 1,
-                }
-                item_list.append(b)
-
-            if 'order_id' in request.session:
-                
-                order = stripe.Order.retrieve(request.session['order_id'])
-                order_items = [item for item in order['items'] if item.type == 'sku']
-
-                if len(item_list) != len(order_items):
-                    order.metadata['cancelation'] = "Order has been canceled due to updated cart"
-                    order.save()
-                    order = stripe.Order.create(
-                      currency = 'usd',
-                      email = user.email,
-                      items = item_list,
-                      shipping = {
+            shipping_info = {
                         "name": user.first_name + " " + user.last_name,
                         "address":{
                           "line1": shipping_address.street_address,
@@ -159,28 +149,47 @@ def payment(request):
                           "postal_code": shipping_address.zip_code,
                           "state" : shipping_address.state,
                         }
-                      },
-                    )
-                    print "items have changed creating new order"
+                      }
 
+            # create a list of objects from the items in the cart.
+            item_list = [{"type" : 'sku', "parent" : item.sku, "quantity" : 1,} for item in cart.products]
+
+            # look for an order_id in the session
+            if 'order_id' in request.session:
+                
+                # if the order_id exists retrieve the order using the ID
+                order = stripe.Order.retrieve(request.session['order_id'])
+
+                # create a list of items in the order if the item type is 'sku'
+                order_items = [item for item in order['items'] if item.type == 'sku']
+
+                """
+                if the length of the item list does not match the length of the len of order items
+                the order has been changed.
+
+                Stripe does not give the ability to edit the items in an already existing order. 
+                cancel old order and create new order
+                """
+                if len(item_list) != len(order_items):
+                    order.metadata['cancelation'] = "Order has been canceled due to updated cart"
+                    order.save()
+                    order = stripe.Order.create(
+                      currency = 'usd',
+                      email = user.email,
+                      items = item_list,
+                      shipping = shipping_info
+                    )
                     request.session['order_id'] = order.id
 
+            # if no order_id in session
             else:
                 
+                # create order
                 order = stripe.Order.create(
                   currency = 'usd',
                   email = user.email,
                   items = item_list,
-                  shipping = {
-                    "name": user.first_name + " " + user.last_name,
-                    "address":{
-                      "line1": shipping_address.street_address,
-                      "city": shipping_address.city,
-                      "country":'US',
-                      "postal_code": shipping_address.zip_code,
-                      "state" : shipping_address.state,
-                    }
-                  },
+                  shipping = shipping_info,
                 )
 
                 request.session['order_id'] = order.id
@@ -188,7 +197,7 @@ def payment(request):
             discount = False
             discount_amount = 0
             default_shipping_amount = ''
-            tax_amount = ''        
+            tax_amount = ''
             shipping_options = []
             order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
 
@@ -211,7 +220,7 @@ def payment(request):
                 
                 shipping_options.append(b)
 
-            context ={
+            context = {
                 'shipping_address': shipping_address,
                 'cart_count' : cart_count,
                 'cart_total' : cart_total,
@@ -238,7 +247,6 @@ def create_address(request):
     address and update the old order to a canceled state due to address change.
     It will then create a new order and redirect to the payment view
     """
-
     user = request.user
 
     if request.method == 'POST':
@@ -265,70 +273,7 @@ def create_address(request):
                 address_type= address_data.cleaned_data['address_type'],                
             )
 
-            cart = Cart(request.session)
-            cart_count = 0
-            cart_total = cart.total
-            item_list =[]
-
-            for product in cart.products:
-                b = {
-                "type" : 'sku',
-                "parent" : product.sku,
-                "quantity" : 1,
-                }
-
-                item_list.append(b)
-
-            for product in cart.products:
-                cart_count +=1
-
-            stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
-            
-            if 'order_id' in request.session:
-                order = stripe.Order.retrieve(request.session['order_id'])
-                order.metadata['cancelation'] = "Order has been canceled due to new shipping address"
-                order.save()
-                
-                order = stripe.Order.create(
-                  currency = 'usd',
-                  email = user.email,
-                  items = item_list,
-                  shipping = {
-                    "name": user.first_name + " " + user.last_name,
-                    "address":{
-                      "line1": address.street_address,
-                      "city": address.city,
-                      "country":'US',
-                      "postal_code": address.zip_code,
-                      "state" : address.state,
-                    }
-                  },
-                )
-
-                request.session['order_id'] = order.id
-                
-                return redirect('payment')
-
-            else:
-                order = stripe.Order.create(
-                  currency = 'usd',
-                  email = user.email,
-                  items = item_list,
-                  shipping = {
-                    "name": user.first_name + " " + user.last_name,
-                    "address":{
-                      "line1": address.street_address,
-                      "city": address.city,
-                      "country":'US',
-                      "postal_code": address.zip_code,
-                      "state" : address.state,
-                    }
-                  },
-                )
-
-                request.session['order_id'] = order.id
-
-                return redirect('payment')
+            return redirect('payment')
 
         else:
             print "data is not clean"
@@ -1089,7 +1034,10 @@ def NewAddressView(request):
 
 
 def StripeUpdateOrderView(request):
-
+    """
+    This view will update the order to reflect the shipping method
+    that has been selected.
+    """
     stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
    
     order_id = request.POST.get('order_id')
