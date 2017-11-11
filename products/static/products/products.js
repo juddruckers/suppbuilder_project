@@ -1,6 +1,6 @@
 function addItem(variation){
 	$.ajax({
-		url: '/shopping/item/add/',
+		url: '/shopping/item/add',
 		type: 'POST',
 		data: {'variation': variation,},
 	});	
