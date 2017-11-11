@@ -10,9 +10,6 @@ from django.core.urlresolvers import reverse
 class AddressForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddressForm, self).__init__(*args, **kwargs)
-
-        # If you pass FormHelper constructor a form instance
-        # It builds a default layout with all its fields
         self.helper = FormHelper(self)
 
         self.helper.layout = Layout(
@@ -38,11 +35,11 @@ class AddressForm(ModelForm):
         # You can dynamically adjust your layout
 
         self.helper.form_id = 'AddressForm'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-4'
-        self.helper.field_class = 'col-lg-6'
+        self.helper.form_class = 'form'
+        self.helper.label_class = 'col-xs-4'
+        self.helper.field_class = 'col-xs-6'
         self.helper.form_method = 'post'
-        self.helper.form_action = "/shopping/guest-address/"
+        self.helper.form_action = "create-address"
 
 
 
@@ -65,9 +62,10 @@ class AuthAddressForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(AuthAddressForm, self).__init__(*args, **kwargs)
 
-        # If you pass FormHelper constructor a form instance
-        # It builds a default layout with all its fields
         self.helper = FormHelper(self)
+        self.helper.form_id = 'AuthAddressForm'
+        self.helper.form_method = 'post'
+        self.helper.form_action = "/shopping/address/create"
 
         self.helper.layout = Layout(
             Fieldset(
@@ -86,18 +84,8 @@ class AuthAddressForm(ModelForm):
             FormActions(
             Submit('save', 'Proceed to checkout'),
             HTML("<a href='{% url 'cart' %}' class='btn btn-default' id='cancel-button'> Back to cart</a>")
+            )
         )
-
-        )
-        # You can dynamically adjust your layout
-
-        self.helper.form_id = 'AuthAddressForm'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-4'
-        self.helper.field_class = 'col-lg-6'
-        self.helper.form_method = 'post'
-        self.helper.form_action = "/shopping/address/"
-
 
 
     class Meta:

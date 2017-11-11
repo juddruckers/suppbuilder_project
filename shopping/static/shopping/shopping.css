@@ -1,13 +1,16 @@
+/*-----FORM------*/
+.form-row {
+	margin: 0 auto;
+	width:60%;
+	padding-top: 2em;
+}
+
 .remove {
 	display: none;
 }
 
 h3 {
 	display: inline-block;
-}
-
-#AddressForm{
-	height:50px;
 }
 
 
