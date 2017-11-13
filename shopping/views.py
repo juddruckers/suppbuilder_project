@@ -239,13 +239,9 @@ def payment(request):
 def create_address(request):
     """
     This is the view the user will go to when they go to checkout and they have no
-    address on file for them. Once they create an address it will create an order and 
-    redirect them to the payment view.
+    address on file for them.
 
-    This will also be the page where they will be directed to if they want to
-    change the address from the payment view. It will create or update a shipping
-    address and update the old order to a canceled state due to address change.
-    It will then create a new order and redirect to the payment view
+
     """
     user = request.user
 
@@ -279,19 +275,9 @@ def create_address(request):
             print "data is not clean"
             errors =  address_data.errors
 
-            for error in errors:
-                print error
-
-            # form = AuthAddressForm(initial={
-            #     'first_name' : request.user.first_name,
-            #     'last_name' : request.user.last_name,
-            #     'email' : request.user.email,
-            # })
             return render(request, 'shopping/address.html', {'form': form, 'errors': errors}) 
 
-    else:
-        print 'no post data receieved EditAuthUserAddressView'
-            
+    else:   
         form = AuthAddressForm(initial={
             'first_name' : request.user.first_name,
             'last_name' : request.user.last_name,
@@ -370,8 +356,6 @@ def CheckoutAddressDeleteView(request):
     except:
         new_default_address = None
 
-    print new_default_address
-
     if new_default_address != None:
         Address.objects.filter(email=user.email, pk=new_default_address.id).update(default_address=True)
 
@@ -443,11 +427,15 @@ def AddressUpdateView(request, pk):
 def CheckOutAddressUpdateView(request, pk):
 
     """
-    This is the address view that the user will come across from the checkout page
-    on edit or delete of address it will return to the 
-    selected shipping address 
+    This view will allow the user to update already existing addresses associated
+    to the user, add a new address, or delete exisiting addresses.
+    
+    Args:
+        address: address that is being updated
+        address_data: form data used to update an existing address object
+        form: modelform that takes an instance of an exsiting address as an argument
+        layout: the layout section of the form to modify the buttons
 
-    update the current address 
     """
 
     current_user = request.user
@@ -462,7 +450,6 @@ def CheckOutAddressUpdateView(request, pk):
 
         return redirect(payment)
 
-
     else:
 
         address = Address.objects.get(id=pk)
@@ -475,7 +462,6 @@ def CheckOutAddressUpdateView(request, pk):
         form.helper.form_action = "/shopping/edit-address/%s/" % pk
 
         layout =  form.helper['layout'][1]
-
         layout[0].value = "Save changes"
         layout[1].html = "<a href='{% url 'update' %}' class='btn btn-default' id='cancel-button'> Cancel</a>"
 
@@ -549,19 +535,28 @@ def StripePaymentView(request):
 
 
 def AddressView(request):
+    """
+    The user is directed to this view to create a new address from the 
+    EditAuthCheckoutCheckoutAddress view. 
 
-    form = AddressForm()
-    current_user = request.user
-    customer_id = str(current_user.id)
+    args:
+        user = current user
+        form = model form
+    """
 
-    print 'no post data receieved'
+    user = request.user
 
     form = AuthAddressForm(initial={
-        'first_name' : current_user.first_name,
-        'last_name' : current_user.last_name,
-        'email' : current_user.email,
+        'first_name' : user.first_name,
+        'last_name' : user.last_name,
+        'email' : user.email,
         })
-        
+
+
+    layout =  form.helper['layout'][1]
+    layout[0].value = "Create address"
+    layout[1].html = "<a href='{% url 'update' %}' class='btn btn-default' id='cancel-button'> Cancel</a>"
+
     return render(request, 'shopping/address.html', {'form': form,})    
 
 
@@ -1015,8 +1010,6 @@ def NewAddressView(request):
         return render(request, 'shopping/address.html', {'form': form})
 
 
-
-
 def StripeUpdateOrderView(request):
     """
     This view will update the order to reflect the shipping method
@@ -1081,127 +1074,22 @@ def EditGuestAddressView(request):
 def EditAuthCheckoutAddressView(request):
 
     """
-    This is the view that takes the authenticated user to their addresses on file 
+    This is the view that takes the authenticated user to the addresses on file from the payment page.
 
-    if the request is a post method it will validate the address data
-    and then create a new order using the new addresss
-    if there is an old order it will delete that old order and state in the meta data why
-    after the new address is saved and new order created they are redirected to the checkout page.
+    if the user deletes all addresses they will be redirected to the create addresss view.
+
+    args:
+        user: current logged in user
+        address_list: all addresses associated to the user
     """
     user = request.user
 
-    if request.method == 'POST':
-        stripe.api_key = "sk_test_dMMQoiznhYQ9CeJJQp4YzdaT"
+    address_list = Address.objects.filter(email=user.email, address_type='shipping')
 
-        address_data = EditAuthAddressForm(request.POST)
+    if len(address_list) == 0:
+        return redirect("create-address")
 
-        if address_data.is_valid():
-
-            Address.objects.filter(email=user.email, address_type='shipping').update(default_address=False)
-
-            shipping_address, created = Address.objects.update_or_create(
-                first_name = address_data.cleaned_data['first_name'],
-                last_name = address_data.cleaned_data['last_name'],
-                street_address= address_data.cleaned_data['street_address'],
-                extended_address= address_data.cleaned_data['extended_address'],
-                city= address_data.cleaned_data['city'], 
-                state= address_data.cleaned_data['state'],
-                zip_code= address_data.cleaned_data['zip_code'],
-                email= address_data.cleaned_data['email'],
-                address_type= address_data.cleaned_data['address_type'],                
-            )
-
-            cart = Cart(request.session)
-            cart_count = 0
-            cart_total = cart.total
-            item_list =[]
-
-            for product in cart.products:
-                b = {
-                "type" : 'sku',
-                "parent" : product.sku,
-                "quantity" : 1,
-                }
-
-                cart_count +=1
-
-                item_list.append(b)
-
-            old_order = stripe.Order.retrieve(request.session['order_id'])
-            old_order.status = 'canceled'
-            old_order.metadata['cancelation'] = "Order canceled due to address change"
-            old_order.save()
-
-            order = stripe.Order.create(
-              currency = 'usd',
-              email = user.email,
-              items = item_list,
-              shipping = {
-                "name": shipping_address.first_name + " " + shipping_address.last_name,
-                "address":{
-                  "line1": shipping_address.street_address,
-                  "city": shipping_address.city,
-                  "country":'US',
-                  "postal_code": shipping_address.zip_code,
-                  "state" : shipping_address.state,
-                }
-              },
-            )
-            
-            request.session['order_id'] = order.id
-
-            default_shipping_amount = ''
-            tax_amount = ''        
-            shipping_options = []
-            order_amount = "{0:.2f}".format(decimal.Decimal(order.amount) / 100)
-
-            for item in order['items']:
-                if item['type'] == 'shipping':
-                    default_shipping_amount = decimal.Decimal(item['amount']) / 100
-                elif item['type'] == 'tax':
-                    tax_amount = decimal.Decimal(item['amount']) / 100
-            
-            
-            for shipping_method in order.shipping_methods:
-                b = {
-                    "description" : shipping_method.description,
-                    "amount" : decimal.Decimal(shipping_method.amount) / 100,
-                    'id' : shipping_method.id,
-                    'delivery_estimate' : shipping_method.delivery_estimate.date,
-                }
-                
-                shipping_options.append(b)        
-
-            context ={
-                'shipping_address': shipping_address,
-                'cart_count' : cart_count,
-                'cart_total' : cart_total,
-                'order' : order,
-                'order_amount' : order_amount,
-                'shipping_options' : shipping_options,
-                'default_shipping_amount' : default_shipping_amount,
-                'tax_amount' : tax_amount,
-                'shipping_address' : shipping_address,
-            }
-
-            return render(request, 'shopping/stripe-payment.html', context)
-
-    else:
-
-        print "no post data received"
-
-        address_list = Address.objects.filter(email=user.email, address_type='shipping')
-
-        if len(address_list) == 0:
-            form = AuthAddressForm(initial={
-                'first_name' : user.first_name,
-                'last_name' : user.last_name,
-                'address_type' : 'shipping',
-                'email' : user.email,
-            })
-            return render(request, 'shopping/address.html', {'form': form,})
-
-        return render (request, 'shopping/select-shipping-address.html', {'address_list': address_list,})
+    return render (request, 'shopping/select-shipping-address.html', {'address_list': address_list,})
 
 
 def EditExistingAddressView(request, pk):
