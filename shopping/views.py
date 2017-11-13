@@ -251,7 +251,7 @@ def create_address(request):
 
     if request.method == 'POST':
 
-        address_data = AddressForm(request.POST)
+        address_data = AuthAddressForm(request.POST)
 
         if address_data.is_valid():
 
@@ -279,11 +279,14 @@ def create_address(request):
             print "data is not clean"
             errors =  address_data.errors
 
-            form = AuthAddressForm(initial={
-                'first_name' : request.user.first_name,
-                'last_name' : request.user.last_name,
-                'email' : request.user.email,
-            })
+            for error in errors:
+                print error
+
+            # form = AuthAddressForm(initial={
+            #     'first_name' : request.user.first_name,
+            #     'last_name' : request.user.last_name,
+            #     'email' : request.user.email,
+            # })
             return render(request, 'shopping/address.html', {'form': form, 'errors': errors}) 
 
     else:
@@ -451,30 +454,14 @@ def CheckOutAddressUpdateView(request, pk):
 
     if request.method == 'POST':
 
-        address_data = AddressForm(request.POST)
+        address = Address.objects.get(id=pk)
 
-        if address_data.is_valid():
+        address_data = AuthAddressForm(request.POST, instance=address)
 
-            Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)            
+        address_data.save()
 
-            address, created = Address.objects.update_or_create(
-                first_name = address_data.cleaned_data['first_name'],
-                last_name = address_data.cleaned_data['last_name'],
-                street_address= address_data.cleaned_data['street_address'],
-                extended_address= address_data.cleaned_data['extended_address'],
-                city= address_data.cleaned_data['city'], 
-                state= address_data.cleaned_data['state'],
-                zip_code= address_data.cleaned_data['zip_code'],
-                email= address_data.cleaned_data['email'],
-                address_type= address_data.cleaned_data['address_type'],
-            )
+        return redirect(payment)
 
-            if address:
-                Address.objects.filter(email=current_user.email, address_type='shipping', pk=pk).update(default_address=True) 
-
-            address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
-
-            return redirect(payment)       
 
     else:
 
@@ -483,19 +470,11 @@ def CheckOutAddressUpdateView(request, pk):
         Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
         Address.objects.filter(id=pk).update(default_address=True)
 
-        form = AuthAddressForm(initial={
-                'first_name' : address.first_name,
-                'last_name' : address.last_name,
-                'street_address' : address.street_address,
-                'extended_address' : address.extended_address,
-                'city' : address.city, 
-                'state' : address.state,
-                'zip_code' : address.zip_code,
-                'email' : address.email,
-            })
+        form = AuthAddressForm(instance=address)
+
+        form.helper.form_action = "/shopping/edit-address/%s/" % pk
 
         layout =  form.helper['layout'][1]
-        # print vars(layout)
 
         layout[0].value = "Save changes"
         layout[1].html = "<a href='{% url 'update' %}' class='btn btn-default' id='cancel-button'> Cancel</a>"

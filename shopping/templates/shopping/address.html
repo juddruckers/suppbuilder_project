@@ -8,18 +8,10 @@
 
 {%block body %}
 
-
-<div class='container'>
-	<div class='row'>
-		<div class='col-md-8 col-md-offset-2'>
+<div class='container form-container'>
+	<div class='row form-row'>
 			{% crispy form %}
-		</div>
 	</div>
 </div>
 
-{% endblock %}
-
-
-{% block footer %}
-     <script type="text/JavaScript" src="{% static 'shopping/address.js' %}"></script>
 {% endblock %}
