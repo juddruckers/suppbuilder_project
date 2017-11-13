@@ -400,7 +400,6 @@ class CreateNewAddressForm(ModelForm):
             Submit('save', 'Save address'),
             HTML("{% if request.user.is_authenticated %} <a href='{% url 'shipping' %}' class='btn btn-default' id='cancel-button'> Cancel</a>{% endif %}")
         )
-
         )
         # You can dynamically adjust your layout
 

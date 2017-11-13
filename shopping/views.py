@@ -443,6 +443,8 @@ def CheckOutAddressUpdateView(request, pk):
     This is the address view that the user will come across from the checkout page
     on edit or delete of address it will return to the 
     selected shipping address 
+
+    update the current address 
     """
 
     current_user = request.user
@@ -465,7 +467,6 @@ def CheckOutAddressUpdateView(request, pk):
                 zip_code= address_data.cleaned_data['zip_code'],
                 email= address_data.cleaned_data['email'],
                 address_type= address_data.cleaned_data['address_type'],
-
             )
 
             if address:
@@ -473,7 +474,7 @@ def CheckOutAddressUpdateView(request, pk):
 
             address_list = Address.objects.filter(email=current_user.email, address_type='shipping')
 
-            return render (request, 'shopping/select-shipping-address.html', {'address_list': address_list,})           
+            return redirect(payment)       
 
     else:
 
@@ -482,7 +483,7 @@ def CheckOutAddressUpdateView(request, pk):
         Address.objects.filter(email=current_user.email, address_type='shipping').update(default_address=False)
         Address.objects.filter(id=pk).update(default_address=True)
 
-        existing_address_form = EditAddressForm(initial={
+        form = AuthAddressForm(initial={
                 'first_name' : address.first_name,
                 'last_name' : address.last_name,
                 'street_address' : address.street_address,
@@ -493,9 +494,13 @@ def CheckOutAddressUpdateView(request, pk):
                 'email' : address.email,
             })
 
-        pk = Address.objects.get(id=pk)
+        layout =  form.helper['layout'][1]
+        # print vars(layout)
 
-        return render(request, 'shopping/address_form.html', {'form': existing_address_form, 'address': address, 'pk':pk})
+        layout[0].value = "Save changes"
+        layout[1].html = "<a href='{% url 'update' %}' class='btn btn-default' id='cancel-button'> Cancel</a>"
+
+        return render(request, 'shopping/address.html', {'form': form, 'pk':pk})
 
 def StripePaymentView(request):
 
@@ -1218,7 +1223,6 @@ def EditAuthCheckoutAddressView(request):
             return render(request, 'shopping/address.html', {'form': form,})
 
         return render (request, 'shopping/select-shipping-address.html', {'address_list': address_list,})
-
 
 
 def EditExistingAddressView(request, pk):
