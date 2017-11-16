@@ -58,24 +58,27 @@ $('.update-cart').on("click", function(){
 });
  
 
-// function to change address to default address
+/*
+listens to all radio buttons. On click it retrieves the value
+of the radio button which is the the ID of the address. Once the
+address ID is retrieved it is sent to the AddressChangeView to 
+update the selected address to be the default address used for orders.
+
+args:
+	id: ID of the address the user wants as the default.
+*/
 $("input:radio[name='address']").on("click", function(){
-	selected_address= $(this).val()
-	
+	id = $(this).val()
+
 	$.ajax({
 		url : '/shopping/change/',
 		type: 'POST',
-		data: {'selected_address': selected_address},
+		data: {'id': id},
 		success: function(){
-			console.log("address id sent to view")
-			$("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-			    $("#success-alert").slideUp(500);
-			});
+			$("#success-alert").slideDown(500).delay(750).slideUp(1000);
 		},
 	});	
 })
-
-
 
 // function to delete address
 $(".delete-link").on("click", function(){
@@ -83,8 +86,6 @@ $(".delete-link").on("click", function(){
 	var pk = $(this).attr('value');
 	$("#delete-address-id").val(pk)
 	var test_pk = $("#delete-address-id").val()
-	console.log(pk)
-	console.log(test_pk)
 });
 
 
@@ -96,7 +97,6 @@ $("#delete-address").on("click", function(){
 		type: 'POST',
 		data: {'pk': pk},
 		success: function(data){
-			console.log(data);
 			location.reload();
 		},
 	});	

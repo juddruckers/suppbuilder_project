@@ -1,93 +1,35 @@
 {% extends 'suppbuilder/base.html' %}
-
 {% load static %}
-{% block head %}
-    
+
+{% block head %}    
 <link rel="stylesheet" type="text/css" href="{% static 'shopping/shopping.css' %}">
 {% endblock %}
 
 {% block body %}
-
-
-
 <div class='container shipping'>
-
-<ol class="breadcrumb">
-  <li><a href="{% url 'profile' %}">Profile</a></li>
-  <li class='active'>Shipping</li>
-</ol>
-
-
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-md" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel"></h4>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this address?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" id='delete-address' class="btn btn-default" data-dismiss="modal">Delete</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-	<div class='row'>
-		<div class="alert alert-info remove center" id='success-alert' role="alert"> Default shipping address changed</div>
+	<div class="row">
+		<ol class="breadcrumb">
+		  <li><a href="{% url 'profile' %}">Profile</a></li>
+		  <li class='active'>Shipping</li>
+		</ol>
 	</div>
 
-	<div class ='row'>
-
+	<div class="row">
 		<div class="page-header">
-		  <h1>Shipping Addresses</h1>
-		</div>
-		<div class='row'>
-		{% for address in address_list %}
-		<div class='col-md-3'>
-			<div class='panel panel-default'>
-			<div class="panel-heading">
-				{% if address.default_address == True %}	
-				<p>
-					<input type='radio' id='{{address.id}}' checked='checked' name='address' value='{{address.id}}'> 
-					Default address
-				</p>
-				{% else %}
-				<p>
-					<input type='radio' id='{{address.id}}' name='address' value='{{address.id}}'> 
-					Default address
-				</p>
-				{% endif %}
-			</div>
-			  <div class="panel-body">
-			    <p>{{address.first_name}} {{address.last_name}}</p>
-			    <p>{{address.street_address}}</p>
-			    <p>{{address.extended_address}}</p>
-			    <p>{{address.city}}, {{address.state}} {{address.zip_code}}</p>
-			    <input type='hidden' id='delete-address-id' value=''>
-			    <p>
-			    	<span><a href="{% url 'edit-existing-address' pk=address.id %}">Edit</a></span>
-			    	 | <span><a data-toggle='modal' class='delete-link' data-target='#myModal' value="{{address.id}}">Delete</a></span>
-			    </p>
-			  </div>
-			</div>
-		</div>
-		{% endfor %}
-		</div>
-
+			<h1>Shipping Addresses</h1>
+		</div>		
 	</div>
-		<div class='row'>
-      		<a class="btn btn-info" href="{% url 'add-new-address'%}" role="button">Add new address</a>	
-		</div>
-
+	{% if address_list %}
+		{% include 'shopping/address_list.html' %}
+	{% else %}
+	<div class='row'>
+		<h2>No address on file.</h2>
+	</div>
+	{% endif %}
+	<div class='row'>
+		<a class="btn btn-info" href="{% url 'add-new-address'%}" role="button">Add new address</a>	
+	</div>
 </div>
-
-
-
-
 {% endblock %}
 
 {% block footer %}

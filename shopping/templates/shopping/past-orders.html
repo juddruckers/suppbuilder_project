@@ -20,54 +20,40 @@
 		{%for order in order_details %}
 			<div class="panel panel-default">
 			  <div class="panel-heading">
-			    <!-- <p class="panel-title">{{order.id}}</p> -->
-			    <p>Order # {{order.order_id}}</p>
 
+			  	<p><a href="{% url 'order-detail' pk=order.order_id %}">Order # {{order.order_id}}</a></p>
 			  </div>
 			  <div class="panel-body">
-			  		<div class='col-sm-2'>
-			    		<p><strong>Order Placed</strong></p>
-			    		<p>{{order.order_created}}</p>
-			    		<p><strong>Order Total</strong></p>
-			    		<p>$ {{order.amount}}</p>
+			  		<div class=' col-xs-6 col-sm-3'>
+			  			<p class='title'>Order Placed</p>
+			  			<p>{{order.order_created}}</p>
 			    	</div>
-			  		<div class='col-sm-2'>
-			    		<p><strong>Shipping Info</strong></p>
-			    		<p>{{order.shipping.name}}</p>
-			    		<p>{{order.shipping.address.line1}}</p>
-			    		<p>{{order.shipping.address.city}}, {{order.shipping.address.state}} {{order.shipping.address.postal_code}}</p>
-			    		<p>{{order.shipping.address.country}}</p>
+			  		<div class='col-xs-6 col-sm-3'>
+			  			<p class='title'>Order Total</p>
+			  			<p>$ {{order.amount}}</p>
 			    	</div>
-			    	<div class='col-sm-2'>
-			    		<p><strong>Custom stack</strong></p>
+			    	<div class='col-xs-6 col-sm-3'>
+			    		<p class='title'>Custom stack</p>
 			    		<ul>
 			    			{% for item in order.items %}
 			    				<li>{{item}}</li>
 			    			{% endfor %}
 			    		</ul>
 			    	</div>
-			    	<div class='col-sm-2'>
-			    		<p><strong>Order Status</strong></p>
-			    		<p>{{order.order_status}}</p>
-			    	{% if order.order_status == 'Fulfilled'%}
-				    		<p><strong>Tracking Information</strong></p>
-				    		<ul>
-				    			<li>{{order.shipping.carrier}}</li>
-				    			<li>{{order.shipping.tracking_number}}</li>
-				    		</ul>
-			    	{% endif %}
+			    	<div class='col-xs-6 col-sm-3'>
+			    		<p class='title'>Order Status</p>
+						<p>{{order.order_status}}</p>
+							{% if order.order_status == 'Fulfilled'%}
+								<p><strong>Tracking Information</strong></p>
+								<ul>
+									<li>{{order.shipping.carrier}}</li>
+									<li>{{order.shipping.tracking_number}}</li>
+								</ul>
+							{% endif %}
 			    	</div>
-
 			  </div>		  
 			</div>
 		{% endfor %}
-
 	</div>
 </div>
-
-
-
-
-
-
 {%endblock%}

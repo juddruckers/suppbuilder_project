@@ -39,14 +39,12 @@ $("input:radio").change(function() {
   var shipping_method_id = $(this).attr("id");
   var order_id = $("#order-id").val();
 
-
   $.ajax({
     url: '/shopping/stripe-update-order/',
     type: 'POST',
     dataType: "json",
     data: {'shipping_method_id': shipping_method_id, 'order_id' : order_id,},
     success : function(data){
-      console.log(data.shipping_price[0]/100);
       var shipping_price = data.shipping_price[0]/100;
       var order_total = (data.order.amount/100).toFixed(2);
       $("#cart-total").text(order_total);
@@ -56,8 +54,6 @@ $("input:radio").change(function() {
       console.log("There was an error captain")
     }
   });
-
-
 });
 
 /*

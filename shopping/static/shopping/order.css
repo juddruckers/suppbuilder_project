@@ -1,66 +1,80 @@
-#logo_side {
-	background: white url("images/logo_no_brand.jpg") center no-repeat ;
-	height: 325px;
+/*-----FINAL ORDER PAGE-------*/
+.summary {
+  font-size:85%;
 }
 
+@media(max-width: 991px){
+  .summary{
+    font-size: 75%;
+  }
+}
+
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 #order-title {
 	text-align: center;
-}
-
-.order-list {
-  margin-left : 10%;
-}
-
-
-h3 {
-	color:rgb(113, 124, 125);
-}
-
-/*.marketing .col-lg-4 {
-  margin: 20px;
-  text-align: center;
-  border: 1px solid gray;
-}
-*/
-.marketing .col-lg-3 {
-  margin: 20px;
-  text-align: center;
-  border: 1px #fcf9f9;
-  background-color: #fcf9f9;
-}
-
-.marketing img {
-  margin: 20px;
-  text-align: center;
-}
-
-.marketing h2 {
-  font-weight: normal;
-}
-.marketing .col-lg-4 p {
-  margin-right: 10px;
-  margin-left: 10px;
 }
 
 .breadcrumb {
   background-color: white;
 }
 
+.thanks{
+  margin: 0 auto;
+}
+
+.items ul{
+  list-style: none;
+}
+
+/*-----PROFILE PAGE-------*/
+.profile-heading{
+  padding-left:1em;
+}
+
+.profile-info{
+  padding-left: 2em;
+  font-size: 80%;
+}
+
+.profile-details{
+  text-align:center;
+}
+
+.icon-large{
+  font-size:800%;
+}
+
+/*-----ORDER PANEL-------*/
 .panel > .panel-heading {
     background-image: none;
-    background-color: #05C3DE;
+    background-color: #7cbde8;
     color: white;
+    font-size:80%;
 }
 
-.panel > .panel-heading h3 {
-    color: white;
+.panel-heading a{
+  color: white;
 }
-
 
 .shipping-information p{
   text-transform: uppercase;
 }
 
+.panel-body {
+  font-size:80%;
+  padding:1em 0;
+}
+
+.title{
+  text-decoration: underline;
+}
+.panel-body ul {
+  list-style: none;
+}
 
 

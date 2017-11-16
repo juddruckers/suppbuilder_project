@@ -1,4 +1,10 @@
-/*navbar color  rgba(52, 152, 219,1.0)*/
+/*navbar color  rgba(52, 152, 219,1.0) #3498db */
+
+
+/*possible price color 1 2BE189
+  possible price color 2 #2ecc71
+
+*/
 
 * {
 	margin:0;
@@ -51,6 +57,12 @@ h2 {
 
 .steps{
 	padding:2em 0;
+}
+
+/*-------------COMMON----------------- */
+.edit-link {
+	font-size: 60%;
+    text-decoration: underline;
 }
 
 /*-------------LANDING PAGE----------------- */
@@ -123,24 +135,24 @@ h2 {
 }
 
 
-ul.nav.navbar-nav .dropdown.open .dropdown-toggle{
+ul.nav.navbar-nav .dropdown.open .dropdown-toggle {
   background-color: white;
   background-image:none;
   border: 1px solid white;
   transition-property: 2s;
 }
 
-.navbar-default .navbar-toggle{
+.navbar-default .navbar-toggle {
 	border-color:white;
 	background-color:white;
 	transition: background-color 0.2s, border 0.2s;
 }
 
-.navbar-default .navbar-toggle .icon-bar{
+.navbar-default .navbar-toggle .icon-bar {
 	background-color: rgba(52, 152, 219,1.0);
 }
 
-.navbar-default .navbar-toggle:focus, .navbar-default .navbar-toggle:hover{
+.navbar-default .navbar-toggle:focus, .navbar-default .navbar-toggle:hover {
 	border:1px solid rgba(189, 195, 199,1.0);
 	background-color:rgba(189, 195, 199,1.0);
 }
@@ -174,7 +186,7 @@ ul.nav.navbar-nav .dropdown.open .dropdown-toggle{
 /*-------------- MISSION STATEMENT ------------------*/
 
 .mission-statement {
-	background-color: #f4f4f4;;
+	background-color: #f4f4f4;
 }
 
 .mission-statement img {

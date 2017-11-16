@@ -1,26 +1,19 @@
 /*-------NAVABAR----------*/
-nav .navbar .navbar-default {
-	display:none;
-}
-
 #order-column {
 	border-right: 1px solid #eee;
 	border-top: 1px solid #eee;
 }
-
 
 #order-summary h3 {
 	display: inline-block;
 	color:rgb(113, 124, 125);
 }
 
-
 #discount-section .btn {
 	margin-top: 10px;
 }
 
 /*--------SHARED---------*/
-
 h4 {
 	color: rgb(0, 58, 112);	
 }
@@ -56,11 +49,6 @@ h4 {
 
 input[type='radio']{
 	margin-top: 1em;
-}
-
-.change-address {
-	font-size: 60%;
-    text-decoration: underline;
 }
 
 .cart-block li{
