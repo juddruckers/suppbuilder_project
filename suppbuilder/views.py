@@ -38,7 +38,7 @@ def IndexView(request):
 def GuestLoginView(request):
 	guest = request.user
 
-	return render(request, 'suppbuilder/guest.html')
+	return render(request, '/guest.html')
 
 
 def StripeGuestView(request):

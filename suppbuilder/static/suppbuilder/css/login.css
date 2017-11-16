@@ -1,90 +1,106 @@
+
+/*--------LOGIN BLOCK--------*/
 .login-block {
-
-	margin-top: 100px;
 	border: 1px #fcf9f9;
-
 }
-
-
 
 .login-block .row {
-
+	margin-top: 2em;
 	border: 1px #fcf9f9;
-
 }
 
-
 .login-block .btn {
-
 	width:100%;
 	margin-top: 10px;
-	
 }
 
 .login-title {
 	text-align: center;
 }
 
-
-
-
 .login {
-	margin-left: 25%;
-	margin-right: 25%;
-
+	margin:0 15%;
 }
 
 .signup-block {
-	margin-top: 100px;
+	margin-top: 1em;
 }
 
-
-
 .signup-block .btn {
-
 	width:100%;
 	margin-top: 10px;
 	
 }
 
+.login .alert {
+	font-size:80%;
+}
+
+.login .alert ul {
+	list-style: none;
+}
+/*--------COMMON--------*/
+
 .panel-heading{
 	text-align: center;
 }
 
+.panel-body {
+	background-color: #F4F4F4;
+}
+
+.panel-body label{
+	font-weight: 300;
+	font-size: 75%;
+}
+
+.panel-body p {
+	margin-top: 10px;
+	text-align:center;
+	font-size:80%;
+}
 
 .panel > .panel-heading {
     background-image: none;
-    background-color: #05C3DE;
+    background-color: #7cbde8;
     color: white;
 }
 
 .panel > .panel-heading a {
     color: white;
-    text-decoration: underline;
+    font-size:80%;
 }
 
 h3 {
     color: white;
 }
 
+/*--------GUEST LOGIN--------*/
 
+.guest-block .panel-body{
+	min-height: 321px;
+}
 .guest-login {
 	margin-top: 100px;
 }
 
-.guest-form{
+.guest-block form{
 	margin-top: 45px;
-	height: 203.5px;
-}
-
-.guest-block .panel-heading{
-	height:87px;
-}
-
-.guest-block .panel-body{
-	margin-top: px;
 }
 
 .error {
 	color:red;
 }
+
+/*--------SIGN UP BLOCK--------*/
+
+.signup-block .panel-heading a {
+    color: white;
+    font-size:90%;
+}
+
+.signup-block .panel-heading p:first-of-type{
+	margin-bottom: 0;
+}
+
+

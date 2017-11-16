@@ -40,11 +40,6 @@
 
 
 
-{% include "suppbuilder/navbar.html" %}
-
-
-
-
 {% block body %}
 
     {% if messages %}
@@ -57,25 +52,6 @@
       </ul>
     </div>
     {% endif %}
-
-
-
-
-
-<!-- LINKS USED PUT THESE INSIDE THE NAVBAR SO YOU CAN HAVE A LOG IN LOG OUT  -->
-
-<!-- <div>
-      <strong>Menu:</strong>
-      <ul>
-	{% if user.is_authenticated %}
-	<li><a href="{% url 'account_email' %}">Change E-mail</a></li>
-	<li><a href="{% url 'account_logout' %}">Sign Out</a></li>
-	{% else %}
-	<li><a href="{% url 'account_login' %}">Sign In</a></li>
-	<li><a href="{% url 'account_signup' %}">Sign Up</a></li>
-	{% endif %}
-      </ul>
-</div> -->
 
 
 

@@ -6,61 +6,42 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block head %} 
-<link rel="stylesheet" type="text/css" href="{% static 'suppbuilder/login.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'suppbuilder/css/login.css' %}">
 {% endblock %}
 {% block body %}
 
-
 <div class='container login-block'>
-  
   <div class='row'>
-      
       <div class='col-md-5 col-md-offset-1'>
-          
           <div class='panel panel-default'>
-            
             <div class="panel-heading">
-              <h2 class="panel-title">Sign in</h2>
-              <br>
-              <span><a href="{{ signup_url }}"> Create an account </a></span></p>
+              <h3>Sign in</h2>
+              <a href="{{ signup_url }}"> Create an account </a>
             </div>
-            
             <div class='panel-body'>
-              
               <form class="login" method="POST" action="{% url 'account_login' %}">
-                  
                   {{ form|crispy }}
-                    
-                  {% csrf_token %}
-                  
+                  {% csrf_token %}  
                   {% if redirect_field_value %}
                     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                   {% endif %}
-                  
-                  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-                  
                   <button class="btn btn-success" type="submit">{% trans "Sign In" %}</button>
-              
+                  <p><a class="forgot" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a></p>
               </form>                          
             </div>
         </div>
       </div>
-      <div class='col-md-5 guest-block'>
-          
+      <div class='col-md-5 guest-block'>  
           <div class='panel panel-default'>
-            
             <div class="panel-heading">
-              <h3 class="">Continue as a guest</h3>
+              <h3>Continue as a guest</h3>
               <br>
               {% if error_message %}
-
                 <p class='error'>Customer already exists, please log in.</p>
               {% endif %}
             </div>
-            
             <div class='panel-body'>
-              
-              <form class="guest-form" method="POST" action="/suppbuilder/guest/">
+              <form method="POST" action="/guest/">
                   {% csrf_token %}
                   <div class="form-group">
                     <label for="guest-email">Email address</label>
@@ -77,13 +58,4 @@
       </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
 {% endblock %}
